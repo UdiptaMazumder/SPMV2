@@ -9,12 +9,12 @@ django.setup()
 
 from spmapp.models import *
 
-files = ["CSE210.xlsx", "CSE214.xlsx", "CSE216.xlsx"]
+files = ["CSE101.xlsx", "CSE201.xlsx", "CSE203.xlsx", "CSE211.xlsx"]
 
-faculties =[]
-faculties.append(Faculty_T.objects.get(pk=4254))
-faculties.append(Faculty_T.objects.get(pk=4255))
-faculties.append(Faculty_T.objects.get(pk=4257))
+faculties = []
+faculties.append(Faculty_T.objects.get(pk=4253))
+faculties.append(Faculty_T.objects.get(pk=4256))
+faculties.append(Faculty_T.objects.get(pk=4259))
 
 
 def updatedatabase(filename, d, semester):
@@ -156,6 +156,6 @@ def updatedatabase(filename, d, semester):
 
 
 for file in files:
-    updatedatabase(file, 2, "Spring")
-    updatedatabase(file, 0, "Summer")
-    updatedatabase(file, 1, "Autumn")
+    updatedatabase(file, 0, "Spring")
+    updatedatabase(file, 1, "Summer")
+    updatedatabase(file, 2, "Autumn")

@@ -9,12 +9,12 @@ django.setup()
 
 from spmapp.models import *
 
-files = ["CSE210.xlsx", "CSE214.xlsx", "CSE216.xlsx"]
+files = ["CSE213.xlsx", "CSE303.xlsx", "CSE307.xlsx", "CSE309.xlsx"]
 
-faculties =[]
-faculties.append(Faculty_T.objects.get(pk=4254))
-faculties.append(Faculty_T.objects.get(pk=4255))
-faculties.append(Faculty_T.objects.get(pk=4257))
+faculties = []
+faculties.append(Faculty_T.objects.get(pk=4250))
+faculties.append(Faculty_T.objects.get(pk=4251))
+faculties.append(Faculty_T.objects.get(pk=4252))
 
 
 def updatedatabase(filename, d, semester):
@@ -85,10 +85,10 @@ def updatedatabase(filename, d, semester):
 
     colist = []
 
-    colist.append(CO_T(CONum="CO1", CourseID=course, PLOID=plolist[0]))
-    colist.append(CO_T(CONum="CO2", CourseID=course, PLOID=plolist[1]))
-    colist.append(CO_T(CONum="CO3", CourseID=course, PLOID=plolist[2]))
-    colist.append(CO_T(CONum="CO4", CourseID=course, PLOID=plolist[3]))
+    colist.append(CO_T(CONum="CO1", CourseID=course, PLOID=plolist[1]))
+    colist.append(CO_T(CONum="CO2", CourseID=course, PLOID=plolist[2]))
+    colist.append(CO_T(CONum="CO3", CourseID=course, PLOID=plolist[3]))
+    colist.append(CO_T(CONum="CO4", CourseID=course, PLOID=plolist[5]))
 
     colist[0].save()
     colist[1].save()
@@ -156,6 +156,6 @@ def updatedatabase(filename, d, semester):
 
 
 for file in files:
-    updatedatabase(file, 2, "Spring")
-    updatedatabase(file, 0, "Summer")
-    updatedatabase(file, 1, "Autumn")
+    updatedatabase(file, 1, "Spring")
+    updatedatabase(file, 2, "Summer")
+    updatedatabase(file, 0, "Autumn")

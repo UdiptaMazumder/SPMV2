@@ -72,7 +72,7 @@ class Head_T(Employee_T):
 
 
 class Faculty_T(Employee_T):
-    FacultyID = models.CharField(max_length=4, primary_key=True)
+    FacultyID = models.IntegerField( primary_key=True)
     StartDate = models.DateField(null=True)
     Rank = models.CharField(max_length=50, null=True)
     DepartmentID = models.ForeignKey(Department_T, on_delete=models.CASCADE)
@@ -95,7 +95,7 @@ class PrereqCourse_T(models.Model):
 
 class PLO_T(models.Model):
     PLOID = models.AutoField(primary_key=True)
-    PLONum = models.IntegerField()
+    PLONum = models.CharField(max_length=5)
     ProgramID = models.ForeignKey(Program_T, on_delete=models.CASCADE)
     Details = models.CharField(max_length=50)
 
@@ -107,7 +107,7 @@ class Section_T(models.Model):
     CourseID = models.ForeignKey(Course_T, on_delete=models.CASCADE)
     FacultyID = models.ForeignKey(Faculty_T, on_delete=models.CASCADE)
     Semester = models.CharField(max_length=6)
-    Year = models.CharField(max_length=4)
+    Year = models.IntegerField()
 
 
 class Registration_T(models.Model):
@@ -115,12 +115,12 @@ class Registration_T(models.Model):
     StudentID = models.ForeignKey(Student_T, on_delete=models.CASCADE)
     SectionID = models.ForeignKey(Section_T, on_delete=models.CASCADE)
     Semester = models.CharField(max_length=6)
-    Year = models.CharField(max_length=4)
+    Year = models.IntegerField()
 
 
 class CO_T(models.Model):
-    COID = models.AutoField(primary_key=True, default='N/A')
-    CONum = models.IntegerField()
+    COID = models.AutoField(primary_key=True)
+    CONum = models.CharField(max_length=4)
     PLOID = models.ForeignKey(PLO_T, on_delete=models.CASCADE, default='N/A')
     CourseID = models.ForeignKey(Course_T, on_delete=models.CASCADE, default='N/A')
     Thresold = models.FloatField(default=40)

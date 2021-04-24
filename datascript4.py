@@ -9,15 +9,10 @@ django.setup()
 
 from spmapp.models import *
 
-files = ["CSE210.xlsx", "CSE214.xlsx", "CSE216.xlsx"]
-
-faculties =[]
-faculties.append(Faculty_T.objects.get(pk=4254))
-faculties.append(Faculty_T.objects.get(pk=4255))
-faculties.append(Faculty_T.objects.get(pk=4257))
+files = []
 
 
-def updatedatabase(filename, d, semester):
+def updatedatabase(filename, facultyid):
     df = pd.read_excel(filename, sheet_name="Marks")
 
     data = df.values.tolist()
@@ -33,7 +28,7 @@ def updatedatabase(filename, d, semester):
     data = data[3:][:]
 
     for i in data:
-        i[1] = int(i[1]) + d
+        i[1] = int(i[1])
         i[3] = int(int(i[3]))
 
     currentstudents = list(Student_T.objects.all())
@@ -58,44 +53,40 @@ def updatedatabase(filename, d, semester):
         student.save()
 
     # Sections
+    faculty = Faculty_T.objects.get(pk=facultyid)
 
     course = Course_T.objects.get(pk=data[1][2])
 
     sectionlist = []
 
     for i in sections:
-        faculty = faculties[i - 1]
-        section = Section_T(SectionNum=i, CourseID=course, FacultyID=faculty, Semester=semester, Year=2020)
-        section.save()
+        section = Section_T(SectionNum=i, CourseID=course, FacultyID=faculty, Semester="Autumn", Year=2020)
         sectionlist.append(section)
+
+    print(len(sectionlist))
 
     # Registration
     reglist = []
 
     for i in data:
         st = Student_T.objects.get(pk=i[1])
-        reg = Registration_T(StudentID=st, SectionID=sectionlist[i[3] - 1], Semester=semester, Year=2020)
-        reg.save()
+        reg = Registration_T(StudentID=st, SectionID=sectionlist[i[3] - 1], Semester="Autumn", Year=2020)
         reglist.append(reg)
+
+    print(len(reglist))
 
     # CO
 
-    plolist = list(PLO_T.objects.filter(ProgramID=1))
-
+    plolist = list(PLO_T.objects.all())
 
     colist = []
 
-    colist.append(CO_T(CONum="CO1", CourseID=course, PLOID=plolist[0]))
-    colist.append(CO_T(CONum="CO2", CourseID=course, PLOID=plolist[1]))
-    colist.append(CO_T(CONum="CO3", CourseID=course, PLOID=plolist[2]))
-    colist.append(CO_T(CONum="CO4", CourseID=course, PLOID=plolist[3]))
+    colist.append(CO_T(CONum="CO1", CourseID=course, PLOID=plolist[1]))
+    colist.append(CO_T(CONum="CO2", CourseID=course, PLOID=plolist[2]))
+    colist.append(CO_T(CONum="CO3", CourseID=course, PLOID=plolist[3]))
+    colist.append(CO_T(CONum="CO4", CourseID=course, PLOID=plolist[5]))
 
-    colist[0].save()
-    colist[1].save()
-    colist[2].save()
-    colist[3].save()
-
-
+    print(len(colist))
 
     # Assessment
     asslist = []
@@ -111,7 +102,6 @@ def updatedatabase(filename, d, semester):
 
             ass = Assessment_T(AssessmentName="Mid", QuestionNum=j, TotalMarks=midmarks[j - 1], COID=coid,
                                SectionID=sectionlist[i - 1], Weight=30)
-            ass.save()
             asslist.append(ass)
 
         for j in range(1, len(cofin) + 1):
@@ -124,8 +114,6 @@ def updatedatabase(filename, d, semester):
                     break
             ass = Assessment_T(AssessmentName="Final", QuestionNum=j, TotalMarks=finmarks[j - 1], COID=coid,
                                SectionID=sectionlist[i - 1], Weight=40)
-
-            ass.save()
             asslist.append(ass)
 
         coid = []
@@ -137,8 +125,9 @@ def updatedatabase(filename, d, semester):
 
         ass = Assessment_T(AssessmentName="Lab", QuestionNum=1, TotalMarks=labmark, COID=coid,
                            SectionID=sectionlist[i - 1], Weight=30)
-        ass.save()
         asslist.append(ass)
+
+    print(len(asslist))
 
     # Evaluation
 
@@ -151,11 +140,7 @@ def updatedatabase(filename, d, semester):
 
         for j in range(0, len(marks)):
             ev = Evaluation_T(ObtainedMarks=marks[j], AssessmentID=asslist[j], RegistrationID=reglist[i])
-            ev.save()
             evlist.append(ev)
 
+    print(len(evlist))
 
-for file in files:
-    updatedatabase(file, 2, "Spring")
-    updatedatabase(file, 0, "Summer")
-    updatedatabase(file, 1, "Autumn")
