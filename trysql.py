@@ -19,6 +19,8 @@ row = []
 with connection.cursor() as cursor:
     cursor.execute('''
            
+         Select *
+         From spmapp_student_t
          
           
             
