@@ -7,7 +7,11 @@ class School_T(models.Model):
     schoolName = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.SchoolName
+        row =[]
+        row.append(self.schoolID)
+        row.append(self.schoolName)
+
+        return row
 
 
 class Department_T(models.Model):
@@ -85,7 +89,7 @@ class Course_T(models.Model):
     program = models.ForeignKey(Program_T, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.CourseID
+        return self.courseID
 
 
 class PrereqCourse_T(models.Model):
@@ -134,6 +138,8 @@ class Assessment_T(models.Model):
     co = models.ForeignKey(CO_T, on_delete=models.CASCADE)
     section = models.ForeignKey(Section_T, on_delete=models.CASCADE)
     weight = models.FloatField()
+
+
 
 
 class Evaluation_T(models.Model):

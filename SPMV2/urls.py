@@ -21,6 +21,8 @@ from spmapp import views
 urlpatterns = [
     path('', views.home, name="home"),
     path('admin/', admin.site.urls),
+    path('adminhome/',views.adminhome,name="Admin Homepage"),
+    path('new/', views.new, name="New")
 
 
 

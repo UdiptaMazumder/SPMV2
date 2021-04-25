@@ -18,24 +18,12 @@ row = []
 
 with connection.cursor() as cursor:
     cursor.execute('''
-       SELECT sc.course_id,at.assessmentName,SUM(et.obtainedMarks)
-       FROM spmapp_registration_t rt,
-            spmapp_section_t sc,
-            spmapp_assessment_t at,
-            spmapp_evaluation_t et
+           
+         
+          
             
-            
-        WHERE rt.student_id='{}'
-        AND rt.semester='{}'
-        AND rt.year='{}'
-        AND rt.section_id=sc.sectionID
-        AND rt.registrationID=et.registration_id
-        AND at.section_id=rt.section_id
-        
-        
-        
-        GROUP BY rt.registrationID, at.assessmentName
-        
+         
+
         
         
     '''.format(1898336,"Spring",2020))
