@@ -89,7 +89,10 @@ class Course_T(models.Model):
     program = models.ForeignKey(Program_T, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.courseID
+        row = []
+        row.append(self.courseID)
+        row.append(self.courseName)
+        return row
 
 
 class PrereqCourse_T(models.Model):
