@@ -9,12 +9,12 @@ django.setup()
 
 from spmapp.models import *
 
-files = ["CSE213.xlsx", "CSE303.xlsx", "CSE307.xlsx", "CSE309.xlsx"]
+files = ["ACN202.xlsx", "BUS202.xlsx", "ECN202.xlsx"]
 
 faculties = []
-faculties.append(Faculty_T.objects.get(pk=4250))
-faculties.append(Faculty_T.objects.get(pk=4251))
-faculties.append(Faculty_T.objects.get(pk=4252))
+faculties.append(Faculty_T.objects.get(pk=4204))
+faculties.append(Faculty_T.objects.get(pk=4205))
+faculties.append(Faculty_T.objects.get(pk=4206))
 
 
 def updatedatabase(filename, d, sem):
@@ -24,11 +24,9 @@ def updatedatabase(filename, d, sem):
 
     comid = data[0][5:11]
     cofin = data[0][13:17]
-    colab = data[0][19]
 
     midmarks = data[2][5:11]
     finmarks = data[2][13:17]
-    labmark = data[2][19]
 
     data = data[3:][:]
 
@@ -50,8 +48,8 @@ def updatedatabase(filename, d, sem):
 
     # Students
 
-    dept = Department_T.objects.get(pk="CSE")
-    program = Program_T.objects.get(pk=1)
+    dept = Department_T.objects.get(pk="BBA")
+    program = Program_T.objects.get(pk=3)
 
     for i in newstudents:
         student = Student_T(studentID=i, department=dept, program=program)
@@ -80,7 +78,8 @@ def updatedatabase(filename, d, sem):
 
     # CO
 
-    plolist = list(PLO_T.objects.filter(program=1))
+    plolist = list(PLO_T.objects.filter(program=3))
+
 
     colist = []
 
@@ -93,6 +92,8 @@ def updatedatabase(filename, d, sem):
     colist[1].save()
     colist[2].save()
     colist[3].save()
+
+
 
     # Assessment
     asslist = []
@@ -107,7 +108,7 @@ def updatedatabase(filename, d, sem):
                     break
 
             ass = Assessment_T(assessmentName="Mid", questionNum=j, totalMarks=midmarks[j - 1], co=coid,
-                               section=sectionlist[i - 1], weight=30)
+                               section=sectionlist[i - 1], weight=40)
             ass.save()
             asslist.append(ass)
 
@@ -120,22 +121,12 @@ def updatedatabase(filename, d, sem):
                     coid = k
                     break
             ass = Assessment_T(assessmentName="Final", questionNum=j, totalMarks=finmarks[j - 1], co=coid,
-                               section=sectionlist[i - 1], weight=40)
+                               section=sectionlist[i - 1], weight=60)
 
             ass.save()
             asslist.append(ass)
 
-        coid = []
 
-        for k in colist:
-            if k.coNum == colab:
-                coid = k
-                break
-
-        ass = Assessment_T(assessmentName="Lab", questionNum=1, totalMarks=labmark, coid=coid,
-                           section=sectionlist[i - 1], weight=30)
-        ass.save()
-        asslist.append(ass)
 
     # Evaluation
 
@@ -151,8 +142,7 @@ def updatedatabase(filename, d, sem):
             ev.save()
             evlist.append(ev)
 
-
 for file in files:
-    updatedatabase(file, 1, "Spring")
-    updatedatabase(file, 2, "Summer")
-    updatedatabase(file, 0, "Autumn")
+    updatedatabase(file, 200, "Spring")
+    updatedatabase(file, 0, "Summer")
+    updatedatabase(file, 100, "Autumn")

@@ -26,6 +26,8 @@ class Program_T(models.Model):
     department = models.ForeignKey(Department_T, on_delete=models.CASCADE, default='N/A')
 
 
+
+
 class Student_T(models.Model):
     studentID = models.CharField(max_length=7, primary_key=True)
     firstName = models.CharField(max_length=50, null=True)
@@ -81,6 +83,13 @@ class Faculty_T(Employee_T):
     rank = models.CharField(max_length=50, null=True)
     department = models.ForeignKey(Department_T, on_delete=models.CASCADE)
 
+    def __str__(self):
+        row =[]
+        row.append(self.facultyID)
+        row.append(self.firstName + " "+self.lastName)
+
+        return row
+
 
 class Course_T(models.Model):
     courseID = models.CharField(max_length=7, primary_key=True)
@@ -88,11 +97,6 @@ class Course_T(models.Model):
     numOfCredits = models.DecimalField(max_digits=2, decimal_places=1)
     program = models.ForeignKey(Program_T, on_delete=models.CASCADE)
 
-    def __str__(self):
-        row = []
-        row.append(self.courseID)
-        row.append(self.courseName)
-        return row
 
 
 class PrereqCourse_T(models.Model):
@@ -150,6 +154,14 @@ class Evaluation_T(models.Model):
     obtainedMarks = models.FloatField()
     assessment = models.ForeignKey(Assessment_T, on_delete=models.CASCADE)
     registration = models.ForeignKey(Registration_T, on_delete=models.CASCADE)
+
+    def __str__(self):
+        row = []
+        row.append(self.evaluationID)
+        row.append(self.obtainedMarks)
+        row.append(self.assessment_id)
+        row.append(self.registration_id)
+        return row
 
 
 
