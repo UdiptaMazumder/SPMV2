@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 
 class School_T(models.Model):
@@ -7,11 +8,7 @@ class School_T(models.Model):
     schoolName = models.CharField(max_length=50)
 
     def __str__(self):
-        row =[]
-        row.append(self.schoolID)
-        row.append(self.schoolName)
-
-        return row
+        return self.schoolID + ", " + self.schoolName
 
 
 class Department_T(models.Model):
@@ -24,8 +21,6 @@ class Program_T(models.Model):
     programID = models.AutoField(primary_key=True)
     programName = models.CharField(max_length=70)
     department = models.ForeignKey(Department_T, on_delete=models.CASCADE, default='N/A')
-
-
 
 
 class Student_T(models.Model):
@@ -56,7 +51,6 @@ class Employee_T(models.Model):
         abstract = True
 
 
-
 class VC_T(Employee_T):
     vcID = models.CharField(max_length=4, primary_key=True)
     startDate = models.DateField()
@@ -78,17 +72,13 @@ class Head_T(Employee_T):
 
 
 class Faculty_T(Employee_T):
-    facultyID = models.IntegerField( primary_key=True)
+    facultyID = models.IntegerField(primary_key=True)
     startDate = models.DateField(null=True)
     rank = models.CharField(max_length=50, null=True)
     department = models.ForeignKey(Department_T, on_delete=models.CASCADE)
 
     def __str__(self):
-        row =[]
-        row.append(self.facultyID)
-        row.append(self.firstName + " "+self.lastName)
-
-        return row
+        return str(self.facultyID) + ", " + self.firstName + " " + self.lastName
 
 
 class Course_T(models.Model):
@@ -96,7 +86,7 @@ class Course_T(models.Model):
     courseName = models.CharField(max_length=50, null=True)
     numOfCredits = models.DecimalField(max_digits=2, decimal_places=1)
     program = models.ForeignKey(Program_T, on_delete=models.CASCADE)
-
+    courseType = models.CharField(max_length=15)
 
 
 class PrereqCourse_T(models.Model):
@@ -109,7 +99,6 @@ class PLO_T(models.Model):
     ploNum = models.CharField(max_length=5)
     program = models.ForeignKey(Program_T, on_delete=models.CASCADE)
     details = models.CharField(max_length=50)
-
 
 
 class Section_T(models.Model):
@@ -147,8 +136,6 @@ class Assessment_T(models.Model):
     weight = models.FloatField()
 
 
-
-
 class Evaluation_T(models.Model):
     evaluationID = models.AutoField(primary_key=True)
     obtainedMarks = models.FloatField()
@@ -156,12 +143,4 @@ class Evaluation_T(models.Model):
     registration = models.ForeignKey(Registration_T, on_delete=models.CASCADE)
 
     def __str__(self):
-        row = []
-        row.append(self.evaluationID)
-        row.append(self.obtainedMarks)
-        row.append(self.assessment_id)
-        row.append(self.registration_id)
-        return row
-
-
-
+        return self.evaluationID + " ," + self.obtainedMarks + " ," + self.assessment_id + ", " + self.registration_id
