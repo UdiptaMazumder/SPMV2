@@ -18,17 +18,14 @@ row = []
 
 with connection.cursor() as cursor:
     cursor.execute('''
-           
-         Select *
-         From spmapp_student_t
-         
-          
-            
-         
-
+        Select r.registrationID
+        
+        from spmapp_registration_t r
+        
+        where r.student_id='{}'
         
         
-    '''.format(1898336,"Spring",2020))
+    '''.format(1416455))
 
     row.append(cursor.fetchall())
 

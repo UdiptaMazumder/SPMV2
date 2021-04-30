@@ -9,24 +9,8 @@ django.setup()
 
 from spmapp.models import *
 
-df = pd.read_excel("ECN202.xlsx", sheet_name="Marks")
-
-data = df.values.tolist()
-
-course = Course_T(courseID=data[3][2], courseName="	Principles of Macroeconomics", numOfCredits=3, program_id=2,courseType="Core")
+course = Course_T(courseID='ECN202', courseName="Principles of Macroeconomics", numOfCredits=3, program_id=2,courseType="Core")
 course.save()
-
-
-
-comid = data[0][5:11]
-cofin = data[0][13:17]
-colab = data[0][19]
-
-midmarks = data[2][5:11]
-finmarks = data[2][13:17]
-labmark = data[2][19]
-
-data = data[3:][:]
 
 # CO
 plolist = list(PLO_T.objects.filter(program=2))
@@ -54,6 +38,21 @@ program = Program_T.objects.get(pk=2)
 
 
 def updatedatabase(d, sem, y):
+    df = pd.read_excel("ECN202.xlsx", sheet_name="Marks")
+
+    data = df.values.tolist()
+
+    comid = data[0][5:11]
+    cofin = data[0][13:17]
+    colab = data[0][19]
+
+    midmarks = data[2][5:11]
+    finmarks = data[2][13:17]
+    labmark = data[2][19]
+
+    data = data[3:][:]
+
+
     for i in data:
         i[1] = int(i[1]) + d
         i[3] = int(int(i[3]))
@@ -154,6 +153,6 @@ def updatedatabase(d, sem, y):
             evlist.append(ev)
 
 
-updatedatabase(2, "Spring", 2020)
+updatedatabase(200, "Spring", 2020)
 updatedatabase(0, "Summer", 2020)
-updatedatabase(1, "Autumn", 2020)
+updatedatabase(100, "Autumn", 2020)

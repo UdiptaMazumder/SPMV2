@@ -9,24 +9,8 @@ django.setup()
 
 from spmapp.models import *
 
-df = pd.read_excel("CSE216.xlsx", sheet_name="Marks")
-
-data = df.values.tolist()
-
-course = Course_T(courseID=data[3][2], courseName="Microprocessor, Interfacing and Assembly Language", numOfCredits=4, program_id=1, courseType="Core")
+course = Course_T(courseID='CSE216', courseName="Microprocessor, Interfacing and Assembly Language", numOfCredits=4, program_id=1, courseType="Core")
 course.save()
-
-
-
-comid = data[0][5:11]
-cofin = data[0][13:17]
-colab = data[0][19]
-
-midmarks = data[2][5:11]
-finmarks = data[2][13:17]
-labmark = data[2][19]
-
-data = data[3:][:]
 
 # CO
 plolist = list(PLO_T.objects.filter(program=1))
@@ -45,15 +29,29 @@ colist[2].save()
 colist[3].save()
 
 faculties = []
-faculties.append(Faculty_T.objects.get(pk=4262))
-faculties.append(Faculty_T.objects.get(pk=4263))
-faculties.append(Faculty_T.objects.get(pk=4264))
+faculties.append(Faculty_T.objects.get(pk=4113))
+faculties.append(Faculty_T.objects.get(pk=4114))
+faculties.append(Faculty_T.objects.get(pk=4115))
 
 dept = Department_T.objects.get(pk="CSE")
 program = Program_T.objects.get(pk=1)
 
 
 def updatedatabase(d, sem, y):
+    df = pd.read_excel("CSE216.xlsx", sheet_name="Marks")
+
+    data = df.values.tolist()
+
+    comid = data[0][5:11]
+    cofin = data[0][13:17]
+    colab = data[0][19]
+
+    midmarks = data[2][5:11]
+    finmarks = data[2][13:17]
+    labmark = data[2][19]
+
+    data = data[3:][:]
+
     for i in data:
         i[1] = int(i[1]) + d
         i[3] = int(int(i[3]))

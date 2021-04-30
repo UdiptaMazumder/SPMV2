@@ -143,4 +143,4 @@ class Evaluation_T(models.Model):
     registration = models.ForeignKey(Registration_T, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.evaluationID + " ," + self.obtainedMarks + " ," + self.assessment_id + ", " + self.registration_id
+        return str(self.evaluationID) + " ," + str(self.obtainedMarks) + " ," + str(self.assessment_id) + ", " + str(self.registration_id)

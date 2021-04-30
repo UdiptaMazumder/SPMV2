@@ -9,30 +9,14 @@ django.setup()
 
 from spmapp.models import *
 
-df = pd.read_excel("ACN201.xlsx", sheet_name="Marks")
-
-data = df.values.tolist()
-
-course = Course_T(courseID=data[3][2], courseName="Principles of Accounting", numOfCredits=3, program_id=2,courseType="Core")
+course = Course_T(courseID='ACN201', courseName="Principles of Accounting", numOfCredits=3, program_id=2,
+                  courseType="Core")
 course.save()
-
-
-
-comid = data[0][5:11]
-cofin = data[0][13:17]
-colab = data[0][19]
-
-midmarks = data[2][5:11]
-finmarks = data[2][13:17]
-labmark = data[2][19]
-
-data = data[3:][:]
 
 # CO
 plolist = list(PLO_T.objects.filter(program=2))
 
 colist = []
-
 
 colist.append(CO_T(coNum="CO1", course=course, plo=plolist[0]))
 colist.append(CO_T(coNum="CO2", course=course, plo=plolist[1]))
@@ -54,6 +38,20 @@ program = Program_T.objects.get(pk=2)
 
 
 def updatedatabase(d, sem, y):
+    df = pd.read_excel("ACN201.xlsx", sheet_name="Marks")
+
+    data = df.values.tolist()
+
+    comid = data[0][5:11]
+    cofin = data[0][13:17]
+    colab = data[0][19]
+
+    midmarks = data[2][5:11]
+    finmarks = data[2][13:17]
+    labmark = data[2][19]
+
+    data = data[3:][:]
+
     for i in data:
         i[1] = int(i[1]) + d
         i[3] = int(int(i[3]))
@@ -71,7 +69,6 @@ def updatedatabase(d, sem, y):
             sections.append(i[3])
 
     # Students
-
 
     for i in newstudents:
         student = Student_T(studentID=i, department=dept, program=program)
@@ -109,7 +106,7 @@ def updatedatabase(d, sem, y):
                     break
 
             assessment = Assessment_T(assessmentName="Mid", questionNum=j, totalMarks=midmarks[j - 1], co=coid,
-                               section=sectionlist[i - 1], weight=30)
+                                      section=sectionlist[i - 1], weight=30)
             assessment.save()
             assessmentlist.append(assessment)
 
@@ -122,7 +119,7 @@ def updatedatabase(d, sem, y):
                     coid = k
                     break
             assessment = Assessment_T(assessmentName="Final", questionNum=j, totalMarks=finmarks[j - 1], co=coid,
-                               section=sectionlist[i - 1], weight=40)
+                                      section=sectionlist[i - 1], weight=40)
 
             assessment.save()
             assessmentlist.append(assessment)
@@ -135,7 +132,7 @@ def updatedatabase(d, sem, y):
                 break
 
         assessment = Assessment_T(assessmentName="Lab", questionNum=1, totalMarks=labmark, co=coid,
-                           section=sectionlist[i - 1], weight=30)
+                                  section=sectionlist[i - 1], weight=30)
         assessment.save()
         assessmentlist.append(assessment)
 
@@ -155,5 +152,5 @@ def updatedatabase(d, sem, y):
 
 
 updatedatabase(0, "Spring", 2020)
-updatedatabase(1, "Summer", 2020)
-updatedatabase(2, "Autumn", 2020)
+updatedatabase(100, "Summer", 2020)
+updatedatabase(200, "Autumn", 2020)
