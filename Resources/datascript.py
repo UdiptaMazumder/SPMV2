@@ -2,7 +2,7 @@ import pandas as pd
 
 import os
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "SPVM2.SPMV2.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "SPMV2.settings")
 
 import django
 
@@ -85,8 +85,10 @@ for name in fnames:
     id = id + 1
     i = i + 1
 
+
+
 fnames = ["Shahriar", "Feroz", "Kafiul", "Abdur", "Mustafa", "Sajib", "Naziba", "Saila", "Khosru"]
-lnames = ["Khan", "Ahmed", "Islam", "Razzak", "Chowdhury", "Tahsin", "Ishrat", "Salim"]
+lnames = ["Khan", "Ahmed", "Islam", "Razzak", "Chowdhury","Chakrabarty", "Tahsin", "Ishrat", "Salim"]
 
 id = 4301
 

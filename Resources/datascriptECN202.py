@@ -68,9 +68,8 @@ def updatedatabase(d, sem, y):
 
         if i[3] not in sections:
             sections.append(i[3])
-
+    sections.sort()
     # Students
-
 
     for i in newstudents:
         student = Student_T(studentID=i, department=dept, program=program)
@@ -146,9 +145,10 @@ def updatedatabase(d, sem, y):
         marks = data[i][5:11]
         marks.extend(data[i][13:17])
         marks.append(data[i][19])
+        num = 11 * (data[i][3] - 1)
 
         for j in range(0, len(marks)):
-            ev = Evaluation_T(obtainedMarks=marks[j], assessment=assessmentlist[j], registration=reglist[i])
+            ev = Evaluation_T(obtainedMarks=marks[j], assessment=assessmentlist[num+j], registration=reglist[i])
             ev.save()
             evlist.append(ev)
 

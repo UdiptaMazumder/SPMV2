@@ -9,36 +9,32 @@ django.setup()
 
 from spmapp.models import *
 
-course = Course_T(courseID='EEE221', courseName="Electronics I", numOfCredits=4, program_id=3, courseType="Core")
-course.save()
+course = Course_T(courseID='ACN201', courseName="Principles of Accounting", numOfCredits=3, program_id=2,
+                  courseType="Core")
 
 # CO
-plolist = list(PLO_T.objects.filter(program=3))
+plolist = list(PLO_T.objects.filter(program=2))
 
 colist = []
 
-
 colist.append(CO_T(coNum="CO1", course=course, plo=plolist[0]))
-colist.append(CO_T(coNum="CO2", course=course, plo=plolist[2]))
-colist.append(CO_T(coNum="CO3", course=course, plo=plolist[3]))
-colist.append(CO_T(coNum="CO4", course=course, plo=plolist[1]))
+colist.append(CO_T(coNum="CO2", course=course, plo=plolist[1]))
+colist.append(CO_T(coNum="CO3", course=course, plo=plolist[2]))
+colist.append(CO_T(coNum="CO4", course=course, plo=plolist[3]))
 
-colist[0].save()
-colist[1].save()
-colist[2].save()
-colist[3].save()
+
 
 faculties = []
-faculties.append(Faculty_T.objects.get(pk=4304))
-faculties.append(Faculty_T.objects.get(pk=4305))
-faculties.append(Faculty_T.objects.get(pk=4306))
+faculties.append(Faculty_T.objects.get(pk=4201))
+faculties.append(Faculty_T.objects.get(pk=4202))
+faculties.append(Faculty_T.objects.get(pk=4203))
 
-dept = Department_T.objects.get(pk="EEE")
-program = Program_T.objects.get(pk=3)
+dept = Department_T.objects.get(pk="ACN")
+program = Program_T.objects.get(pk=2)
 
 
 def updatedatabase(d, sem, y):
-    df = pd.read_excel("EEE221.xlsx", sheet_name="Marks")
+    df = pd.read_excel("ACN201.xlsx", sheet_name="Marks")
 
     data = df.values.tolist()
 
@@ -67,13 +63,12 @@ def updatedatabase(d, sem, y):
 
         if i[3] not in sections:
             sections.append(i[3])
+
     sections.sort()
     # Students
 
-
     for i in newstudents:
         student = Student_T(studentID=i, department=dept, program=program)
-        student.save()
 
     # Sections
 
@@ -82,16 +77,14 @@ def updatedatabase(d, sem, y):
     for i in sections:
         faculty = faculties[i - 1]
         section = Section_T(sectionNum=i, course=course, faculty=faculty, semester=sem, year=y)
-        section.save()
         sectionlist.append(section)
-
+    print(len(sectionlist))
     # Registration
     reglist = []
 
     for i in data:
         st = Student_T.objects.get(pk=i[1])
         reg = Registration_T(student=st, section=sectionlist[i[3] - 1], semester=sem, year=y)
-        reg.save()
         reglist.append(reg)
 
     # Assessment
@@ -107,8 +100,7 @@ def updatedatabase(d, sem, y):
                     break
 
             assessment = Assessment_T(assessmentName="Mid", questionNum=j, totalMarks=midmarks[j - 1], co=coid,
-                               section=sectionlist[i - 1], weight=30)
-            assessment.save()
+                                      section=sectionlist[i - 1], weight=30)
             assessmentlist.append(assessment)
 
         for j in range(1, len(cofin) + 1):
@@ -120,9 +112,8 @@ def updatedatabase(d, sem, y):
                     coid = k
                     break
             assessment = Assessment_T(assessmentName="Final", questionNum=j, totalMarks=finmarks[j - 1], co=coid,
-                               section=sectionlist[i - 1], weight=40)
+                                      section=sectionlist[i - 1], weight=40)
 
-            assessment.save()
             assessmentlist.append(assessment)
 
         coid = []
@@ -133,10 +124,9 @@ def updatedatabase(d, sem, y):
                 break
 
         assessment = Assessment_T(assessmentName="Lab", questionNum=1, totalMarks=labmark, co=coid,
-                           section=sectionlist[i - 1], weight=30)
-        assessment.save()
+                                  section=sectionlist[i - 1], weight=30)
         assessmentlist.append(assessment)
-
+    print(len(assessmentlist))
     # Evaluation
 
     evlist = []
@@ -145,14 +135,14 @@ def updatedatabase(d, sem, y):
         marks = data[i][5:11]
         marks.extend(data[i][13:17])
         marks.append(data[i][19])
-        num = 11 * (data[i][3] - 1)
+        num = 11*(data[i][3]-1)
 
         for j in range(0, len(marks)):
+
             ev = Evaluation_T(obtainedMarks=marks[j], assessment=assessmentlist[num+j], registration=reglist[i])
-            ev.save()
             evlist.append(ev)
+    print(len(evlist))
 
 
-updatedatabase(200, "Spring", 2020)
-updatedatabase(0, "Summer", 2020)
-updatedatabase(100, "Autumn", 2020)
+updatedatabase(0, "Spring", 2020)
+
