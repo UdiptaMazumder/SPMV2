@@ -1,301 +1,388 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends "layouts/base.html" %}
 
-<head>
-    <link rel="icon" href="{% /logo.png">
+{% block title %} Dashboard {% endblock %} 
 
-    <link rel="icon" href="{% static 'img/logo.png' %}" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <title>SPM V2.0 </title>
-</head>
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
 
-<body id="body">
-    <div class="containers">
-        <nav class="navbar">
-            <div class="nav_icon" onclick="toggleSidebar()">
-                <i class="fa fa-bars" aria-hidden="true"></i>
-            </div>
-            <div class="navbar__left">
-                <a href="#">INDEPENDENT UNIVERSITY, BANGLADESH</a>
-            </div>
-            <div class="navbar__right">
-                <a href="#">Sadita Ahmed</a>
-                <a href="#">
-                    <img width="40" src="{% static 'img/avatar.svg' %}" alt="" />
+{% block content %}
 
-                </a>
-            </div>
-        </nav>
-
-        <main>
-
-            <div class="dropdown">
-
-                <h2>Student Performance</h2>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              School
-            </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">Separated link</a></li>
-                    </ul>
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              Department
-            </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">Separated link</a></li>
-                    </ul>
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              Year
-            </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">Separated link</a></li>
-                    </ul>
-                </div>
-
-            </div>
-            <div class="main__container">
-
-                <br>
-                <br>
-                <div class="main__container">
-                    REPORTS STARTS HERE
-                    <div class="charts">
-                        <div class="charts__left">
-                            <div class="charts__left__title">
-                                <div>
-                                    <h1>PLO Chart</h1>
-                                    <p></p>
-                                </div>
-
-                            </div>
-                            <div id="apex1"></div>
-                        </div>
-
-                        <div class="charts__right">
-                            <div class="charts__right__title">
-                                <div>
-                                    <h1>CO's Chart</h1>
-                                    <p></p>
-                                </div>
-
-                            </div>
-
-                            <div class="charts__right__cards">
-                                <div class="card1">
-                                    <h1>CO1</h1>
-                                    <p></p>
-                                </div>
-
-                                <div class="card2">
-                                    <h1>CO2</h1>
-                                    <p></p>
-                                </div>
-
-                                <div class="card3">
-                                    <h1>CO3</h1>
-                                    <p></p>
-                                </div>
-
-                                <div class="card4">
-                                    <h1>CO4</h1>
-                                    <p></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-
-
-                    <!-- MAIN CARDS STARTS HERE 
-          <div class="main__cards">
-            <div class="card">
-              <i
-                class="fa fa-user-o fa-2x text-lightblue"
-                aria-hidden="true"
-              ></i>
-              <div class="card_inner">
-                <p class="text-primary-p">Number of Subscribers</p>
-                <span class="font-bold text-title">578</span>
+    <div class="row" >
+      <div class="col-12">
+        <div class="card card-chart">
+          <div class="card-header ">
+            <div class="row">
+              <div class="col-sm-6 text-left">
+                <h2 class="card-title">PLO Performance</h2>
               </div>
-            </div>
-
-            <div class="card">
-              <i class="fa fa-calendar fa-2x text-red" aria-hidden="true"></i>
-              <div class="card_inner">
-                <p class="text-primary-p">Times of Watching</p>
-                <span class="font-bold text-title">2467</span>
-              </div>
-            </div>
-
-            <div class="card">
-              <i
-                class="fa fa-video-camera fa-2x text-yellow"
-                aria-hidden="true"
-              ></i>
-              <div class="card_inner">
-                <p class="text-primary-p">Number of Videos</p>
-                <span class="font-bold text-title">340</span>
-              </div>
-            </div>
-
-            <div class="card">
-              <i
-                class="fa fa-thumbs-up fa-2x text-green"
-                aria-hidden="true"
-              ></i>
-              <div class="card_inner">
-                <p class="text-primary-p">Number of Likes</p>
-                <span class="font-bold text-title">645</span>
-              </div>
-            </div>
-          </div>
-          MAIN CARDS ENDS HERE
-
-          CHARTS STARTS HERE
-          <div class="charts">
-            <div class="charts__left">
-              <div class="charts__left__title">
-                <div>
-                  <h1>Daily Reports</h1>
-                  <p>Cupertino, California, USA</p>
-                </div>
-                <i class="fa fa-usd" aria-hidden="true"></i>
-              </div>
-              <div id="apex1"></div>
-            </div>
-
-            <div class="charts__right">
-              <div class="charts__right__title">
-                <div>
-                  <h1>Stats Reports</h1>
-                  <p>Cupertino, California, USA</p>
-                </div>
-                <i class="fa fa-usd" aria-hidden="true"></i>
-              </div>
-
-              <div class="charts__right__cards">
-                <div class="card1">
-                  <h1>Income</h1>
-                  <p>$75,300</p>
-                </div>
-
-                <div class="card2">
-                  <h1>Sales</h1>
-                  <p>$124,200</p>
-                </div>
-
-                <div class="card3">
-                  <h1>Users</h1>
-                  <p>3900</p>
-                </div>
-
-                <div class="card4">
-                  <h1>Orders</h1>
-                  <p>1881</p>
+              <div class="col-sm-6">
+                <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+                  <label class="btn btn-sm btn-primary btn-simple active" id="0">
+                    <input type="radio" name="options" checked>
+                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Accounts</span>
+                    <span class="d-block d-sm-none">
+                      <i class="tim-icons icon-single-02"></i>
+                    </span>
+                  </label>
+                  <label class="btn btn-sm btn-primary btn-simple" id="1">
+                    <input type="radio" class="d-none d-sm-none" name="options">
+                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Purchases</span>
+                    <span class="d-block d-sm-none">
+                      <i class="tim-icons icon-gift-2"></i>
+                    </span>
+                  </label>
+                  <label class="btn btn-sm btn-primary btn-simple" id="2">
+                    <input type="radio" class="d-none" name="options">
+                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Sessions</span>
+                    <span class="d-block d-sm-none">
+                      <i class="tim-icons icon-tap-02"></i>
+                    </span>
+                  </label>
                 </div>
               </div>
             </div>
           </div>
-         CHARTS ENDS HERE -->
-                </div>
-        </main>
-
-        <div id="sidebar">
-            <div class="sidebar__title">
-                <div class="sidebar__img">
-                    <img src="{% static 'img/logo.png' %}" alt="logo" />
-
-                </div>
-                <i onclick="closeSidebar()" class="fa fa-times" id="sidebarIcon" aria-hidden="true"></i>
+          <div class="card-body" style="height:500px;" >
+            <div class="chart-area">
+                <canvas id="ploperformance" height="100%"></canvas>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="sidebar__menu">
-
-                <h2>EDUCATIONAL</h2>
-                <div class="sidebar__link">
-                    <i class="fa fa-line-chart" aria-hidden="true"></i>
-                    <a href="Admin Management.html"> Student Performance</a>
-                </div>
-                <div class="sidebar__link">
-                    <i class="fa fa-check-square-o" aria-hidden="true"></i>
-                    <a href="#">PLO and CO Reports</a>
-                </div>
-                <div class="sidebar__link">
-                    <i class="fa fa-pie-chart" aria-hidden="true"></i>
-                    <a href="#">Course Analysis</a>
-                </div>
-                <div class="sidebar__link">
-                    <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                    <a href="#">Students Enrolled</a>
-                </div>
-
-
-                <h2>MY PROFILE</h2>
-                <div class="sidebar__link">
-                    <i class="fa fa-book" aria-hidden="true"></i>
-                    <a href="#">My Courses</a>
-                </div>
-                <div class="sidebar__link">
-                    <i class="fa fa-user" aria-hidden="true"></i>
-                    <a href="#">My Profile</a>
-                </div>
-                <div class="sidebar__link">
-                    <i class="fa fa-cogs" aria-hidden="true"></i>
-                    <a href="#">Settings</a>
-                </div>
-                <div class="sidebar__link">
-                    <i class="fa fa-files-o"></i>
-                    <a href="#">My Evaluation</a>
-                </div>
-
-
-                <div class="sidebar__logout">
-                    <i class="fa fa-power-off"></i>
-                    <a href="#">Log out</a>
-                </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h3 class="card-title"><i class="tim-icons icon-bell-55 text-primary"></i> GPA Performance</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+              <canvas id="gpatrend" height="100%"></canvas>
             </div>
+          </div>
         </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h3 class="card-title"><i class="tim-icons icon-send text-success"></i>PLO Duplicate</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+              <canvas id="right" height="100%"></canvas>
+            </div>
+          </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-        <script src="{% static 'js/script.js' %}"></script>
-</body>
+      </div>
+    </div>
 
-</html>
+   <div class="row">
+      <div class="col-12">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h3 class="card-title"><i class="tim-icons icon-send text-success"></i> Course-wise PLO Achievement</h3>
+          </div>
+          <div class="card-body" style ="height:500px;">
+            <div class="chart-area">
+              <canvas id="coursewiseplo" height="100%"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   <div class="row">
+      <div class="col-12">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h3 class="card-title"><i class="tim-icons icon-send text-success"></i> CO-wise PLO Achievement</h3>
+          </div>
+          <div class="card-body" style ="height:500px;">
+            <div class="chart-area">
+              <canvas id="cowiseplo" height="100%"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<!--  <script>-->
+<!--    chartLabel = {{chartLabel|safe}}-->
+<!--     chartDataSet = {{chartDataSet}}-->
+<!--    $(document).ready(function(chartLabel,chartDataSet) {-->
+<!--      // Javascript method's body can be found in assets/js/demos.js-->
+<!--      demo.initDashboardPageCharts(chartLabel,chartDataSet);-->
+
+<!--    });-->
+<!--  </script>-->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+ <script>
+   var ctx = document.getElementById("ploperformance").getContext("2d");
+
+    var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+
+    gradientStroke.addColorStop(1, 'rgba(29,140,248,0.2)');
+    gradientStroke.addColorStop(0.4, 'rgba(29,140,248,0.0)');
+    gradientStroke.addColorStop(0, 'rgba(29,140,248,0)');
+
+
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      responsive: true,
+      legend: {
+        display: false
+      },
+      data: {
+        labels: {{chartLabel|safe}},
+        datasets: [{
+          label: 'PLO',
+          fill: true,
+          backgroundColor: gradientStroke,
+          hoverBackgroundColor: gradientStroke,
+          borderColor: '#1f8ef1',
+          borderWidth: 2,
+          borderDash: [],
+          borderDashOffset: 0.0,
+          data: {{chartDataSet|safe}},
+        }]
+      },
+       options: {
+          scales: {
+              xAxes: [{
+                  stacked: true,
+                  gridLines: {
+                      display: false,
+                  }
+              }],
+              yAxes: [{
+                  stacked: true,
+                  ticks: {
+                      beginAtZero: true,
+                      max:100,
+                  },
+                  type: 'linear',
+              }]
+          },
+
+          responsive: true,
+          maintainAspectRatio: true
+      }
+    });
+  </script>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+  <script>
+  var ctx = document.getElementById('right').getContext('2d');
+  var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+          labels: {{chartLabel|safe}},
+          datasets: [{
+              label: 'PLO Achievement',
+              data: {{chartDataSet|safe}},
+              backgroundColor: ['Red','Orange','Green','Blue','Cyan', 'Purple','Pink','Teal','Maroon','Gray','Olive','Lime'],
+              borderColor: ['Red','Orange','Green','Blue','Cyan', 'Purple','Pink','Teal','Maroon','Gray','Olive','Lime'],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              xAxes: [{
+                  stacked: true,
+                  gridLines: {
+                      display: false,
+                  }
+              }],
+              yAxes: [{
+                  stacked: true,
+                  ticks: {
+                      beginAtZero: true,
+                      max:100,
+                  },
+                  type: 'linear',
+              }]
+          },
+
+          responsive: true,
+          maintainAspectRatio: true
+      }
+  });
+  </script>
+
+  <script>
+      var ctx = document.getElementById("gpatrend").getContext("2d");
+
+    var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+
+    gradientStroke.addColorStop(1, 'rgba(72,72,176,0.2)');
+    gradientStroke.addColorStop(0.2, 'rgba(72,72,176,0.0)');
+    gradientStroke.addColorStop(0, 'rgba(119,52,169,0)'); //purple colors
+
+    var data = {
+      labels: {{chartLabel2|safe}},
+      datasets: [{
+        label: "GPA",
+        fill: true,
+        backgroundColor: gradientStroke,
+        borderColor: '#d048b6',
+        borderWidth: 2,
+        borderDash: [],
+        borderDashOffset: 0.0,
+        pointBackgroundColor: '#d048b6',
+        pointBorderColor: 'rgba(255,255,255,0)',
+        pointHoverBackgroundColor: '#d048b6',
+        pointBorderWidth: 20,
+        pointHoverRadius: 4,
+        pointHoverBorderWidth: 15,
+        pointRadius: 4,
+        data: {{chartDataSet2}},
+      }]
+    };
+
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: data,
+      options: {
+          scales: {
+              xAxes: [{
+                  stacked: true,
+                  gridLines: {
+                      display: false,
+                  }
+              }],
+              yAxes: [{
+                  stacked: true,
+                  ticks: {
+                      beginAtZero: true,
+                      max:4,
+                  },
+                  type: 'linear',
+              }]
+          },
+
+          responsive: true,
+          maintainAspectRatio: true
+      }
+    });
+
+  </script>
+
+  <script>
+      var ctx = document.getElementById("coursewiseplo").getContext('2d');
+
+      plo = [{% for i in plo %} '{{ i }}', {% endfor %}];
+      courses = [{% for i in courses %} '{{ i }}', {% endfor %}];
+      table = {{ table }};
+
+      colors = ['Red','Orange','Green','Blue','Cyan', 'Purple','Pink','Teal','Maroon','Gray','Olive','Lime','GoldenRod']
+
+      var datasetlist = []
+
+      for (let i = 0; i < courses.length; i++) {
+        datasetlist.push({
+           label: courses[i],
+           data: table[i],
+           backgroundColor:colors[i]
+        });
+      }
+
+     var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: plo,
+            datasets: datasetlist
+        },
+        options: {
+            scales: {
+        xAxes: [{
+          stacked: true,
+          gridLines: {
+            display: false,
+          }
+        }],
+        yAxes: [{
+          stacked: true,
+          ticks: {
+            beginAtZero: true,
+            max:100,
+          },
+          type: 'linear',
+        }]
+      },
+
+            responsive: true,
+            maintainAspectRatio: true
+        }
+    });
+
+
+  </script>
+
+  <script>
+      var ctx = document.getElementById("cowiseplo").getContext('2d');
+
+      plo = [{% for i in plo2 %} '{{ i }}', {% endfor %}];
+      cos = [{% for i in cos %} '{{ i }}', {% endfor %}];
+      table = {{ table2 }};
+
+      colors = ['Red','Orange','Green','Blue']
+
+      var datasetlist = []
+
+      for (let i = 0; i < cos.length; i++) {
+        datasetlist.push({
+           label: cos[i],
+           data: table[i],
+           backgroundColor:colors[i]
+        });
+      }
+
+     var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: plo,
+            datasets: datasetlist
+        },
+        options: {
+            scales: {
+        xAxes: [{
+          stacked: true,
+          gridLines: {
+            display: false,
+          }
+        }],
+        yAxes: [{
+          stacked: true,
+          ticks: {
+            beginAtZero: true,
+            max:100,
+          },
+          type: 'linear',
+        }]
+      },
+
+            responsive: true,
+            maintainAspectRatio: true
+        }
+    });
+
+
+  </script>
+
+
+{% endblock javascripts %}

@@ -8,7 +8,7 @@ class School_T(models.Model):
     schoolName = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.schoolID + ", " + self.schoolName
+        return self.schoolID
 
 
 class Department_T(models.Model):
@@ -16,11 +16,19 @@ class Department_T(models.Model):
     departmentName = models.CharField(max_length=50)
     school = models.ForeignKey(School_T, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.departmentID
+
 
 class Program_T(models.Model):
     programID = models.AutoField(primary_key=True)
     programName = models.CharField(max_length=70)
     department = models.ForeignKey(Department_T, on_delete=models.CASCADE, default='N/A')
+
+    def __str__(self):
+        return self.programName
+
+
 
 
 class Student_T(models.Model):
@@ -35,6 +43,9 @@ class Student_T(models.Model):
     enrollmentDate = models.DateField(null=True)
     program = models.ForeignKey(Program_T, on_delete=models.CASCADE, default='N/A')
     department = models.ForeignKey(Department_T, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.studentID
 
 
 class Employee_T(models.Model):
@@ -78,7 +89,7 @@ class Faculty_T(Employee_T):
     department = models.ForeignKey(Department_T, on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.facultyID) + ", " + self.firstName + " " + self.lastName
+        return self.firstName + " "+ self.lastName
 
 
 class Course_T(models.Model):
@@ -87,6 +98,9 @@ class Course_T(models.Model):
     numOfCredits = models.DecimalField(max_digits=2, decimal_places=1)
     program = models.ForeignKey(Program_T, on_delete=models.CASCADE)
     courseType = models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.courseID
 
 
 class PrereqCourse_T(models.Model):
@@ -100,6 +114,9 @@ class PLO_T(models.Model):
     program = models.ForeignKey(Program_T, on_delete=models.CASCADE)
     details = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.ploNum
+
 
 class Section_T(models.Model):
     sectionID = models.AutoField(primary_key=True)
@@ -109,6 +126,9 @@ class Section_T(models.Model):
     semester = models.CharField(max_length=6)
     year = models.IntegerField()
 
+    def __str__(self):
+        return str(self.sectionNum)
+
 
 class Registration_T(models.Model):
     registrationID = models.AutoField(primary_key=True)
@@ -117,6 +137,10 @@ class Registration_T(models.Model):
     semester = models.CharField(max_length=6)
     year = models.IntegerField()
 
+    def __str__(self):
+        return str(self.registrationID)
+
+
 
 class CO_T(models.Model):
     coID = models.AutoField(primary_key=True)
@@ -124,6 +148,9 @@ class CO_T(models.Model):
     plo = models.ForeignKey(PLO_T, on_delete=models.CASCADE, default='N/A')
     course = models.ForeignKey(Course_T, on_delete=models.CASCADE, default='N/A')
     thresold = models.FloatField(default=40)
+
+    def __str__(self):
+        return self.coNum
 
 
 class Assessment_T(models.Model):
@@ -135,6 +162,10 @@ class Assessment_T(models.Model):
     section = models.ForeignKey(Section_T, on_delete=models.CASCADE)
     weight = models.FloatField()
 
+    def __str__(self):
+        return self.assessmentName + " "+str(self.questionNum)
+
+
 
 class Evaluation_T(models.Model):
     evaluationID = models.AutoField(primary_key=True)
@@ -143,4 +174,4 @@ class Evaluation_T(models.Model):
     registration = models.ForeignKey(Registration_T, on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.evaluationID) + " ," + str(self.obtainedMarks) + " ," + str(self.assessment_id) + ", " + str(self.registration_id)
+        return str(self.evaluationID)
