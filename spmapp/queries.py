@@ -108,7 +108,7 @@ def getStudentWiseOverallPLO(studentID):
 
     return row
 
-def getCourseWisePLO(studentID):
+def getCourseWisePLO(studentID,cat):
     with connection.cursor() as cursor:
         cursor.execute(''' 
                SELECT p.ploNum as ploNum,co.course_id,100*(sum(e.obtainedMarks)/derived.Total) as PLOper
@@ -161,12 +161,15 @@ def getCourseWisePLO(studentID):
                     temptable.append(np.round(k[2],2))
                     found = True
             if not found:
-                temptable.append(0)
+                if cat =='report':
+                    temptable.append('N/A')
+                elif cat == 'chart':
+                    temptable.append(0)
         table.append(temptable)
     return plo, courses, table
 
 
-def getCOWisePLO(studentID):
+def getCOWisePLO(studentID,cat):
     with connection.cursor() as cursor:
         cursor.execute(''' 
                SELECT p.ploNum as ploNum,co.coNum,100*(sum(e.obtainedMarks)/derived.Total) as PLOper
@@ -219,7 +222,10 @@ def getCOWisePLO(studentID):
                     temptable.append(np.round(k[2],2))
                     found = True
             if not found:
-                temptable.append(0)
+                if cat == 'report':
+                    temptable.append('N/A')
+                elif cat == 'chart':
+                     temptable.append(0)
         table.append(temptable)
     return (plo,cos,table)
 

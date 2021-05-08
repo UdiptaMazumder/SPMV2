@@ -16,14 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from spmapp import views
+from django.contrib.auth.views import LogoutView
 
 
 urlpatterns = [
     path('', views.home, name="home"),
     path('admin/', admin.site.urls),
-    path('login/', views.loginview, name="Login Page"),
-
-
+    path('login/', views.loginview, name="loginview"),
+    path('logout', views.logoutview, name='logoutview'),
+    path('userprofile',views.userprofile, name='profile'),
 
 
 ]

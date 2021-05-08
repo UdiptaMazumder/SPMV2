@@ -72,8 +72,69 @@ def getStudentWisePLO(studentID):
     return row
 
 
-for r in getStudentWisePLO(1823228):
-    print(r)
+
+def getCourseWisePLO(studentID,cat):
+    with connection.cursor() as cursor:
+        cursor.execute(''' 
+               SELECT p.ploNum as ploNum,co.course_id,100*(sum(e.obtainedMarks)/derived.Total) as PLOper
+               FROM spmapp_registration_t r,
+                   spmapp_assessment_t a, 
+                   spmapp_evaluation_t e,
+                   spmapp_co_t co, 
+                   spmapp_plo_t p,
+                   (
+                        SELECT p.ploNum as ploNum,sum(a.totalMarks) as Total, r.student_id as StudentID
+                        FROM spmapp_registration_t r,
+                            spmapp_assessment_t a, 
+                            spmapp_evaluation_t e,
+                            spmapp_co_t co, 
+                            spmapp_plo_t p
+                        WHERE r.registrationID = e.registration_id 
+                            and e.assessment_id = a.assessmentID
+                            and a.co_id=co.coID 
+                            and co.plo_id = p.ploID 
+                        GROUP BY  r.student_id,p.ploID) derived
+               WHERE derived.StudentID = '{}'
+                    and r.student_id = derived.StudentID
+                    and e.registration_id = r.registrationID
+                    and e.assessment_id = a.assessmentID
+                    and a.co_id=co.coID 
+                    and co.plo_id = p.ploID
+                    and p.ploNum = derived.ploNum
+
+               GROUP BY  p.ploID,co.course_id
+
+               '''.format(studentID))
+        row = cursor.fetchall()
+    for k in row:
+        print(k)
+
+    table = []
+    courses = []
+
+    for entry in row:
+        if entry[1] not in courses:
+            courses.append(entry[1])
+    courses.sort()
+    plo = ["PLO1","PLO2","PLO3","PLO4","PLO5","PLO6","PLO7","PLO8","PLO9","PLO10","PLO11","PLO12"]
+
+    for i in courses:
+        temptable = []
+
+        for j in plo:
+            found = False
+            for k in row:
+                if j==k[0] and i==k[1]:
+                    temptable.append(np.round(k[2],2))
+                    found = True
+            if not found:
+                if cat == "report":
+                    temptable.append('N/A')
+                elif cat == "chart":
+                    temptable.append(0)
+        table.append(temptable)
+    return plo, courses, table
+
 
 
 

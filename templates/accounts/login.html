@@ -1,70 +1,78 @@
-{% extends "layouts/base.html" %}
+<!doctype html>
+<html lang="en">
+{% load static %}
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.82.0">
+    <title>Signin</title>
 
-{% block title %} Login {% endblock %} 
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sign-in/">
 
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
 
-{% block content %}
 
-        <div class="row">
-          <div class="col-md-8">
-            <div class="card">
+    <!-- Bootstrap core CSS -->
+<link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
 
-              <form role="form" method="post" action="">
-              
-                {% csrf_token %} 
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
 
-                <div class="card-header">
-                  <h5 class="title">Login</h5>
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
 
-                  <h6 class="card-category">
-                      {% if msg %}
-                        <span class="text-danger">{{ msg | safe }}</span>
-                      {% else %}
-                        Add your credentials
-                      {% endif %}  
-                  </h6>
-                </div>
 
-                <div class="card-body">
+    <!-- Custom styles for this template -->
+    <link href="{% static 'assets/css/signin.css' %}" rel="stylesheet"/>
+  </head>
+  <body class="text-center">
 
-                    <div class="row">
+  <main class="form-signin">
+      <form role="form" method="post" action="">
 
-                      <div class="col-md-3 px-md-1">
-                        <div class="form-group">
-                          <label>Username</label>
-                          {{ form.username }}
-                        </div>
-                      </div>
+        {% csrf_token %}
+        <img class="mb-4" src="{% static 'assets/img/iub11.png' %}"  style="border-radius: 50%;" alt="" width="100" height="100">
+            <div>
+                <h5 class="title">Login</h5>
 
-                    </div>
-                    <div class="row">
-
-                      <div class="col-md-3 px-md-1">
-                        <div class="form-group">
-                          <label>Password</label>
-                          {{ form.password }}
-                        </div>
-                      </div>
-
-                    </div>
-                    
-                </div>
-                <div class="card-footer">
-                  <button type="submit" name="login" class="btn btn-fill btn-primary">Login</button>
-                  &nbsp; &nbsp;
-                  Don't have an account? <a href="#" class="text-primary">Create</a>
-                </div>
-
-              </form>
-
+                <h6 class="card-category">
+                    {% if msg %}
+                    <span class="text-danger">{{ msg | safe }}</span>
+                    {% else %}
+                    Add your credentials
+                    {% endif %}
+                </h6>
             </div>
-          </div>
-      </div>
+
+        <div class="form-floating">
+          {{ form.username }}
+
+        </div>
+        <div class="form-floating">
+          {{form.password}}
+        </div>
+
+        <div class="checkbox mb-3">
+          <label>
+            <input type="checkbox" value="remember-me"> Remember me
+          </label>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+      </form>
+  </main>
 
 
-{% endblock content %}
 
-<!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+      </body>
+    </html>

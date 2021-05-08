@@ -151,5 +151,48 @@ def getCOWisePLO(studentID):
 
 
 
-for r in getCOWisePLO(1416455):
-    print(r)
+def getPLOwithDeptAvg(studentID):
+    with connection.cursor() as cursor:
+        cursor.execute(''' 
+            SELECT p.ploNum as ploNum,100*(sum(e.obtainedMarks)/sum(a.totalMarks)) as PLOper,derived.DeptAvg
+            FROM 
+                spmapp_registration_t r,
+                spmapp_student_t st,
+                spmapp_assessment_t a, 
+                spmapp_evaluation_t e,
+                spmapp_co_t co, 
+                spmapp_plo_t p,
+                (
+                    SELECT d.departmentID as Dept,p.ploNum as ploNum, 100*sum(e.obtainedMarks)/sum(a.TotalMarks) as DeptAvg
+                    
+                    FROM spmapp_registration_t r,
+                        spmapp_evaluation_t e,
+                        spmapp_student_t st,
+                        spmapp_department_t d,
+                        spmapp_assessment_t a,
+                        spmapp_co_t c,
+                        spmapp_plo_t p
+                    WHERE r.student_id = st.studentID
+                        and st.department_id = d.departmentID
+                        and e.registration_id = r.registrationID
+                        and a.assessmentID = e.assessment_id
+                        and a.co_id = c.coID
+                        and c.plo_id = p.ploID
+                    GROUP BY p.ploID
+                        
+                ) derived
+            WHERE r.registrationID = e.registration_id 
+                and r.student_id = st.studentID
+                and e.assessment_id = a.assessmentID
+                and a.co_id=co.coID 
+                and co.plo_id = p.ploID
+                and r.student_id = '{}' 
+                and st.department_id = derived.Dept
+                and p.ploNum = derived.ploNum
+            GROUP BY  p.ploID
+            '''.format(studentID))
+        row = cursor.fetchall()
+        print(row)
+
+
+getPLOwithDeptAvg(1416455)

@@ -1,20 +1,51 @@
 from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import redirect
+from django.http import HttpResponse
+from .forms import LoginForm
+from django.contrib.auth.decorators import login_required
+
 
 from .queries import *
 
 
 # Create your views here.
 
+def loginview(request):
+    form = LoginForm(request.POST or None)
+
+    msg = None
+
+    if request.method == "POST":
+
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect("/")
+            else:
+                msg = 'Invalid credentials'
+        else:
+            msg = 'Error validating the form'
+
+    return render(request, "accounts/login.html", {"form": form, "msg" : msg})
+
+def logoutview(request):
+    logout(request)
+    return redirect('loginview')
+
+
 
 def adminhome(request):
     return render(request, 'adminhome.html', {})
 
 
-def loginview(request):
-    return render(request, 'accounts/login.html', {})
 
-
+@login_required(login_url="/login/")
 def home(request):
+    name = request.user.get_full_name()
     studentid = 1416455
     row = getStudentWiseOverallPLO(studentid)
     chartName = 'PLO Achievement'
@@ -31,12 +62,10 @@ def home(request):
     row2.append(getStudentWiseGpa(1823228, "Autumn", 2020))
 
     chartName3 = "Course-wise PLO Chart"
-    (plo,courses,table) = getCourseWisePLO(studentid)
+    (plo,courses,table) = getCourseWisePLO(studentid,"chart")
 
     chartName4 = "CO-wise PLO Chart"
-    (plo2,cos,table2) = getCOWisePLO(studentid)
-
-
+    (plo2,cos,table2) = getCOWisePLO(studentid,"chart")
 
 
     for i in row:
@@ -64,6 +93,10 @@ def home(request):
         'chartName4': chartName4,
         'plo2': plo2,
         'cos': cos,
-        'table2': table2
+        'table2': table2,
+        'name': name
 
     })
+
+def userprofile(request):
+    return render(request,'page-user.html', {})

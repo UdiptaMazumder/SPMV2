@@ -9,10 +9,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   <link rel="apple-touch-icon" sizes="76x76" href="{% static 'assets/img/apple-icon.png' %}">
-  <link rel="icon" type="image/png"          href="{% static 'assets/img/favicon.png'    %}">
+  <link rel="icon" type="image/png"          href="{% static 'assets/img/logo.png'    %}">
 
   <title>
-    Student Performance Monitor
+    {% block title %}{% endblock %}
   </title>
 
   <!--     Fonts and icons     -->
@@ -34,7 +34,9 @@
 <body class="">
   <div class="wrapper">
 
-    {% include 'includes/sidebar.html' %}
+
+      {% include 'includes/sidebar.html' %}
+    
 
     <div class="main-panel">
 
@@ -45,6 +47,7 @@
         {% block content %}{% endblock content %}
 
       </div>
+
       {% include 'includes/footer.html' %}
 
     </div>

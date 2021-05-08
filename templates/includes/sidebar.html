@@ -1,5 +1,7 @@
-  <div class="sidebar">
+
+    <div class="sidebar">
       <div class="sidebar-wrapper">
+
         
         <div class="logo">
           <a target="_blank" 
@@ -13,7 +15,7 @@
         </div>
 
         <ul class="nav">
-        <!--{% if request.user.is_authenticated %}-->
+
           <li class="{% if 'index' in segment %} active {% endif %} ">
             <a href="/">
               <i class="tim-icons icon-chart-pie-36"></i>
@@ -63,22 +65,17 @@
             </a>
           </li>
           <li>
-            <a href="#" >
+            <a href="{% url 'logoutview' %}" >
               <i class="tim-icons icon-user-run"></i>
               <p>Logout</p>
             </a>
           </li>
-          <!--{% else %}-->
-          <li class="active">
-            <a target="_blank" 
-               href="https://www.creative-tim.com/product/black-dashboard-pro-django">
-              <i class="tim-icons icon-spaceship"></i>
-              <p>PRO Version</p>
-            </a>
-          </li>   
-         <!-- {% endif %}-->
+
+
                     
         </ul>
+
         
       </div>
     </div>
+
