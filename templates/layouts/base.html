@@ -34,13 +34,13 @@
 <body class="">
   <div class="wrapper">
 
+     {% include 'includes/navigation.html' %}
 
-      {% include 'includes/sidebar.html' %}
-    
+      {% block sidebar %} {% endblock sidebar %}
+
 
     <div class="main-panel">
 
-      {% include 'includes/navigation.html' %}
 
       <div class="content">
 

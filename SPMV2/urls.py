@@ -20,10 +20,18 @@ from django.contrib.auth.views import LogoutView
 
 
 urlpatterns = [
-    path('', views.home, name="home"),
+    path('', views.homeview, name="homepage"),
     path('admin/', admin.site.urls),
-    path('login/', views.loginview, name="loginview"),
-    path('logout', views.logoutview, name='logoutview'),
+    path('login/', views.loginview, name="loginpage"),
+    path('logout', views.logoutview, name='logoutpage'),
+    path('cowise',views.cowiseplo,name='cowiseplo'),
+    path('coursewise',views.coursewiseplo,name='coursewiseplo'),
+    path('plotable',views.plotable,name='plotable'),
+    path('ploresult',views.plo,name='ploresult'),
+    path('enrollment', views.enrollment, name='enrollment'),
+    path('studentplotable',views.studentplotable,name='studentplotable'),
+    path('plostats',views.plostats,name='plostats'),
+    path('courseverdict',views.courseverdict, name='courseverdict'),
     path('userprofile',views.userprofile, name='profile'),
 
 

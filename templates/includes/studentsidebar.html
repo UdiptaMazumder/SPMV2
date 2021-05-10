@@ -1,0 +1,44 @@
+
+    <div class="sidebar">
+      <div class="sidebar-wrapper">
+
+        <ul class="nav">
+
+          <li class="{% if 'index' in segment %} active {% endif %} ">
+            <a href="/">
+              <i class="tim-icons icon-chart-pie-36"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="{% if 'icons' in segment %} active {% endif %}">
+            <a href="{% url 'cowiseplo' %}">
+              <i class="tim-icons icon-atom"></i>
+              <p>CO wise PLO analysis</p>
+            </a>
+          </li>
+          <li class="{% if 'maps' in segment %} active {% endif %}">
+            <a href="{% url 'coursewiseplo' %}">
+              <i class="tim-icons icon-pin"></i>
+              <p>Course wise PLO analysis</p>
+            </a>
+          </li>
+          <li class="{% if 'notifications' in segment %} active {% endif %}">
+            <a href="{% url 'plotable' %}">
+              <i class="tim-icons icon-bell-55"></i>
+              <p>PLO Achievement Table</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="{% url 'logoutpage' %}" >
+              <i class="tim-icons icon-user-run"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+
+
+                    
+        </ul>
+      </div>
+    </div>
+

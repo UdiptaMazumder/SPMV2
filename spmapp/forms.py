@@ -17,3 +17,4 @@ class LoginForm(forms.Form):
                 "class": "form-control"
             }
         ))
+

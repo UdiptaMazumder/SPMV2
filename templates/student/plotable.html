@@ -1,0 +1,118 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} SPMS{% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block sidebar %} {% include 'includes/studentsidebar.html' %} {% endblock %}
+
+{% block content %}
+
+  <div class="row">
+      <div class="col-12">
+          <div class="card card-chart">
+            <div class="card-header ">
+                <h2 class="card-title">PLO Achievement Table</h2>
+            </div>
+          </div>
+          <div class="card-body">
+            <table class="table table-bordered table-striped ">
+               <thead style="background-color:#007FFF">
+                    <tr>
+                      <th>COURSE</th>
+                      <th>PLO01</th>
+                      <th>PLO02</th>
+                      <th>PLO03</th>
+                      <th>PLO04</th>
+                      <th>PLO05</th>
+                      <th>PLO06</th>
+                      <th>PLO07</th>
+                      <th>PLO08</th>
+                      <th>PLO09</th>
+                      <th>PLO10</th>
+                      <th>PLO11</th>
+                      <th>PLO12</th>
+                    </tr>
+               </thead>
+                        <tbody>
+                            {% for c in table%}
+                                <tr>
+                                    {% for e  in c %}
+                                        <td class="value">{{ e }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            <script>
+
+                                        let val = document.querySelectorAll('td.value');
+                                        for(let i = 0; i < val.length; i++) {
+
+                                            if (val[i].textContent.slice(0, val[i].textContent.length - 2) >= 40)
+                                                 val[i].style = 'color: green ! important;';
+
+                                            if (val[i].textContent.slice(0, val[i].textContent.length - 2) < 40)
+                                                 val[i].style = 'color: red ! important;';
+                                        }
+
+
+                            </script>
+                        </tbody>
+                    </table>
+          </div>
+      </div>
+  </div>
+
+  <div class = "row" id ="pie">
+
+  </div>
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<!--  <script>-->
+<!--    chartLabel = {{chartLabel|safe}}-->
+<!--     chartDataSet = {{chartDataSet}}-->
+<!--    $(document).ready(function(chartLabel,chartDataSet) {-->
+<!--      // Javascript method's body can be found in assets/js/demos.js-->
+<!--      demo.initDashboardPageCharts(chartLabel,chartDataSet);-->
+
+<!--    });-->
+<!--  </script>-->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+
+  <script>
+    block = document.getElementByID('pie');
+
+    var pielist = []
+    for (let i = 0; i < courses.length; i++) {
+        pielist.push({
+           label: courses[i],
+           data: table[i],
+           backgroundColor:colors[i]
+        });
+     }
+
+
+
+
+
+
+
+
+
+  </script>
+
+
+
+{% endblock javascripts %}

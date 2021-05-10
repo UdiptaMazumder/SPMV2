@@ -71,8 +71,6 @@ def getStudentWisePLO(studentID):
 
     return row
 
-
-
 def getCourseWisePLO(studentID,cat):
     with connection.cursor() as cursor:
         cursor.execute(''' 
@@ -134,8 +132,5 @@ def getCourseWisePLO(studentID,cat):
                     temptable.append(0)
         table.append(temptable)
     return plo, courses, table
-
-
-
 
 
