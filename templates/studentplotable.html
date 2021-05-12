@@ -30,7 +30,11 @@
         <table class="form-table">
             <tr>
                 <td class="form-field">
-                    <input type="text" id="student-id" name="student-id" class="form-control" placeholder="Student ID" />
+                    {% if sid is not None %}
+                        <input type="text" id="student-id" name="student-id" class="form-control" value={{sid}} />
+                    {% else %}
+                         <input type="text" id="student" name="student-id" class="form-control"  placeholder="Student ID" />
+                    {% endif %}
                 </td>
             </tr>
             <tr>
@@ -43,7 +47,7 @@
 </div>
 
 
-  <div class="row">
+  <div class="row" id ="chart">
       <div class="col-12">
           <div class="card card-chart">
           <div class="card-body">
@@ -92,6 +96,7 @@
           </div>
       </div>
   </div>
+  </div>
 
 {% endblock content %}
 
@@ -102,6 +107,13 @@
 {% block javascripts %}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+    var search = {{search}}
+    if(search==1){
+        document.getElementById("chart").style.display = "none";
+        }
+</script>
+
 
 
 {% endblock javascripts %}

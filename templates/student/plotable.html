@@ -39,7 +39,12 @@
                             {% for c in table%}
                                 <tr>
                                     {% for e  in c %}
-                                        <td class="value">{{ e }}</td>
+                                        {% if e != 'N/A' %}
+                                            <td class="value">{{ e }}%</td>
+                                        {% else %}
+                                             <td class="value">{{ e }}</td>
+                                        {% endif %}
+
                                     {% endfor %}
                                 </tr>
                             {% endfor %}

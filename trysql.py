@@ -395,7 +395,7 @@ def getProgramWisePLO(program):
 
 
 
-def fuck(program):
+def fuchka(program):
     with connection.cursor() as cursor:
         cursor.execute('''SELECT COUNT(*)
         FROM(

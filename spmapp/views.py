@@ -9,15 +9,16 @@ from django.contrib.auth.decorators import login_required
 from .queries import *
 from spmapp.models import *
 
-
 # Create your views here.
 
-#list
+# list
 
 schoollist = School_T.objects.all()
 deptlist = Department_T.objects.all()
 programlist = Program_T.objects.all()
 courselist = Course_T.objects.all()
+sectionlist = Section_T.objects.all()
+
 
 def loginview(request):
     form = LoginForm(request.POST or None)
@@ -59,9 +60,6 @@ def homeview(request):
             return hahome(request)
         else:
             return redirect('/')
-
-
-
 
 
 @login_required(login_url="/login/")
@@ -230,24 +228,18 @@ def fhome(request):
 
     for s in semesters:
         gpadata.append(getDeptWiseGPA(dept, s[0], s[1]))
-        gpalabel.append(s[0]+' '+str(s[1]))
+        gpalabel.append(s[0] + ' ' + str(s[1]))
 
-    return render(request,'facultyhome.html',{
-        'name':name,
-        'usertype':type,
+    return render(request, 'facultyhome.html', {
+        'name': name,
+        'usertype': type,
 
-        'plolabel':plolabel,
-        'plodata':plodata,
-        'gpalabel':gpalabel,
+        'plolabel': plolabel,
+        'plodata': plodata,
+        'gpalabel': gpalabel,
         'gpadata': gpadata,
 
     })
-
-
-
-
-
-
 
 
 def userprofile(request):
@@ -260,7 +252,6 @@ def userprofile(request):
 def hahome(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
-
 
     totalStudents = len(studentlist)
 
@@ -350,7 +341,7 @@ def hahome(request):
         'programs': programnames,
         'pgpatable': pgpatable,
         'pgpalabel': pgpalabel,
-        'totalstudents':totalStudents,
+        'totalstudents': totalStudents,
 
     })
 
@@ -387,13 +378,18 @@ def plo(request):
             'plo3': plo3,
             'table3': table3,
             'courses': courses,
+            'sid': studentid,
+
+            'search': 0,
         }
 
         return render(request, 'plo.html', response)
     else:
         return render(request, 'plo.html', {
             'name': name,
-            'usertype': type
+            'usertype': type,
+            'sid': None,
+            'search': 1
         })
 
 
@@ -401,8 +397,12 @@ def enrollment(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
 
+    years = [2019, 2020]
+    sems = ['Spring', 'Summer', 'Autumn']
+
     if request.method == 'POST':
         year = request.POST['year']
+        semester = request.POST['semester']
 
         year = int(year)
 
@@ -418,10 +418,7 @@ def enrollment(request):
         snum = []
         for school in schools:
             num = 0
-
-            for s in semesters:
-                if (int(s[1]) == year):
-                    num += getSchoolWiseEnrolledStudents(school, s[0], s[1])
+            num = getSchoolWiseEnrolledStudents(school, semester, year)
             snum.append(num)
 
         # deptwise students
@@ -435,10 +432,7 @@ def enrollment(request):
 
         for dept in depts:
             num = 0
-
-            for s in semesters:
-                if (s[1] == year):
-                    num += getDeptWiseEnrolledStudents(dept, s[0], s[1])
+            num = getDeptWiseEnrolledStudents(dept, semester, year)
             dnum.append(num)
 
         # programwise gpa
@@ -454,9 +448,7 @@ def enrollment(request):
         for p in programs:
             num = 0
 
-            for s in semesters:
-                if (s[1] == year):
-                    num += getProgramWiseEnrolledStudents(p, s[0], s[1])
+            num += getProgramWiseEnrolledStudents(p, semester, year)
             pnum.append(num)
 
         return render(request, 'enrollment.html', {
@@ -468,12 +460,22 @@ def enrollment(request):
             'depts': depts,
             'dnum': dnum,
             'program': programnames,
-            'pnum': pnum
+            'pnum': pnum,
+            'years': years,
+            'semesters': sems,
+            'selectedYear': year,
+            'selectedSemester': semester,
+            'search': 0,
         })
     else:
         return render(request, 'enrollment.html', {
             'name': name,
-            'usertype': type
+            'usertype': type,
+            'years': years,
+            'semesters': sems,
+            'selectedYear': None,
+            'selectedSemester': None,
+            'search': 1,
         })
 
 
@@ -492,12 +494,16 @@ def studentplotable(request):
             'courses': courses,
             'table': table,
             'range': range,
+            'sid': studentid,
+            'search': 0,
 
         })
     else:
-        return render(request, 'studentplotable.html',{
-            'name':name,
-            'usertype':type,
+        return render(request, 'studentplotable.html', {
+            'name': name,
+            'usertype': type,
+            'sid': None,
+            'search': 1,
         })
 
 
@@ -524,21 +530,24 @@ def plostats(request):
 
         (plo, achieved, attempted) = getProgramWisePLO(program1)
 
-
         return render(request, 'plostats.html', {
             'name': name,
             'usertype': type,
-            'programs':programs,
+            'programs': programs,
             'plo': plo,
             'achieved': achieved,
             'attempted': attempted,
+            'selectedItem': prog,
+            'search': 0,
 
         })
     else:
         return render(request, 'plostats.html', {
             'name': name,
             'usertype': type,
-            'programs':programs,
+            'programs': programs,
+            'selectedItem': None,
+            'search': 1,
         })
 
 
@@ -546,36 +555,63 @@ def courseverdict(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
 
-    courses=[]
+    courses = []
     for c in courselist:
         courses.append(c.courseID)
-
 
     if request.method == 'POST':
 
         course = request.POST['course']
 
-        (table,total)= getVerdictTable(course)
+        (table, total) = getVerdictTable(course)
 
+        return render(request, 'courseverdict.html', {
+            'name': name,
+            'usertype': type,
+            'table': table,
+            'courses': courses,
+            'total': total,
+            'search':0,
+            'selectedCourse':course,
 
-        return render(request,'courseverdict.html',{
-            'name':name,
-            'usertype':type,
-            'table':table,
-            'courses':courses,
-            'total':total,
         })
 
 
 
 
     else:
-        return render(request,'courseverdict.html',{
+        return render(request, 'courseverdict.html', {
             'name': name,
-            'usertype':type,
-            'courses':courses,
-
+            'usertype': type,
+            'courses': courses,
+            'search':1,
+            'selectedCourse':None,
 
         })
 
 
+def dataentry(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    courses=[]
+    for c in courselist:
+        courses.append(c.courseID)
+
+    semesters = ["Spring","Summer","Autumn"]
+
+    sections = [1,2,3]
+    year = [2019,2020]
+
+
+
+
+
+    return render(request,'dataentry.html',{
+        'name':name,
+        'usertype':type,
+        'courses':courses,
+        'semesters':semesters,
+        'sections':sections,
+        'year':year,
+    })

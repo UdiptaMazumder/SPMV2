@@ -49,7 +49,8 @@ def getStudentWiseGPA(studentID, semester, year):
                     and r.section_id = sc.sectionID
                     and r.section_id = a.section_id
                     and sc.course_id = c.courseID 
-                    and r.registrationID = e.registration_id and e.assessment_id = a.assessmentID
+                    and r.registrationID = e.registration_id 
+                    and e.assessment_id = a.assessmentID
                 GROUP BY  c.courseID,a.assessmentName ) DerivedTable
             GROUP BY CourseID'''.format(studentID, semester, year))
 

@@ -31,8 +31,26 @@
             <tr>
                  <td class="form-field">
                     <select  style = "width:120px;height:30px;" class ="form-select" id="year" name="year" form="yearform" aria-label="Default select example">
-                      <option value="2020">2020</option>
-                      <option value="2019">2019</option>
+                        {% for y in years %}
+                            {% if y ==  selectedYear %}
+                                <option value="{{y}}" selected="selected">{{y}}</option>
+                            {% else %}
+                                 <option value="{{y}}">{{y}}</option>
+                            {% endif %}
+                        {% endfor %}
+
+
+                    </select>
+                    <select  style = "width:120px;height:30px;" class ="form-select" id="semester" name="semester" form="yearform" aria-label="Default select example">
+                        {% for s in semesters %}
+                            {% if s == selectedSemester %}
+                                <option value="{{s}}" selected="selected">{{s}}</option>
+                            {% else %}
+                                 <option value="{{s}}">{{s}}</option>
+                            {% endif %}
+                        {% endfor %}
+
+
                     </select>
                 </td>
 
@@ -48,14 +66,11 @@
 
 
 
-    <div class="row">
+    <div class="row" id ="chart">
       <div class="col-12">
         <div class="card card-chart">
           <div class="card-header ">
-            <div class="row">
-              <div class="col-sm-6 text-left">
-                <h2 class="card-title">Student Enrollment Analysis</h2>
-              </div>
+            <div class="row justify-content-end">
               <div class="col-sm-6">
                 <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
                   <label class="btn btn-sm btn-primary btn-simple active" id="0">
@@ -103,6 +118,12 @@
 
     var ctx = document.getElementById("pie").getContext("2d");
     colors = ['Red','Orange','Green','Blue','Cyan', 'Purple','Pink','Teal','Maroon','Gray','Olive','Lime','GoldenRod']
+
+    var search = {{search}}
+
+    if(search==1){
+        document.getElementById("chart").style.display = "none";
+        }
 
     school = {{school|safe}}
     snum = {{snum|safe}}

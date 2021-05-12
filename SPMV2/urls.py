@@ -32,6 +32,7 @@ urlpatterns = [
     path('studentplotable',views.studentplotable,name='studentplotable'),
     path('plostats',views.plostats,name='plostats'),
     path('courseverdict',views.courseverdict, name='courseverdict'),
+    path('dataentry',views.dataentry,name='dataentry'),
     path('userprofile',views.userprofile, name='profile'),
 
 

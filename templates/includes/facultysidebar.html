@@ -34,6 +34,12 @@
               <p>Course Report</p>
             </a>
           </li>
+          <li class="{% if 'tables' in segment %} active {% endif %}">
+            <a href="{% url 'dataentry' %}">
+              <i class="tim-icons icon-puzzle-10"></i>
+              <p>Data Entry</p>
+            </a>
+          </li>
 
           <li>
             <a href="{% url 'logoutpage' %}" >
