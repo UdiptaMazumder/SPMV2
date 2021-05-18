@@ -93,13 +93,12 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
   <script>
         var ctx = document.getElementById("gpatrend").getContext("2d");
 
         colors = ['Red','Orange','Green','Blue','Cyan', 'Purple','Pink','Teal','Maroon','Gray','Olive','Lime','GoldenRod']
 
-        label = [{% for i in sgpalabel %} '{{ i }}', {% endfor %}];
+        label = {{gpalabel|safe}}
         schools = [{% for i in schools %} '{{ i }}', {% endfor %}];
         stable = {{ sgpatable }};
 
@@ -109,12 +108,7 @@
         programs = [{% for i in programs %} '{{ i }}', {% endfor %}];
         ptable = {{ pgpatable }};
 
-
-
-
         var datasetlist1 = []
-
-
 
         for (let i = 0; i < schools.length; i++) {
             datasetlist1.push({

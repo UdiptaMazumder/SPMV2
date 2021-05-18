@@ -39,7 +39,7 @@
                             {% for c in table%}
                                 <tr>
                                     {% for e  in c %}
-                                        {% if e != 'N/A' %}
+                                        {% if e >= 0 %}
                                             <td class="value">{{ e }}%</td>
                                         {% else %}
                                              <td class="value">{{ e }}</td>
@@ -83,18 +83,6 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-
-<!--  <script>-->
-<!--    chartLabel = {{chartLabel|safe}}-->
-<!--     chartDataSet = {{chartDataSet}}-->
-<!--    $(document).ready(function(chartLabel,chartDataSet) {-->
-<!--      // Javascript method's body can be found in assets/js/demos.js-->
-<!--      demo.initDashboardPageCharts(chartLabel,chartDataSet);-->
-
-<!--    });-->
-<!--  </script>-->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-
 
   <script>
     block = document.getElementByID('pie');

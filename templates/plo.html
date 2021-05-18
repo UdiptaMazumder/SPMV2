@@ -29,7 +29,7 @@
         {% csrf_token %}
         <table class="form-table">
             <tr>
-                <td class="form-field">
+                <td class="form-field" style="padding-right:30px;">
                     {% if sid is not None %}
                         <input type="text" id="student-id" name="student-id" class="form-control" value={{sid}} />
                     {% else %}
@@ -38,8 +38,6 @@
 
 
                 </td>
-            </tr>
-            <tr>
                 <td style="text-align: center;" class="last-row" colspan="2">
                     <button class="btn btn-primary">Search</button>
                 </td>
@@ -50,7 +48,7 @@
 
 
 
-    <div class="row" id ="chart">
+    <div class="row mt-4" id ="chart">
       <div class="col-12">
         <div class="card card-chart">
           <div class="card-header ">
@@ -100,7 +98,7 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
 
 <script>
     var search ={{search}}

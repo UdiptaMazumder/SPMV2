@@ -18,6 +18,7 @@ deptlist = Department_T.objects.all()
 programlist = Program_T.objects.all()
 courselist = Course_T.objects.all()
 sectionlist = Section_T.objects.all()
+faculties = Faculty_T.objects.all()
 
 
 def loginview(request):
@@ -93,27 +94,18 @@ def shome(request):
     chart3 = "Student Wise Gpa"
     gpalabel1 = []
     gpadata1 = []
-    row = []
 
     for s in semesters:
-        row.append((s[0] + "'" + str(s[1]), getStudentWiseGPA(studentid, s[0], s[1])))
-
-    for i in row:
-        gpalabel1.append(i[0])
-        gpadata1.append(i[1])
+        gpalabel1.append(s[0] + "'" + str(s[1]))
+        gpadata1.append(getStudentWiseGPA(studentid, s[0], s[1]))
 
     chart4 = "Department Wise Gpa"
     gpalabel2 = []
     gpadata2 = []
-    row = []
 
-    row.append(("Spring" + "'" + str(2020), getDeptWiseGPA('ACN', "Spring", 2020)))
-    row.append(("Summer" + "'" + str(2020), getDeptWiseGPA('ACN', "Summer", 2020)))
-    row.append(("Autumn" + "'" + str(2020), getDeptWiseGPA('ACN', "Autumn", 2020)))
-
-    for i in row:
-        gpalabel2.append(i[0])
-        gpadata2.append(i[1])
+    for s in semesters:
+        gpalabel2.append(s[0] + "'" + str(s[1]))
+        gpadata2.append(getDeptWiseGPA(dept, s[0], s[1]))
 
     return render(request, 'student/studenthome.html', {
         'name': name,
@@ -228,7 +220,7 @@ def fhome(request):
 
     for s in semesters:
         gpadata.append(getDeptWiseGPA(dept, s[0], s[1]))
-        gpalabel.append(s[0] + ' ' + str(s[1]))
+        gpalabel.append(s[0] + "'" + str(s[1]))
 
     return render(request, 'facultyhome.html', {
         'name': name,
@@ -255,70 +247,55 @@ def hahome(request):
 
     totalStudents = len(studentlist)
 
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
     schools = []
+    depts = []
+    programs = []
+    programnames = []
 
     for s in schoollist:
         schools.append(s.schoolID)
 
-    semesters = getAllSemesters()
-
-    # schoolwise gpa
-    sgpatable = []
-    sgpalabel = []
-
-    for s in semesters:
-        sgpalabel.append(s[0] + " " + str(s[1]))
-
-    for school in schools:
-
-        gpa = []
-        temp = []
-
-        for s in semesters:
-            temp.append(getSchoolWiseGPA(school, s[0], s[1]))
-
-        for i in temp:
-            gpa.append(i)
-        sgpatable.append(gpa)
-
-    # deptwise gpa
-
-    depts = []
-
     for d in deptlist:
         depts.append(d.departmentID)
-
-    # schoolwise gpa
-    dgpatable = []
-    dgpalabel = []
-
-    for s in semesters:
-        dgpalabel.append(s[0] + " " + str(s[1]))
-
-    for dept in depts:
-        gpa = []
-        temp = []
-
-        for s in semesters:
-            temp.append(getDeptWiseGPA(dept, s[0], s[1]))
-
-        for i in temp:
-            gpa.append(i)
-        dgpatable.append(gpa)
-
-    # programwise gpa
-    programs = []
-    programnames = []
 
     for p in programlist:
         programs.append(p.programID)
         programnames.append(p.programName)
 
-    pgpatable = []
-    pgpalabel = []
+    semesters = getAllSemesters()
+
+    gpalabel = []
 
     for s in semesters:
-        pgpalabel.append(s[0] + " " + str(s[1]))
+        gpalabel.append(s[0] + "'" + str(s[1]))
+
+    # schoolwise gpa
+    sgpatable = []
+
+    for school in schools:
+        gpa = []
+
+        for s in semesters:
+            gpa.append(getSchoolWiseGPA(school, s[0], s[1]))
+
+        sgpatable.append(gpa)
+
+    # deptwise gpa
+    dgpatable = []
+
+    for dept in depts:
+        gpa = []
+
+        for s in semesters:
+            gpa.append(getDeptWiseGPA(dept, s[0], s[1]))
+
+        dgpatable.append(gpa)
+
+    # programwise gpa
+    pgpatable = []
 
     for p in programs:
         gpa = []
@@ -330,17 +307,17 @@ def hahome(request):
         'name': name,
         'usertype': type,
 
+        'gpalabel': gpalabel,
+
         'schools': schools,
         'sgpatable': sgpatable,
-        'sgpalabel': sgpalabel,
 
         'depts': depts,
         'dgpatable': dgpatable,
-        'dgpalabel': sgpalabel,
 
         'programs': programnames,
         'pgpatable': pgpatable,
-        'pgpalabel': pgpalabel,
+
         'totalstudents': totalStudents,
 
     })
@@ -397,58 +374,54 @@ def enrollment(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
 
-    years = [2019, 2020]
-    sems = ['Spring', 'Summer', 'Autumn']
+    semesters = getAllSemesters()
 
     if request.method == 'POST':
-        year = request.POST['year']
-        semester = request.POST['semester']
-
-        year = int(year)
-
-        semesters = getAllSemesters()
+        b = int(request.POST['sem1'])
+        e = int(request.POST['sem2'])
 
         schools = []
-
-        # schoolwise students
+        depts = []
+        programs = []
+        programnames = []
 
         for s in schoollist:
             schools.append(s.schoolID)
 
-        snum = []
-        for school in schools:
-            num = 0
-            num = getSchoolWiseEnrolledStudents(school, semester, year)
-            snum.append(num)
-
-        # deptwise students
-
-        depts = []
-
         for d in deptlist:
             depts.append(d.departmentID)
-
-        dnum = []
-
-        for dept in depts:
-            num = 0
-            num = getDeptWiseEnrolledStudents(dept, semester, year)
-            dnum.append(num)
-
-        # programwise gpa
-        programs = []
-        programnames = []
 
         for p in programlist:
             programs.append(p.programID)
             programnames.append(p.programName)
 
+        # schoolwise students
+        snum = []
+        for school in schools:
+            num = 0
+
+            for i in range(b, e + 1):
+                num += getSchoolWiseEnrolledStudents(school, semesters[i][0], semesters[i][1])
+            snum.append(num)
+
+        # deptwise students
+        dnum = []
+
+        for dept in depts:
+            num = 0
+
+            for i in range(b, e + 1):
+                num += getDeptWiseEnrolledStudents(dept, semesters[i][0], semesters[i][1])
+            dnum.append(num)
+
+        # programwise students
         pnum = []
 
         for p in programs:
             num = 0
 
-            num += getProgramWiseEnrolledStudents(p, semester, year)
+            for i in range(b, e + 1):
+                num += getProgramWiseEnrolledStudents(p, semesters[i][0], semesters[i][1])
             pnum.append(num)
 
         return render(request, 'enrollment.html', {
@@ -461,20 +434,18 @@ def enrollment(request):
             'dnum': dnum,
             'program': programnames,
             'pnum': pnum,
-            'years': years,
-            'semesters': sems,
-            'selectedYear': year,
-            'selectedSemester': semester,
+            'semesters': semesters,
+            'selected1': b,
+            'selected2': e,
             'search': 0,
         })
     else:
         return render(request, 'enrollment.html', {
             'name': name,
             'usertype': type,
-            'years': years,
-            'semesters': sems,
-            'selectedYear': None,
-            'selectedSemester': None,
+            'semesters': semesters,
+            'selected1': None,
+            'selected2': None,
             'search': 1,
         })
 
@@ -571,8 +542,8 @@ def courseverdict(request):
             'table': table,
             'courses': courses,
             'total': total,
-            'search':0,
-            'selectedCourse':course,
+            'search': 0,
+            'selectedCourse': course,
 
         })
 
@@ -584,8 +555,8 @@ def courseverdict(request):
             'name': name,
             'usertype': type,
             'courses': courses,
-            'search':1,
-            'selectedCourse':None,
+            'search': 1,
+            'selectedCourse': None,
 
         })
 
@@ -594,24 +565,308 @@ def dataentry(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
 
-    courses=[]
+    courses = []
     for c in courselist:
         courses.append(c.courseID)
 
-    semesters = ["Spring","Summer","Autumn"]
+    semesters = ["Spring", "Summer", "Autumn"]
 
-    sections = [1,2,3]
-    year = [2019,2020]
+    sections = [1, 2, 3]
+    year = [2019, 2020]
 
-
-
-
-
-    return render(request,'dataentry.html',{
-        'name':name,
-        'usertype':type,
-        'courses':courses,
-        'semesters':semesters,
-        'sections':sections,
-        'year':year,
+    return render(request, 'dataentry.html', {
+        'name': name,
+        'usertype': type,
+        'courses': courses,
+        'semesters': semesters,
+        'sections': sections,
+        'year': year,
     })
+
+
+def semesterwisegpa(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    schools = []
+    depts = []
+    programs = []
+    programnames = []
+
+    for s in schoollist:
+        schools.append(s.schoolID)
+
+    for d in deptlist:
+        depts.append(d.departmentID)
+
+    for p in programlist:
+        programs.append(p.programID)
+        programnames.append(p.programName)
+
+    semesters = getAllSemesters()
+
+    if request.method == "POST":
+        b = int(request.POST['sem1'])
+        e = int(request.POST['sem2'])
+
+        labels = []
+
+        for i in range(b, e + 1):
+            labels.append(semesters[i][0] + " " + str(semesters[i][1]))
+
+        # schoolwise gpa
+        sgpatable = []
+
+        for school in schools:
+
+            gpa = []
+
+            for i in range(b, e + 1):
+                gpa.append(getSchoolWiseGPA(school, semesters[i][0], semesters[i][1]))
+
+            sgpatable.append(gpa)
+
+        # deptwise gpa
+        dgpatable = []
+
+        for dept in depts:
+            gpa = []
+
+            for i in range(b, e + 1):
+                gpa.append(getDeptWiseGPA(dept, semesters[i][0], semesters[i][1]))
+
+            dgpatable.append(gpa)
+
+        # programwise gpa
+        pgpatable = []
+
+        for p in programs:
+            gpa = []
+            for i in range(b, e + 1):
+                gpa.append(getProgramWiseGPA(p, semesters[i][0], semesters[i][1]))
+
+            pgpatable.append(gpa)
+
+        return render(request, 'semesterwisegpa.html', {
+            'name': name,
+            'usertype': type,
+
+            'semesters': semesters,
+            'selected1': b,
+            'selected2': e,
+
+            'schools': schools,
+            'sgpatable': sgpatable,
+            'labels': labels,
+
+            'depts': depts,
+            'dgpatable': dgpatable,
+
+            'programs': programnames,
+            'pgpatable': pgpatable,
+
+            'search': 0,
+
+        })
+    else:
+        return render(request, 'semesterwisegpa.html', {
+            'name': name,
+            'usertype': type,
+
+            'semesters': semesters,
+
+            'selected1': None,
+            'selected2': None,
+            'search': 1,
+
+        })
+
+
+def coursewisegpa(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    courses = []
+
+    for c in courselist:
+        courses.append(c.courseID)
+
+    semesters = getAllSemesters()
+
+    if request.method == 'POST':
+        selectedCourses = request.POST.getlist('courses')
+        b = int(request.POST['sem1'])
+        e = int(request.POST['sem2'])
+
+        label = []
+
+        for i in range(b, e + 1):
+            label.append(semesters[i][0] + "'" + str(semesters[i][1]))
+
+        gpatable = []
+
+        for c in selectedCourses:
+            gpa = []
+            for i in range(b, e + 1):
+                gpa.append(getCourseWiseGPA(c, semesters[i][0], semesters[i][1]))
+            gpatable.append(gpa)
+
+        return render(request, 'coursewisegpa.html', {
+            'name': name,
+            'usertype': type,
+
+            'courses': courses,
+            'semesters': semesters,
+
+            'selected1': b,
+            'selected2': e,
+            'selectedCourses': selectedCourses,
+
+            'gpatable': gpatable,
+            'labels': label,
+
+            'search': 0,
+
+        })
+
+    else:
+        return render(request, 'coursewisegpa.html', {
+            'name': name,
+            'usertype': type,
+
+            'courses': courses,
+            'semesters': semesters,
+            'selected1': None,
+            'selected2': None,
+            'search': 1,
+        })
+
+
+def instructorwisegpa(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    semesters = getAllSemesters()
+
+    if request.method == 'POST':
+        selectedIns = request.POST.getlist('instructors')
+
+        fnames = []
+
+
+        for i in range(0,len(selectedIns)):
+            selectedIns[i] = int(selectedIns[i])
+            for j in faculties:
+                if j.facultyID == selectedIns[i]:
+                    fnames.append(j.firstName + " " + j.lastName)
+
+
+        b = int(request.POST['sem1'])
+        e = int(request.POST['sem2'])
+
+        label = []
+
+        for i in range(b, e + 1):
+            label.append(semesters[i][0] + "'" + str(semesters[i][1]))
+
+        gpatable = []
+
+        for s in selectedIns:
+            gpa = []
+            for i in range(b, e + 1):
+                gpa.append(getInstructorWiseGPA(s, semesters[i][0], semesters[i][1]))
+            gpatable.append(gpa)
+
+        return render(request, 'inswisegpa.html', {
+            'name': name,
+            'usertype': type,
+
+            'instructors': faculties,
+            'fnames': fnames,
+            'semesters': semesters,
+
+            'selected1': b,
+            'selected2': e,
+            'selectedIns': selectedIns,
+
+            'gpatable': gpatable,
+            'labels': label,
+            'search': 0,
+
+        })
+
+    else:
+        return render(request, 'inswisegpa.html', {
+            'name': name,
+            'usertype': type,
+
+            'instructors': faculties,
+
+            'semesters': semesters,
+            'selected1': None,
+            'selected2': None,
+            'selectedIns': None,
+            'search': 1,
+        })
+
+
+def instructorwisegpaforcourse(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    courses = []
+
+    for c in courselist:
+        courses.append(c.courseID)
+
+    semesters = getAllSemesters()
+
+    if request.method == 'POST':
+        selectedCourse = request.POST['course']
+        b = int(request.POST['sem1'])
+        e = int(request.POST['sem2'])
+
+        label = []
+
+        for i in range(b, e + 1):
+            label.append(semesters[i][0] + "'" + str(semesters[i][1]))
+
+        gpatable = []
+        ins = []
+
+        for i in range(b, e + 1):
+            temp = getInstructorWiseGPAForCourse(selectedCourse, semesters[i][0], semesters[i][1])
+            for t in temp:
+                gpatable.append(t[1])
+                if t[0] not in ins:
+                    ins.append(t[0])
+        return render(request, 'instructorwisegpaforcourse.html', {
+            'name': name,
+            'usertype': type,
+
+            'courses': courses,
+            'semesters': semesters,
+
+            'selected1': b,
+            'selected2': e,
+            'selectedCourse': selectedCourse,
+
+            'gpatable': gpatable,
+            'labels': label,
+            'ins':ins,
+
+            'search': 0,
+
+        })
+
+    else:
+        return render(request, 'instructorwisegpaforcourse.html', {
+            'name': name,
+            'usertype': type,
+
+            'courses': courses,
+            'semesters': semesters,
+            'selected1': None,
+            'selected2': None,
+            'search': 1,
+        })

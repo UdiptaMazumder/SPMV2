@@ -6,31 +6,56 @@
 
           <li class="{% if 'index' in segment %} active {% endif %} ">
             <a href="/">
-              <i class="tim-icons icon-chart-pie-36"></i>
+              <i class="tim-icons icon-world"></i>
               <p>Dashboard</p>
-            </a>
-          </li>
-          <li class="{% if 'icons' in segment %} active {% endif %}">
-            <a href="{% url 'ploresult' %}">
-              <i class="tim-icons icon-atom"></i>
-              <p>Student Wise PLO Analysis</p>
             </a>
           </li>
           <li class="{% if 'maps' in segment %} active {% endif %}">
             <a href="{% url 'enrollment' %}">
-              <i class="tim-icons icon-pin"></i>
+              <i class="tim-icons icon-chart-pie-36"></i>
               <p>Student Enrollment</p>
             </a>
           </li>
+          <li class="{% if 'icons' in segment %} active {% endif %}">
+            <a href="{% url 'sgpa' %}">
+              <i class="tim-icons icon-atom"></i>
+              <p>Semester Wise GPA Analysis</p>
+            </a>
+          </li>
+          <li class="{% if 'icons' in segment %} active {% endif %}">
+            <a href="{% url 'igpa' %}">
+              <i class="tim-icons icon-badge"></i>
+              <p>Instructor Wise GPA Analysis</p>
+            </a>
+          </li>
+           <li class="{% if 'icons' in segment %} active {% endif %}">
+            <a href="{% url 'cgpa' %}">
+              <i class="tim-icons icon-single-copy-04"></i>
+              <p>Course Wise GPA Analysis</p>
+            </a>
+          </li>
+          <li class="{% if 'icons' in segment %} active {% endif %}">
+            <a href="{% url 'cigpa' %}">
+              <i class="tim-icons icon-badge"></i>
+              <p>Instructor Wise GPA Analysis For a Chosen Course</p>
+            </a>
+          </li>
+          <li class="{% if 'icons' in segment %} active {% endif %}">
+            <a href="{% url 'ploresult' %}">
+              <i class="tim-icons icon-chart-bar-32"></i>
+              <p>Student Wise PLO Analysis</p>
+            </a>
+          </li>
+
           <li class="{% if 'notifications' in segment %} active {% endif %}">
             <a href="{% url 'studentplotable' %}">
-              <i class="tim-icons icon-bell-55"></i>
+              <i class="tim-icons icon-single-02"></i>
               <p><strong>Student Wise PLO Table</strong></p>
             </a>
           </li>
           <li class="{% if 'page-user' in segment %} active {% endif %}">
             <a href="{% url 'plostats' %}">
-              <i class="tim-icons icon-single-02"></i>
+              <i class="tim-icons icon-align-center"></i>
               <p>PLO Achievement Statistics</p>
             </a>
           </li>

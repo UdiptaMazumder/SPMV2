@@ -7,136 +7,321 @@ studentlist = Student_T.objects.all()
 programlist = Program_T.objects.all()
 
 
-def getgradepoint(n):
-    if n >= 85:
-        return 4.0
-    elif n >= 80:
-        return 3.7
-    elif n >= 75:
-        return 3.3
-    elif n >= 70:
-        return 3.0
-    elif n >= 65:
-        return 2.7
-    elif n >= 60:
-        return 2.3
-    elif n >= 55:
-        return 2.0
-    elif n >= 50:
-        return 1.7
-    elif n >= 45:
-        return 1.3
-    elif n >= 40:
-        return 1.0
-    else:
-        return 0
-
-
 def getStudentWiseGPA(studentID, semester, year):
     with connection.cursor() as cursor:
         cursor.execute(''' 
-            Select sum(Marks),Credits
-            From(
-                SELECT c.courseID as CourseID, a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
-                FROM spmapp_registration_t r,
-                    spmapp_section_t sc, 
-                    spmapp_course_t c,
-                    spmapp_assessment_t a, 
-                    spmapp_evaluation_t e
-                WHERE r.student_id = '{}' 
-                    and r.semester='{}' 
-                    and r.year ='{}' 
-                    and r.section_id = sc.sectionID
-                    and r.section_id = a.section_id
-                    and sc.course_id = c.courseID 
-                    and r.registrationID = e.registration_id 
-                    and e.assessment_id = a.assessmentID
-                GROUP BY  c.courseID,a.assessmentName ) DerivedTable
-            GROUP BY CourseID'''.format(studentID, semester, year))
+            SELECT sum(Credits*grade)/sum(Credits)
+            FROM(   
+                SELECT  Credits,
+                    CASE
+                        WHEN sum(Marks) >= 85 THEN 4.0
+                        WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                        WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                        WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                        WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                        WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                        WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                        WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                        WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                        WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                        ELSE 0.0
+                    END as grade
+                FROM(
+                    SELECT c.courseID as CourseID,a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
+                    FROM spmapp_registration_t r,
+                        spmapp_section_t sc, 
+                        spmapp_course_t c,
+                        spmapp_assessment_t a, 
+                        spmapp_evaluation_t e
+                    WHERE r.student_id = '{}' 
+                        and r.semester='{}' 
+                        and r.year ='{}' 
+                        and r.section_id = sc.sectionID
+                        and sc.course_id = c.courseID 
+                        and r.registrationID = e.registration_id 
+                        and e.assessment_id = a.assessmentID
+                    GROUP BY  c.courseID,a.assessmentName) Derived 
+                GROUP BY CourseID) Derived
+                    '''.format(studentID, semester, year))
 
-        row = cursor.fetchall()
-    totalgpa = 0
-    totalcredits = 0
-    for j in row:
-        totalgpa += getgradepoint(j[0]) * j[1]
-        totalcredits += j[1]
-
-    return np.round(totalgpa / totalcredits, 2)
+        row = cursor.fetchall()[0][0]
+    return np.round(row, 3)
 
 
 def getSchoolWiseGPA(school, semester, year):
     with connection.cursor() as cursor:
         cursor.execute('''
-            SELECT st.studentID
-            FROM spmapp_school_t s,
-                spmapp_department_t d,
-                spmapp_student_t st
-            WHERE s.schoolID = d.school_id
-                and d.departmentID = st.department_id
-                and s.schoolID = '{}'
-            '''.format(school))
+               SELECT AVG(grade) as avgGrade
+               FROM(
+                   SELECT StudentID,sum(Credits*gradepoint)/sum(Credits) as grade
+                   FROM(   
+                       SELECT  StudentID,Credits,
+                           CASE
+                               WHEN sum(Marks) >= 85 THEN 4.0
+                               WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                               WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                               WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                               WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                               WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                               WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                               WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                               WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                               WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                               ELSE 0.0
+                           END as gradepoint
+                       FROM(
+                           SELECT st.studentID as StudentID,c.courseID as CourseID,
+                               a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
+                           FROM spmapp_student_t st,
+                                spmapp_department_t d,
+                                spmapp_school_t s,
+                               spmapp_registration_t r,
+                               spmapp_section_t sc, 
+                               spmapp_course_t c,
+                               spmapp_assessment_t a, 
+                               spmapp_evaluation_t e
+                           WHERE st.studentID = r.student_id
+                                and st.department_id = d.departmentID
+                                and d.school_id = s.schoolID
+                                and r.section_id = sc.sectionID
+                                and sc.course_id = c.courseID 
+                                and r.registrationID = e.registration_id 
+                                and e.assessment_id = a.assessmentID
+                                and s.schoolID = '{}'
+                                and r.semester='{}'
+                                and r.year ='{}' 
+                           GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
+                       GROUP BY StudentID,CourseID) Derived2
+                   GROUP BY StudentID)
+                       '''.format(school, semester, year))
 
-        studentlist = cursor.fetchall()
-
-    totalgpa = 0.0
-    totalstudent = 0
-
-    for st in studentlist:
-        totalgpa += getStudentWiseGPA(st[0], semester, year)
-        totalstudent += 1
-
-    return totalgpa / totalstudent
+        row = cursor.fetchall()[0][0]
+    return np.round(row, 3)
 
 
 def getDeptWiseGPA(dept, semester, year):
-    totalgpa = 0.0
-    totalstudent = 0
+    with connection.cursor() as cursor:
+        cursor.execute('''
+            SELECT AVG(grade) as avgGrade
+            FROM(
+                SELECT StudentID,sum(Credits*gradepoint)/sum(Credits) as grade
+                FROM(   
+                    SELECT  StudentID,Credits,
+                        CASE
+                            WHEN sum(Marks) >= 85 THEN 4.0
+                            WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                            WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                            WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                            WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                            WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                            WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                            WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                            WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                            WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                            ELSE 0.0
+                        END as gradepoint
+                    FROM(
+                        SELECT st.studentID as StudentID,c.courseID as CourseID,
+                            a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
+                        FROM spmapp_student_t st,
+                            spmapp_registration_t r,
+                            spmapp_section_t sc, 
+                            spmapp_course_t c,
+                            spmapp_assessment_t a, 
+                            spmapp_evaluation_t e
+                        WHERE st.studentID = r.student_id
+                            and r.section_id = sc.sectionID
+                            and sc.course_id = c.courseID 
+                            and r.registrationID = e.registration_id 
+                            and e.assessment_id = a.assessmentID
+                            and st.department_id = '{}'
+                            and r.semester='{}'
+                            and r.year ='{}' 
+                        GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
+                    GROUP BY StudentID,CourseID) Derived2
+                GROUP BY StudentID)
+                    '''.format(dept, semester, year))
 
-    for st in studentlist:
-        if st.department_id == dept:
-            totalgpa += getStudentWiseGPA(st.studentID, semester, year)
-            totalstudent += 1
-
-    return totalgpa / totalstudent
+        row = cursor.fetchall()[0][0]
+    return np.round(row, 3)
 
 
 def getProgramWiseGPA(program, semester, year):
-    totalgpa = 0.0
-    totalstudent = 0
+    with connection.cursor() as cursor:
+        cursor.execute('''
+               SELECT AVG(grade) as avgGrade
+               FROM(
+                   SELECT StudentID,sum(Credits*gradepoint)/sum(Credits) as grade
+                   FROM(   
+                       SELECT  StudentID,Credits,
+                           CASE
+                               WHEN sum(Marks) >= 85 THEN 4.0
+                               WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                               WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                               WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                               WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                               WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                               WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                               WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                               WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                               WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                               ELSE 0.0
+                           END as gradepoint
+                       FROM(
+                           SELECT st.studentID as StudentID,c.courseID as CourseID,
+                               a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
+                           FROM spmapp_student_t st,
+                               spmapp_registration_t r,
+                               spmapp_section_t sc, 
+                               spmapp_course_t c,
+                               spmapp_assessment_t a, 
+                               spmapp_evaluation_t e
+                           WHERE st.studentID = r.student_id
+                               and r.section_id = sc.sectionID
+                               and sc.course_id = c.courseID 
+                               and r.registrationID = e.registration_id 
+                               and e.assessment_id = a.assessmentID
+                               and st.program_id = '{}'
+                               and r.semester='{}'
+                               and r.year ='{}' 
+                           GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
+                       GROUP BY StudentID,CourseID) Derived2
+                   GROUP BY StudentID)
+                       '''.format(program, semester, year))
 
-    for st in studentlist:
-        if st.program_id == program:
-            totalgpa += getStudentWiseGPA(st.studentID, semester, year)
-            totalstudent += 1
-
-    return totalgpa / totalstudent
+        row = cursor.fetchall()[0][0]
+    return np.round(row, 3)
 
 
-# studentlist = Student_T.objects.all()
+def getCourseWiseGPA(course, semester, year):
+    with connection.cursor() as cursor:
+        cursor.execute('''
+               SELECT AVG(gradepoint) as avgGrade
+               FROM(   
+                       SELECT  StudentID,
+                           CASE
+                               WHEN sum(Marks) >= 85 THEN 4.0
+                               WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                               WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                               WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                               WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                               WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                               WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                               WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                               WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                               WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                               ELSE 0.0
+                           END as gradepoint
+                       FROM(
+                           SELECT st.studentID as StudentID,c.courseID as CourseID,
+                               a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks
+                           FROM spmapp_student_t st,
+                               spmapp_registration_t r,
+                               spmapp_section_t sc, 
+                               spmapp_course_t c,
+                               spmapp_assessment_t a, 
+                               spmapp_evaluation_t e
+                           WHERE st.studentID = r.student_id
+                               and r.section_id = sc.sectionID
+                               and sc.course_id = c.courseID 
+                               and r.registrationID = e.registration_id 
+                               and e.assessment_id = a.assessmentID
+                               and c.courseID = '{}'
+                               and r.semester='{}'
+                               and r.year ='{}' 
+                           GROUP BY  st.studentID,a.assessmentName) Derived
+                       GROUP BY StudentID) Derived2
+                       '''.format(course, semester, year))
 
-# resultSpring = []
-
-# for student in studentlist:
-#   resultSpring.append(getStudentWiseGpa(student.studentID,"Spring",2020))
+        row = cursor.fetchall()[0][0]
+    return np.round(row, 3)
 
 
-# resultSummer = []
+def getInstructorWiseGPA(instructor, semester, year):
+    with connection.cursor() as cursor:
+        cursor.execute('''
+               SELECT AVG(gradepoint) as avgGrade
+               FROM(   
+                       SELECT  StudentID,
+                           CASE
+                               WHEN sum(Marks) >= 85 THEN 4.0
+                               WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                               WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                               WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                               WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                               WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                               WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                               WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                               WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                               WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                               ELSE 0.0
+                           END as gradepoint
+                       FROM(
+                           SELECT st.studentID as StudentID,c.courseID as CourseID,
+                               a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks
+                           FROM spmapp_student_t st,
+                               spmapp_registration_t r,
+                               spmapp_section_t sc, 
+                               spmapp_course_t c,
+                               spmapp_assessment_t a, 
+                               spmapp_evaluation_t e
+                           WHERE st.studentID = r.student_id
+                               and r.section_id = sc.sectionID
+                               and r.registrationID = e.registration_id 
+                               and e.assessment_id = a.assessmentID
+                               and sc.faculty_id = '{}'
+                               and r.semester='{}'
+                               and r.year ='{}' 
+                           GROUP BY  st.studentID,a.assessmentName) Derived
+                       GROUP BY StudentID) Derived2
+                       '''.format(instructor, semester, year))
 
-# for student in studentlist:
-# resultSummer.append(getStudentWiseGpa(student.studentID,"Summer",2020))
+        row = cursor.fetchall()[0][0]
+    return np.round(row, 3)
 
-# resultAutumn = []
 
-# for student in studentlist:
-# resultAutumn.append(getStudentWiseGpa(student.studentID,"Autumn",2020))
+def getInstructorWiseGPAForCourse(course, semester, year):
+    with connection.cursor() as cursor:
+        cursor.execute('''
+               SELECT FacultyID, AVG(gradepoint) as avgGrade
+               FROM(   
+                       SELECT  FacultyID,StudentID,
+                           CASE
+                               WHEN sum(Marks) >= 85 THEN 4.0
+                               WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                               WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                               WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                               WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                               WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                               WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                               WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                               WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                               WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                               ELSE 0.0
+                           END as gradepoint
+                       FROM(
+                           SELECT sc.faculty_id as FacultyID, st.studentID as StudentID,c.courseID as CourseID,
+                               a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks
+                           FROM spmapp_student_t st,
+                               spmapp_registration_t r,
+                               spmapp_section_t sc, 
+                               spmapp_course_t c,
+                               spmapp_assessment_t a, 
+                               spmapp_evaluation_t e
+                           WHERE st.studentID = r.student_id
+                               and r.section_id = sc.sectionID
+                               and r.registrationID = e.registration_id 
+                               and e.assessment_id = a.assessmentID
+                               and sc.course_id = '{}'
+                               and r.semester='{}'
+                               and r.year ='{}' 
+                           GROUP BY  sc.faculty_id,st.studentID,a.assessmentName) Derived
+                       GROUP BY FacultyID,StudentID) Derived2
+               GROUP BY FacultyID
+                       '''.format(course, semester, year))
 
-# gpas = []
-# for i in range(0,len(studentlist)):
-# gpas.append((studentlist[i].studentID,resultSpring[i],resultSummer[i],resultAutumn[i]))
-
-# for gpa in gpas:
-# print(gpa)
-
+        row = cursor.fetchall()
+    return row
 
 def getStudentWiseOverallPLO(studentID):
     with connection.cursor() as cursor:
@@ -535,13 +720,12 @@ def getVerdictTable(course):
         if row is None:
             row = []
 
-
-
     with connection.cursor() as cursor:
         cursor.execute('''
                SELECT coNum, ploNum, COUNT(marks)
                FROM(
-                       SELECT r.student_id as StudentID,c.course_id as CourseID,c.coNum as coNum,p.ploNum as ploNum,100*sum(e.obtainedMarks)/sum(a.totalMarks) as marks
+                       SELECT r.student_id as StudentID,c.course_id as CourseID,c.coNum as coNum,
+                       p.ploNum as ploNum,100*sum(e.obtainedMarks)/sum(a.totalMarks) as marks
                        FROM spmapp_registration_t r,
                            spmapp_evaluation_t e,
                            spmapp_assessment_t a, 
@@ -557,7 +741,6 @@ def getVerdictTable(course):
                 GROUP BY CourseID,coNum,ploNum
                '''.format(course))
         total = cursor.fetchone()[2]
-
 
     coplo = []
     temp = []
