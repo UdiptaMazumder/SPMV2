@@ -1044,7 +1044,7 @@ def getVCWiseGPA(vc):
                        '''.format(semesters[0]))
     else:
         print(semesters)
-        print(b,e)
+        print(b, e)
         cursor.execute('''
                        SELECT AVG(grade) as avgGrade
                 FROM(
