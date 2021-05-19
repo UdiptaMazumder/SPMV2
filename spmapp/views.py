@@ -543,7 +543,7 @@ def courseverdict(request):
         })
 
 
-def dataentry(request):
+def dataentry2(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
 
@@ -556,7 +556,7 @@ def dataentry(request):
     sections = [1, 2, 3]
     year = [2019, 2020]
 
-    return render(request, 'dataentry.html', {
+    return render(request, 'dataentry2.html', {
         'name': name,
         'usertype': type,
         'courses': courses,
@@ -565,6 +565,27 @@ def dataentry(request):
         'year': year,
     })
 
+####def dataentry(request):
+ ####   name = request.user.get_full_name()
+####    type = request.user.groups.all()[0].name
+
+####    courses = []
+####    for c in courselist:
+ ####       courses.append(c.courseID)
+
+ ####   semesters = ["Spring", "Summer", "Autumn"]
+
+ ####   sections = [1, 2, 3]
+####    year = [2019, 2020]
+
+ ####   return render(request, 'dataentry2.html', {
+ ####       'name': name,
+ ####       'usertype': type,
+ ####       'courses': courses,
+ ####       'semesters': semesters,
+ ####       'sections': sections,
+  ####      'year': year,
+ ####   })
 
 def semesterwisegpa(request):
     name = request.user.get_full_name()
