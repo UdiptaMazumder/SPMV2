@@ -38,7 +38,7 @@
           </select>
                 </td>
                 <td class="form-field" style="text-align: center; padding-right: 20px">
-                    <label for="year" style="padding-right: 10px">Semester Year</label>
+                    <label for="year" style="padding-right: 10px">Year</label>
 
                     <select style="width: 120px; height: 30px" class="form-select" id="year" name="year" form="courseform" aria-label="Default select example">
             {% for i in year %} {% if i == selectedYear %}
@@ -78,7 +78,7 @@
     <table id="atable">
         <tr>
             <td style="text-align: center; padding-right: 20px">
-                <input type="text" id="anum" name="anum" class="form-control" placeholder="Number of Assessments" />
+                <input type="text" id="anum" name="anum" class="form-control" placeholder="Assessments Details" />
             </td>
             <td style="text-align: center" class="last-row" colspan="2">
                 <button class="btn btn-primary" onclick="showAssessment()">
