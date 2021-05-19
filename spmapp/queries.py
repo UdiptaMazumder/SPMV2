@@ -124,6 +124,7 @@ def getProgramWiseGPA(program, semester, year):
 # for student in studentlist:
 # resultSummer.append(getStudentWiseGpa(student.studentID,"Summer",2020))
 
+
 # resultAutumn = []
 
 # for student in studentlist:
@@ -579,3 +580,121 @@ def getVerdictTable(course):
         finalRow.append(tempRow)
 
     return (finalRow, total)
+
+#ExtraQueries addeD section:    
+
+# vc--all
+#def getVCwiseStudentPerformancetrendsBasedonGPA(VemployeeID,studentID, semester, year,starDate,endDate):
+    with connection.cursor() as cursor:
+        cursor.execute(''' 
+            Select sum(Marks),Credits
+            From(
+                SELECT c.courseID as CourseID, a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credit, DATEDIFF(day,startDate,endDate) as VcDatediff
+                FROM spmapp_registration_t r,
+                    spmapp_section_t sc, 
+                    spmapp_course_t c,
+                    spmapp_assessment_t a, 
+                    spmapp_evaluation_t e,
+                    spmapp_Vc_t v
+                WHERE r.student_id = '{}' 
+                    and r.semester='{}' 
+                    and r.year ='{}' 
+                    and r.section_id = sc.sectionID
+                    and r.section_id = a.section_id
+                    and sc.course_id = c.courseID 
+                    and r.registrationID = e.registration_id and e.assessment_id = a.assessmentID
+                GROUP BY  c.courseID,a.assessmentName ) DerivedTable
+            GROUP BY CourseID'''.format(VemployeeID,studentID, semester, year,starDate,endDate))
+
+        row = cursor.fetchall()
+    totalgpa = 0
+    totalcredits = 0
+    for j in row:
+        totalgpa += getgradepoint(j[0]) * j[1]
+        totalcredits += j[1]
+
+    HeadDatediff = 0
+    HeadDatediff = 0
+    for j in row:
+        HeadDatediff += getVcDatediff(j[0]) * j[1]
+        HeadDatediff += j[1]
+
+    return np.round(totalgpa / totalcredits *VcDatediff, 2)  
+
+#head---department
+
+#def getDeptHeadwiseStudentPerformancetrendsBasedonGPA(HemployeeID,studentID, semester, year,starDate,endDate):
+    with connection.cursor() as cursor:
+        cursor.execute(''' 
+            Select sum(Marks),Credits
+            From(
+                SELECT c.courseID as CourseID, a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits, DATEDIFF(day,startDate,endDate) as HeadDatediff
+                FROM spmapp_registration_t r,
+                    spmapp_section_t sc, 
+                    spmapp_course_t c,
+                    spmapp_assessment_t a, 
+                    spmapp_evaluation_t e,
+                    spmapp_Head_T h
+                WHERE r.student_id = '{}' 
+                    and r.semester='{}' 
+                    and r.year ='{}' 
+                    and r.section_id = sc.sectionID
+                    and r.section_id = a.section_id
+                    and sc.course_id = c.courseID 
+                    and r.registrationID = e.registration_id and e.assessment_id = a.assessmentID
+                GROUP BY  c.courseID,a.assessmentName ) DerivedTable
+            GROUP BY CourseID'''.format(HemployeeID, studentID, semester, year,starDate,endDate))
+
+        row = cursor.fetchall()
+    
+    totalgpa = 0
+    totalcredits = 0
+    for j in row:
+        totalgpa += getgradepoint(j[0]) * j[1]
+    totalcredits += j[1]
+
+    HeadDatediff = 0
+    HeadDatediff = 0
+    for j in row:
+                HeadDatediff += getHeadDatediff(j[0]) * j[1]
+                HeadDatediff += j[1]
+
+    return np.round(totalgpa / totalcredits* HeadDatediff, 2)
+
+#dean---school 
+#def getDeanwiseStudentPerformancetrendsBasedonGPA(DemployeeID,studentID, semester, year,starDate,endDate):
+    with connection.cursor() as cursor:
+        cursor.execute(''' 
+            Select sum(Marks),Credits
+            From(
+                SELECT c.courseID as CourseID, a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits, DATEDIFF(day,startDate,endDate) as DeanDatediff
+                FROM spmapp_registration_t r,
+                    spmapp_section_t sc, 
+                    spmapp_course_t c,
+                    spmapp_assessment_t a, 
+                    spmapp_evaluation_t e,
+                    spamapp_DEAN_T as d
+                WHERE r.student_id = '{}' 
+                    and r.semester='{}' 
+                    and r.year ='{}' 
+                    and r.section_id = sc.sectionID
+                    and r.section_id = a.section_id
+                    and sc.course_id = c.courseID 
+                    and r.registrationID = e.registration_id and e.assessment_id = a.assessmentID
+                GROUP BY  c.courseID,a.assessmentName ) DerivedTable
+            GROUP BY CourseID'''.format(DemployeeID,studentID, semester, year,starDate,endDate))
+
+        row = cursor.fetchall()
+    totalgpa = 0
+    totalcredits = 0
+    for j in row:
+        totalgpa += getgradepoint(j[0]) * j[1]
+        totalcredits += j[1]
+
+    HeadDatediff = 0
+    HeadDatediff = 0
+    for j in row:
+                HeadDatediff += getDeanDatediff(j[0]) * j[1]
+                HeadDatediff += j[1]
+
+    return np.round(totalgpa / totalcredits * DeanDatediff, 2)
