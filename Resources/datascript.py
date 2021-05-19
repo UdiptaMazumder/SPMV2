@@ -57,8 +57,7 @@ for p in programList:
 
 
 fnames = ["Mahady", "Sadita", "Md. Abu", "Romasa", "Mohammad Motiur", "Asif Bin", "Ferdows", "Bijoy R.", "Raihan Bin",
-          "Faisal M.",
-          "Subrata Kumar", "Mohammad Noor", "Farruk", "Sabrina", "Sanzar Adnan"]
+          "Faisal M.", "Subrata Kumar", "Mohammad Noor", "Farruk", "Sabrina", "Sanzar Adnan"]
 
 lnames = ["Hasan", "Ahmed", "Sayed", "Qasim", "Rahman", "Khaled", "Zahid", "Arif", "Rafique", "Uddin", "Dey", "Nabi",
           "Ahmed", "Alam", "Alam"]

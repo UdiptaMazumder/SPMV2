@@ -63,21 +63,21 @@ class Employee_T(models.Model):
 
 class VC_T(Employee_T):
     vcID = models.CharField(max_length=4, primary_key=True)
-    startDate = models.DateField()
-    endDate = models.DateField(null=True)
+    startDate = models.CharField(max_length=15, default='N/A')
+    endDate = models.CharField(max_length=15, default='N/A')
 
 
 class Dean_T(Employee_T):
     deanID = models.CharField(max_length=4, primary_key=True)
-    startDate = models.DateField()
-    endDate = models.DateField(null=True)
+    startDate = models.CharField(max_length=15, default='N/A')
+    endDate = models.CharField(max_length=15, default='N/A')
     school = models.ForeignKey(School_T, on_delete=models.CASCADE)
 
 
 class Head_T(Employee_T):
     headID = models.CharField(max_length=4, primary_key=True)
-    startDate = models.DateField()
-    endDate = models.DateField(null=True)
+    startDate = models.CharField(max_length=15,default='N/A')
+    endDate = models.CharField(max_length=15,default='N/A')
     department = models.ForeignKey(Department_T, on_delete=models.CASCADE)
 
 
@@ -122,7 +122,7 @@ class Section_T(models.Model):
     sectionNum = models.IntegerField()
     course = models.ForeignKey(Course_T, on_delete=models.CASCADE)
     faculty = models.ForeignKey(Faculty_T, on_delete=models.CASCADE)
-    semester = models.CharField(max_length=6)
+    semester = models.CharField(max_length=15)
     year = models.IntegerField()
 
     def __str__(self):
@@ -133,7 +133,7 @@ class Registration_T(models.Model):
     registrationID = models.AutoField(primary_key=True)
     student = models.ForeignKey(Student_T, on_delete=models.CASCADE)
     section = models.ForeignKey(Section_T, on_delete=models.CASCADE)
-    semester = models.CharField(max_length=6)
+    semester = models.CharField(max_length=15)
     year = models.IntegerField()
 
     def __str__(self):

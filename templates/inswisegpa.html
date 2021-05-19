@@ -45,9 +45,9 @@
                     <select  style = "width:120px;height:30px;" class ="form-select selectpicker" id="sem1" name="sem1" form="myform" aria-label="Default select example">
                         {% for i in semesters %}
                             {% if forloop.counter0 ==  selected1 %}
-                                <option value="{{forloop.counter0}}" selected="selected">{{i.0}} {{i.1}}</option>
+                                <option value="{{forloop.counter0}}" selected="selected">{{i}}</option>
                             {% else %}
-                                <option value="{{forloop.counter0}}">{{i.0}} {{i.1}}</option>
+                                <option value="{{forloop.counter0}}">{{i}}</option>
                             {% endif %}
                         {% endfor %}
                     </select>
@@ -57,9 +57,9 @@
                     <select  style = "width:120px;height:30px;" class ="form-select selectpicker" id="sem2" name="sem2" form="myform" aria-label="Default select example">
                         {% for i in semesters %}
                             {% if forloop.counter0 == selected2 %}
-                                <option value="{{forloop.counter0}}" selected="selected">{{i.0}} {{i.1}}</option>
+                                <option value="{{forloop.counter0}}" selected="selected">{{i}}</option>
                             {% else %}
-                                 <option value="{{forloop.counter0}}">{{i.0}} {{i.1}}</option>
+                                 <option value="{{forloop.counter0}}">{{i}}</option>
                             {% endif %}
                         {% endfor %}
                     </select>

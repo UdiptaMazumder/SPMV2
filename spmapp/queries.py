@@ -7,7 +7,7 @@ studentlist = Student_T.objects.all()
 programlist = Program_T.objects.all()
 
 
-def getStudentWiseGPA(studentID, semester, year):
+def getStudentWiseGPA(studentID, semester):
     with connection.cursor() as cursor:
         cursor.execute(''' 
             SELECT sum(Credits*grade)/sum(Credits)
@@ -33,22 +33,21 @@ def getStudentWiseGPA(studentID, semester, year):
                         spmapp_course_t c,
                         spmapp_assessment_t a, 
                         spmapp_evaluation_t e
-                    WHERE r.student_id = '{}' 
-                        and r.semester='{}' 
-                        and r.year ='{}' 
-                        and r.section_id = sc.sectionID
+                    WHERE r.section_id = sc.sectionID
                         and sc.course_id = c.courseID 
                         and r.registrationID = e.registration_id 
                         and e.assessment_id = a.assessmentID
+                        and r.student_id = '{}' 
+                        and r.semester='{}' 
                     GROUP BY  c.courseID,a.assessmentName) Derived 
                 GROUP BY CourseID) Derived
-                    '''.format(studentID, semester, year))
+                    '''.format(studentID, semester))
 
         row = cursor.fetchall()[0][0]
     return np.round(row, 3)
 
 
-def getSchoolWiseGPA(school, semester, year):
+def getSchoolWiseGPA(school, semester):
     with connection.cursor() as cursor:
         cursor.execute('''
                SELECT AVG(grade) as avgGrade
@@ -89,17 +88,16 @@ def getSchoolWiseGPA(school, semester, year):
                                 and e.assessment_id = a.assessmentID
                                 and s.schoolID = '{}'
                                 and r.semester='{}'
-                                and r.year ='{}' 
                            GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
                        GROUP BY StudentID,CourseID) Derived2
                    GROUP BY StudentID)
-                       '''.format(school, semester, year))
+                       '''.format(school, semester))
 
         row = cursor.fetchall()[0][0]
     return np.round(row, 3)
 
 
-def getDeptWiseGPA(dept, semester, year):
+def getDeptWiseGPA(dept, semester):
     with connection.cursor() as cursor:
         cursor.execute('''
             SELECT AVG(grade) as avgGrade
@@ -136,17 +134,16 @@ def getDeptWiseGPA(dept, semester, year):
                             and e.assessment_id = a.assessmentID
                             and st.department_id = '{}'
                             and r.semester='{}'
-                            and r.year ='{}' 
                         GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
                     GROUP BY StudentID,CourseID) Derived2
                 GROUP BY StudentID)
-                    '''.format(dept, semester, year))
+                    '''.format(dept, semester))
 
         row = cursor.fetchall()[0][0]
     return np.round(row, 3)
 
 
-def getProgramWiseGPA(program, semester, year):
+def getProgramWiseGPA(program, semester):
     with connection.cursor() as cursor:
         cursor.execute('''
                SELECT AVG(grade) as avgGrade
@@ -183,17 +180,16 @@ def getProgramWiseGPA(program, semester, year):
                                and e.assessment_id = a.assessmentID
                                and st.program_id = '{}'
                                and r.semester='{}'
-                               and r.year ='{}' 
                            GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
                        GROUP BY StudentID,CourseID) Derived2
                    GROUP BY StudentID)
-                       '''.format(program, semester, year))
+                       '''.format(program, semester))
 
         row = cursor.fetchall()[0][0]
     return np.round(row, 3)
 
 
-def getCourseWiseGPA(course, semester, year):
+def getCourseWiseGPA(course, semester):
     with connection.cursor() as cursor:
         cursor.execute('''
                SELECT AVG(gradepoint) as avgGrade
@@ -228,16 +224,15 @@ def getCourseWiseGPA(course, semester, year):
                                and e.assessment_id = a.assessmentID
                                and c.courseID = '{}'
                                and r.semester='{}'
-                               and r.year ='{}' 
                            GROUP BY  st.studentID,a.assessmentName) Derived
                        GROUP BY StudentID) Derived2
-                       '''.format(course, semester, year))
+                       '''.format(course, semester))
 
         row = cursor.fetchall()[0][0]
     return np.round(row, 3)
 
 
-def getInstructorWiseGPA(instructor, semester, year):
+def getInstructorWiseGPA(instructor, semester):
     with connection.cursor() as cursor:
         cursor.execute('''
                SELECT AVG(gradepoint) as avgGrade
@@ -271,16 +266,15 @@ def getInstructorWiseGPA(instructor, semester, year):
                                and e.assessment_id = a.assessmentID
                                and sc.faculty_id = '{}'
                                and r.semester='{}'
-                               and r.year ='{}' 
                            GROUP BY  st.studentID,a.assessmentName) Derived
                        GROUP BY StudentID) Derived2
-                       '''.format(instructor, semester, year))
+                       '''.format(instructor, semester))
 
         row = cursor.fetchall()[0][0]
     return np.round(row, 3)
 
 
-def getInstructorWiseGPAForCourse(course, semester, year):
+def getInstructorWiseGPAForCourse(course, semester):
     with connection.cursor() as cursor:
         cursor.execute('''
                SELECT FacultyID, AVG(gradepoint) as avgGrade
@@ -314,14 +308,14 @@ def getInstructorWiseGPAForCourse(course, semester, year):
                                and e.assessment_id = a.assessmentID
                                and sc.course_id = '{}'
                                and r.semester='{}'
-                               and r.year ='{}' 
                            GROUP BY  sc.faculty_id,st.studentID,a.assessmentName) Derived
                        GROUP BY FacultyID,StudentID) Derived2
                GROUP BY FacultyID
-                       '''.format(course, semester, year))
+                       '''.format(course, semester))
 
         row = cursor.fetchall()
     return row
+
 
 def getStudentWiseOverallPLO(studentID):
     with connection.cursor() as cursor:
@@ -559,7 +553,7 @@ def getSchoolWisePLO(school):
     return row
 
 
-def getSchoolWiseEnrolledStudents(school, semester, year):
+def getSchoolWiseEnrolledStudents(school, semester):
     with connection.cursor() as cursor:
         cursor.execute('''
             SELECT count( distinct st.studentID)
@@ -570,16 +564,15 @@ def getSchoolWiseEnrolledStudents(school, semester, year):
             WHERE r.student_id = st.studentID
                 and st.department_id = d.departmentID
                 and d.school_id = s.schoolID
+                 and s.schoolID = '{}'
                 and r.semester = '{}'
-                and r.year = '{}'
-                and s.schoolID = '{}'
-            '''.format(semester, year, school))
+            '''.format(school, semester))
         row = cursor.fetchall()
 
     return row[0][0]
 
 
-def getDeptWiseEnrolledStudents(dept, semester, year):
+def getDeptWiseEnrolledStudents(dept, semester):
     with connection.cursor() as cursor:
         cursor.execute('''
             SELECT count(distinct st.studentID)
@@ -587,16 +580,15 @@ def getDeptWiseEnrolledStudents(dept, semester, year):
                 spmapp_student_t st,
                 spmapp_registration_t r
             WHERE r.student_id = st.studentID
-                and r.semester = '{}'
-                and r.year = '{}'
                 and st.department_id = '{}'
-            '''.format(semester, year, dept))
+                and r.semester = '{}'
+            '''.format(dept, semester))
         row = cursor.fetchall()
 
     return row[0][0]
 
 
-def getProgramWiseEnrolledStudents(program, semester, year):
+def getProgramWiseEnrolledStudents(program, semester):
     with connection.cursor() as cursor:
         cursor.execute('''
             SELECT count( distinct st.studentID)
@@ -605,10 +597,9 @@ def getProgramWiseEnrolledStudents(program, semester, year):
                 spmapp_registration_t r
             WHERE r.student_id = st.studentID
                 and st.program_id = p.programID
-                and r.semester = '{}'
-                and r.year = '{}'
                 and st.program_id = '{}'
-            '''.format(semester, year, program))
+                and r.semester = '{}'
+            '''.format(program, semester))
         row = cursor.fetchall()
     return row[0][0]
 
@@ -616,9 +607,8 @@ def getProgramWiseEnrolledStudents(program, semester, year):
 def getAllSemesters():
     with connection.cursor() as cursor:
         cursor.execute('''
-            SELECT DISTINCT semester, year
-            FROM spmapp_registration_t r
-            
+            SELECT DISTINCT semester
+            FROM spmapp_registration_t r    
         ''')
 
         row = cursor.fetchall()
@@ -763,3 +753,338 @@ def getVerdictTable(course):
         finalRow.append(tempRow)
 
     return (finalRow, total)
+
+
+def getHeadWiseGPA(head):
+    semlist = getAllSemesters()
+
+    b = -1
+    e = -1
+
+    for s in range(0, len(semlist)):
+        if semlist[s][0] == head.startDate:
+            b = s
+
+        if head.endDate == 'N/A':
+            e = len(semlist) - 1
+        elif semlist[s][0] == head.endDate:
+            e = s
+
+    semesters = []
+
+    for i in range(b, e + 1):
+        semesters.append(semlist[i][0])
+
+    cursor = connection.cursor()
+
+    if len(semesters) == 1:
+        cursor.execute('''
+                SELECT AVG(grade) as avgGrade
+                FROM(
+                    SELECT StudentID,sum(Credits*gradepoint)/sum(Credits) as grade
+                    FROM(   
+                        SELECT  StudentID,Credits,
+                            CASE
+                                   WHEN sum(Marks) >= 85 THEN 4.0
+                                   WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                                   WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                                   WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                                   WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                                   WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                                   WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                                   WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                                   WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                                   WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                                   ELSE 0.0
+                           END as gradepoint
+                       FROM(
+                           SELECT st.studentID as StudentID,c.courseID as CourseID,
+                               a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
+                           FROM spmapp_student_t st,
+                                spmapp_department_t d,
+                                spmapp_head_t h,
+                               spmapp_registration_t r,
+                               spmapp_section_t sc, 
+                               spmapp_course_t c,
+                               spmapp_assessment_t a, 
+                               spmapp_evaluation_t e
+                           WHERE st.studentID = r.student_id
+                                and st.department_id = h.department_id
+                                and r.section_id = sc.sectionID
+                                and sc.course_id = c.courseID 
+                                and r.registrationID = e.registration_id 
+                                and e.assessment_id = a.assessmentID
+                                and h.headID = '{}'
+                                and r.semester='{}'
+                           GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
+                       GROUP BY StudentID,CourseID) Derived2
+                   GROUP BY StudentID)
+                       '''.format(head.headID, semesters[0]))
+    else:
+        cursor.execute('''
+                      SELECT AVG(grade) as avgGrade
+                FROM(
+                    SELECT StudentID,sum(Credits*gradepoint)/sum(Credits) as grade
+                    FROM(   
+                        SELECT  StudentID,Credits,
+                            CASE
+                                   WHEN sum(Marks) >= 85 THEN 4.0
+                                   WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                                   WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                                   WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                                   WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                                   WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                                   WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                                   WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                                   WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                                   WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                                   ELSE 0.0
+                           END as gradepoint
+                       FROM(
+                           SELECT st.studentID as StudentID,c.courseID as CourseID,
+                               a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
+                           FROM spmapp_student_t st,
+                                spmapp_department_t d,
+                                spmapp_head_t h,
+                               spmapp_registration_t r,
+                               spmapp_section_t sc, 
+                               spmapp_course_t c,
+                               spmapp_assessment_t a, 
+                               spmapp_evaluation_t e
+                           WHERE st.studentID = r.student_id
+                                and st.department_id = h.department_id
+                                and r.section_id = sc.sectionID
+                                and sc.course_id = c.courseID 
+                                and r.registrationID = e.registration_id 
+                                and e.assessment_id = a.assessmentID
+                                and h.headID = '{}'
+                                and r.semester in {}
+                           GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
+                       GROUP BY StudentID,CourseID) Derived2
+                   GROUP BY StudentID)
+                       '''.format(head.headID, str(tuple(semesters))))
+    row = cursor.fetchall()[0][0]
+
+    return row
+
+
+def getDeanWiseGPA(dean):
+    semlist = getAllSemesters()
+
+    b = -1
+    e = -1
+
+    for s in range(0, len(semlist)):
+        if semlist[s][0] == dean.startDate:
+            b = s
+        if dean.endDate == 'N/A':
+            e = len(semlist) - 1
+        elif semlist[s][0] == dean.endDate:
+            e = s
+    semesters = []
+
+    for i in range(b, e + 1):
+        semesters.append(semlist[i][0])
+
+    cursor = connection.cursor()
+
+    if len(semesters) == 1:
+        cursor.execute('''
+                SELECT AVG(grade) as avgGrade
+                FROM(
+                    SELECT StudentID,sum(Credits*gradepoint)/sum(Credits) as grade
+                    FROM(   
+                        SELECT  StudentID,Credits,
+                            CASE
+                                   WHEN sum(Marks) >= 85 THEN 4.0
+                                   WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                                   WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                                   WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                                   WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                                   WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                                   WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                                   WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                                   WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                                   WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                                   ELSE 0.0
+                           END as gradepoint
+                       FROM(
+                           SELECT st.studentID as StudentID,c.courseID as CourseID,
+                               a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
+                           FROM spmapp_student_t st,
+                                spmapp_department_t d,
+                                spmapp_dean_t dn,
+                               spmapp_registration_t r,
+                               spmapp_section_t sc, 
+                               spmapp_course_t c,
+                               spmapp_assessment_t a, 
+                               spmapp_evaluation_t e
+                           WHERE st.studentID = r.student_id
+                                and st.department_id = d.departmentID
+                                and d.school_id = dn.school_id
+                                and r.section_id = sc.sectionID
+                                and sc.course_id = c.courseID 
+                                and r.registrationID = e.registration_id 
+                                and e.assessment_id = a.assessmentID
+                                and dn.deanID= '{}'
+                                and r.semester='{}'
+                           GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
+                       GROUP BY StudentID,CourseID) Derived2
+                   GROUP BY StudentID)
+                       '''.format(dean.deanID, semesters[0]))
+    else:
+        cursor.execute('''
+                       SELECT AVG(grade) as avgGrade
+                FROM(
+                    SELECT StudentID,sum(Credits*gradepoint)/sum(Credits) as grade
+                    FROM(   
+                        SELECT  StudentID,Credits,
+                            CASE
+                                   WHEN sum(Marks) >= 85 THEN 4.0
+                                   WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                                   WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                                   WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                                   WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                                   WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                                   WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                                   WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                                   WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                                   WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                                   ELSE 0.0
+                           END as gradepoint
+                       FROM(
+                           SELECT st.studentID as StudentID,c.courseID as CourseID,
+                               a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
+                           FROM spmapp_student_t st,
+                                spmapp_department_t d,
+                                spmapp_dean_t dn,
+                               spmapp_registration_t r,
+                               spmapp_section_t sc, 
+                               spmapp_course_t c,
+                               spmapp_assessment_t a, 
+                               spmapp_evaluation_t e
+                           WHERE st.studentID = r.student_id
+                                and st.department_id = d.departmentID
+                                and d.school_id = dn.school_id
+                                and r.section_id = sc.sectionID
+                                and sc.course_id = c.courseID 
+                                and r.registrationID = e.registration_id 
+                                and e.assessment_id = a.assessmentID
+                                and dn.deanID= '{}'
+                                and r.semester in {}
+                           GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
+                       GROUP BY StudentID,CourseID) Derived2
+                   GROUP BY StudentID)
+                       '''.format(dean.deanID, str(tuple(semesters))))
+    row = cursor.fetchall()[0][0]
+
+    return row
+
+
+def getVCWiseGPA(vc):
+    semlist = getAllSemesters()
+
+    b = -1
+    e = -1
+
+    for s in range(0, len(semlist)):
+        if semlist[s][0] == vc.startDate:
+            b = s
+        if vc.endDate == 'N/A':
+            e = len(semlist) - 1
+        elif semlist[s][0] == vc.endDate:
+            e = s
+    semesters = []
+
+    for i in range(b, e + 1):
+        semesters.append(semlist[i][0])
+
+    cursor = connection.cursor()
+
+    if len(semesters) == 1:
+        cursor.execute('''
+                SELECT AVG(grade) as avgGrade
+                FROM(
+                    SELECT StudentID,sum(Credits*gradepoint)/sum(Credits) as grade
+                    FROM(   
+                        SELECT  StudentID,Credits,
+                            CASE
+                                   WHEN sum(Marks) >= 85 THEN 4.0
+                                   WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                                   WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                                   WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                                   WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                                   WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                                   WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                                   WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                                   WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                                   WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                                   ELSE 0.0
+                           END as gradepoint
+                       FROM(
+                           SELECT st.studentID as StudentID,c.courseID as CourseID,
+                               a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
+                           FROM spmapp_student_t st,
+                                spmapp_department_t d,
+                                spmapp_dean_t dn,
+                               spmapp_registration_t r,
+                               spmapp_section_t sc, 
+                               spmapp_course_t c,
+                               spmapp_assessment_t a, 
+                               spmapp_evaluation_t e
+                           WHERE st.studentID = r.student_id
+                                and r.section_id = sc.sectionID
+                                and sc.course_id = c.courseID 
+                                and r.registrationID = e.registration_id 
+                                and e.assessment_id = a.assessmentID
+                                and r.semester='{}'
+                           GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
+                       GROUP BY StudentID,CourseID) Derived2
+                   GROUP BY StudentID)
+                       '''.format(semesters[0]))
+    else:
+        print(semesters)
+        print(b,e)
+        cursor.execute('''
+                       SELECT AVG(grade) as avgGrade
+                FROM(
+                    SELECT StudentID,sum(Credits*gradepoint)/sum(Credits) as grade
+                    FROM(   
+                        SELECT  StudentID,Credits,
+                            CASE
+                                   WHEN sum(Marks) >= 85 THEN 4.0
+                                   WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                                   WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                                   WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                                   WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                                   WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                                   WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                                   WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                                   WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                                   WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                                   ELSE 0.0
+                           END as gradepoint
+                       FROM(
+                           SELECT st.studentID as StudentID,c.courseID as CourseID,
+                               a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
+                           FROM spmapp_student_t st,
+                                spmapp_department_t d,
+                                spmapp_dean_t dn,
+                               spmapp_registration_t r,
+                               spmapp_section_t sc, 
+                               spmapp_course_t c,
+                               spmapp_assessment_t a, 
+                               spmapp_evaluation_t e
+                           WHERE st.studentID = r.student_id
+                                and r.section_id = sc.sectionID
+                                and sc.course_id = c.courseID 
+                                and r.registrationID = e.registration_id 
+                                and e.assessment_id = a.assessmentID
+                                and r.semester in {}
+                           GROUP BY  st.studentID,c.courseID,a.assessmentName) Derived1
+                       GROUP BY StudentID,CourseID) Derived2
+                   GROUP BY StudentID)
+                       '''.format(str(tuple(semesters))))
+    row = cursor.fetchall()[0][0]
+
+    return row

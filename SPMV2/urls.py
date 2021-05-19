@@ -37,7 +37,8 @@ urlpatterns = [
     path('sgpa',views.semesterwisegpa, name='sgpa'),
     path('cgpa',views.coursewisegpa,name='cgpa'),
     path('igpa',views.instructorwisegpa, name='igpa'),
-    path('cigpa',views.instructorwisegpaforcourse,name='cigpa')
+    path('cigpa',views.instructorwisegpaforcourse,name='cigpa'),
+    path('lgpa',views.leaderwisegpa, name='lgpa'),
 
 
 

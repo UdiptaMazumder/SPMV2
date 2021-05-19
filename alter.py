@@ -9,12 +9,9 @@ django.setup()
 
 from spmapp.models import *
 
-colist = CO_T.objects.all()
+#rlist = Registration_T.objects.all()
 
-for i in colist:
-    if i.course_id in ('CSE201', 'CSE104'):
-        i.plo_id += 4
-        i.save()
-    elif i.course_id in ('CSE203', 'CSE204'):
-        i.plo_id += 8
-        i.save()
+#for i in rlist:
+ #   st = i.semester + " " + str(i.year)
+  ## i.save()
+

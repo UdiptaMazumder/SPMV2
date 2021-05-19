@@ -1,5 +1,4 @@
 import json
-
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
@@ -19,6 +18,12 @@ programlist = Program_T.objects.all()
 courselist = Course_T.objects.all()
 sectionlist = Section_T.objects.all()
 faculties = Faculty_T.objects.all()
+semlist = getAllSemesters()
+
+semesters = []
+
+for s in semlist:
+    semesters.append(s[0])
 
 
 def loginview(request):
@@ -90,22 +95,22 @@ def shome(request):
         plolabel2.append(i[0])
         plodata2.append(i[1])
 
-    semesters = getAllSemesters()
     chart3 = "Student Wise Gpa"
     gpalabel1 = []
     gpadata1 = []
 
     for s in semesters:
-        gpalabel1.append(s[0] + "'" + str(s[1]))
-        gpadata1.append(getStudentWiseGPA(studentid, s[0], s[1]))
+        print(s)
+        gpalabel1.append(s)
+        gpadata1.append(getStudentWiseGPA(studentid, s))
 
     chart4 = "Department Wise Gpa"
     gpalabel2 = []
     gpadata2 = []
 
     for s in semesters:
-        gpalabel2.append(s[0] + "'" + str(s[1]))
-        gpadata2.append(getDeptWiseGPA(dept, s[0], s[1]))
+        gpalabel2.append(s)
+        gpadata2.append(getDeptWiseGPA(dept, s))
 
     return render(request, 'student/studenthome.html', {
         'name': name,
@@ -216,11 +221,9 @@ def fhome(request):
     gpalabel = []
     gpadata = []
 
-    semesters = getAllSemesters()
-
     for s in semesters:
-        gpadata.append(getDeptWiseGPA(dept, s[0], s[1]))
-        gpalabel.append(s[0] + "'" + str(s[1]))
+        gpadata.append(getDeptWiseGPA(dept, s))
+        gpalabel.append(s)
 
     return render(request, 'facultyhome.html', {
         'name': name,
@@ -265,12 +268,10 @@ def hahome(request):
         programs.append(p.programID)
         programnames.append(p.programName)
 
-    semesters = getAllSemesters()
-
     gpalabel = []
 
     for s in semesters:
-        gpalabel.append(s[0] + "'" + str(s[1]))
+        gpalabel.append(s)
 
     # schoolwise gpa
     sgpatable = []
@@ -279,7 +280,7 @@ def hahome(request):
         gpa = []
 
         for s in semesters:
-            gpa.append(getSchoolWiseGPA(school, s[0], s[1]))
+            gpa.append(getSchoolWiseGPA(school, s))
 
         sgpatable.append(gpa)
 
@@ -290,7 +291,7 @@ def hahome(request):
         gpa = []
 
         for s in semesters:
-            gpa.append(getDeptWiseGPA(dept, s[0], s[1]))
+            gpa.append(getDeptWiseGPA(dept, s))
 
         dgpatable.append(gpa)
 
@@ -300,7 +301,7 @@ def hahome(request):
     for p in programs:
         gpa = []
         for s in semesters:
-            gpa.append(getProgramWiseGPA(p, s[0], s[1]))
+            gpa.append(getProgramWiseGPA(p, s))
         pgpatable.append(gpa)
 
     return render(request, 'hahome.html', {
@@ -374,8 +375,6 @@ def enrollment(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
 
-    semesters = getAllSemesters()
-
     if request.method == 'POST':
         b = int(request.POST['sem1'])
         e = int(request.POST['sem2'])
@@ -401,7 +400,7 @@ def enrollment(request):
             num = 0
 
             for i in range(b, e + 1):
-                num += getSchoolWiseEnrolledStudents(school, semesters[i][0], semesters[i][1])
+                num += getSchoolWiseEnrolledStudents(school, semesters[i])
             snum.append(num)
 
         # deptwise students
@@ -411,7 +410,7 @@ def enrollment(request):
             num = 0
 
             for i in range(b, e + 1):
-                num += getDeptWiseEnrolledStudents(dept, semesters[i][0], semesters[i][1])
+                num += getDeptWiseEnrolledStudents(dept, semesters[i])
             dnum.append(num)
 
         # programwise students
@@ -421,7 +420,7 @@ def enrollment(request):
             num = 0
 
             for i in range(b, e + 1):
-                num += getProgramWiseEnrolledStudents(p, semesters[i][0], semesters[i][1])
+                num += getProgramWiseEnrolledStudents(p, semesters[i])
             pnum.append(num)
 
         return render(request, 'enrollment.html', {
@@ -482,29 +481,15 @@ def plostats(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
 
-    programs = []
-
-    for p in programlist:
-        programs.append(p.programName)
-
     if request.method == 'POST':
-        prog = request.POST['program']
+        prog = int(request.POST['program'])
 
-        print(prog)
-
-        program = 1
-
-        for p in programlist:
-            print(p.programName)
-            if p.programName == prog:
-                program1 = p.programID
-
-        (plo, achieved, attempted) = getProgramWisePLO(program1)
+        (plo, achieved, attempted) = getProgramWisePLO(prog)
 
         return render(request, 'plostats.html', {
             'name': name,
             'usertype': type,
-            'programs': programs,
+            'programs': programlist,
             'plo': plo,
             'achieved': achieved,
             'attempted': attempted,
@@ -516,7 +501,7 @@ def plostats(request):
         return render(request, 'plostats.html', {
             'name': name,
             'usertype': type,
-            'programs': programs,
+            'programs': programlist,
             'selectedItem': None,
             'search': 1,
         })
@@ -546,9 +531,6 @@ def courseverdict(request):
             'selectedCourse': course,
 
         })
-
-
-
 
     else:
         return render(request, 'courseverdict.html', {
@@ -603,8 +585,6 @@ def semesterwisegpa(request):
         programs.append(p.programID)
         programnames.append(p.programName)
 
-    semesters = getAllSemesters()
-
     if request.method == "POST":
         b = int(request.POST['sem1'])
         e = int(request.POST['sem2'])
@@ -612,7 +592,7 @@ def semesterwisegpa(request):
         labels = []
 
         for i in range(b, e + 1):
-            labels.append(semesters[i][0] + " " + str(semesters[i][1]))
+            labels.append(semesters[i])
 
         # schoolwise gpa
         sgpatable = []
@@ -622,7 +602,7 @@ def semesterwisegpa(request):
             gpa = []
 
             for i in range(b, e + 1):
-                gpa.append(getSchoolWiseGPA(school, semesters[i][0], semesters[i][1]))
+                gpa.append(getSchoolWiseGPA(school, semesters[i]))
 
             sgpatable.append(gpa)
 
@@ -633,7 +613,7 @@ def semesterwisegpa(request):
             gpa = []
 
             for i in range(b, e + 1):
-                gpa.append(getDeptWiseGPA(dept, semesters[i][0], semesters[i][1]))
+                gpa.append(getDeptWiseGPA(dept, semesters[i]))
 
             dgpatable.append(gpa)
 
@@ -643,7 +623,7 @@ def semesterwisegpa(request):
         for p in programs:
             gpa = []
             for i in range(b, e + 1):
-                gpa.append(getProgramWiseGPA(p, semesters[i][0], semesters[i][1]))
+                gpa.append(getProgramWiseGPA(p, semesters[i]))
 
             pgpatable.append(gpa)
 
@@ -691,8 +671,6 @@ def coursewisegpa(request):
     for c in courselist:
         courses.append(c.courseID)
 
-    semesters = getAllSemesters()
-
     if request.method == 'POST':
         selectedCourses = request.POST.getlist('courses')
         b = int(request.POST['sem1'])
@@ -701,14 +679,14 @@ def coursewisegpa(request):
         label = []
 
         for i in range(b, e + 1):
-            label.append(semesters[i][0] + "'" + str(semesters[i][1]))
+            label.append(semesters[i])
 
         gpatable = []
 
         for c in selectedCourses:
             gpa = []
             for i in range(b, e + 1):
-                gpa.append(getCourseWiseGPA(c, semesters[i][0], semesters[i][1]))
+                gpa.append(getCourseWiseGPA(c, semesters[i]))
             gpatable.append(gpa)
 
         return render(request, 'coursewisegpa.html', {
@@ -746,20 +724,16 @@ def instructorwisegpa(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
 
-    semesters = getAllSemesters()
-
     if request.method == 'POST':
         selectedIns = request.POST.getlist('instructors')
 
         fnames = []
 
-
-        for i in range(0,len(selectedIns)):
+        for i in range(0, len(selectedIns)):
             selectedIns[i] = int(selectedIns[i])
             for j in faculties:
                 if j.facultyID == selectedIns[i]:
                     fnames.append(j.firstName + " " + j.lastName)
-
 
         b = int(request.POST['sem1'])
         e = int(request.POST['sem2'])
@@ -767,14 +741,14 @@ def instructorwisegpa(request):
         label = []
 
         for i in range(b, e + 1):
-            label.append(semesters[i][0] + "'" + str(semesters[i][1]))
+            label.append(semesters[i])
 
         gpatable = []
 
         for s in selectedIns:
             gpa = []
             for i in range(b, e + 1):
-                gpa.append(getInstructorWiseGPA(s, semesters[i][0], semesters[i][1]))
+                gpa.append(getInstructorWiseGPA(s, semesters[i]))
             gpatable.append(gpa)
 
         return render(request, 'inswisegpa.html', {
@@ -819,27 +793,42 @@ def instructorwisegpaforcourse(request):
     for c in courselist:
         courses.append(c.courseID)
 
-    semesters = getAllSemesters()
-
     if request.method == 'POST':
         selectedCourse = request.POST['course']
         b = int(request.POST['sem1'])
-        e = int(request.POST['sem2'])
+        end = int(request.POST['sem2'])
+
 
         label = []
 
-        for i in range(b, e + 1):
-            label.append(semesters[i][0] + "'" + str(semesters[i][1]))
+        for i in range(b, end + 1):
+            label.append(semesters[i])
 
         gpatable = []
         ins = []
+        insnames = []
+        temp = []
 
-        for i in range(b, e + 1):
-            temp = getInstructorWiseGPAForCourse(selectedCourse, semesters[i][0], semesters[i][1])
+        for i in range(b, end + 1):
+            temp.append(getInstructorWiseGPAForCourse(selectedCourse, semesters[i]))
+        print(temp)
+
+        for t in temp:
+            for e in t:
+                if e[0] not in ins:
+                    ins.append(e[0])
+
+        for i in ins:
+            for f in faculties:
+                if f.facultyID == i:
+                    insnames.append(f.firstName+" "+f.lastName)
+            gpa = []
             for t in temp:
-                gpatable.append(t[1])
-                if t[0] not in ins:
-                    ins.append(t[0])
+                for e in t:
+                    if e[0] == i:
+                        gpa.append(e[1])
+            gpatable.append(gpa)
+
         return render(request, 'instructorwisegpaforcourse.html', {
             'name': name,
             'usertype': type,
@@ -848,12 +837,13 @@ def instructorwisegpaforcourse(request):
             'semesters': semesters,
 
             'selected1': b,
-            'selected2': e,
+            'selected2': end,
             'selectedCourse': selectedCourse,
 
             'gpatable': gpatable,
             'labels': label,
-            'ins':ins,
+            'ins': ins,
+            'insnames':insnames,
 
             'search': 0,
 
@@ -870,3 +860,47 @@ def instructorwisegpaforcourse(request):
             'selected2': None,
             'search': 1,
         })
+
+
+def leaderwisegpa(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    headlist = Head_T.objects.all()
+    deanlist = Dean_T.objects.all()
+    vclist = VC_T.objects.all()
+
+    headlabel = []
+    headgpa = []
+
+    deanlabel = []
+    deangpa = []
+
+    vclabel = []
+    vcgpa = []
+
+    for h in headlist:
+        headlabel.append(h.firstName + " " + h.lastName)
+        headgpa.append(getHeadWiseGPA(h))
+
+    for d in deanlist:
+        deanlabel.append(d.firstName + " " + d.lastName)
+        deangpa.append(getDeanWiseGPA(d))
+
+    for v in vclist:
+        vclabel.append(v.firstName + " " + v.lastName)
+        vcgpa.append(getVCWiseGPA(v))
+
+    return render(request, 'leaderwisegpa.html', {
+        'name': name,
+        'usertype': type,
+
+        'headlabel': headlabel,
+        'headgpa': headgpa,
+
+        'deanlabel': deanlabel,
+        'deangpa': deangpa,
+
+        'vclabel': vclabel,
+        'vcgpa': vcgpa,
+    })

@@ -32,10 +32,10 @@
                 <td class="form-field" style="padding-right:30px;">
                      <select  style = "width:120px;height:30px;" class ="form-select selectpicker" id="program" name="program" form="myform" aria-label="Default select example">
                      {% for i in programs %}
-                         {% if i == selectedItem %}
-                            <option value="{{i}}" selected="selected">{{i}}</option>
+                         {% if i.programID == selectedItem %}
+                            <option value="{{i.programID}}" selected="selected">{{i.programName}}</option>
                          {% else %}
-                            <option value="{{i}}">{{i}}</option>
+                            <option value="{{i.programID}}">{{i.programName}}</option>
                          {% endif %}
                      {% endfor %}
                     </select>

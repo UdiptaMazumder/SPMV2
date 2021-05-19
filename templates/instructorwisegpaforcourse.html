@@ -33,7 +33,7 @@
                      <label style="padding-right:5px;" for="sem1">Course</label>
                         <select style = "width:120px;height:30px;" class ="form-select selectpicker"  data-live-search='true' id="course" name="course" form="myform">
                             {% for i in courses %}
-                                {% if i in selectedCourse %}
+                                {% if i == selectedCourse %}
                                     <option value="{{i}}" selected="selected">{{i}}</option>
                                 {% else %}
                                     <option value="{{i}}">{{i}}</option>
@@ -47,25 +47,23 @@
                         <select  style = "width:120px;height:30px;" class ="form-select selectpicker" id="sem1" name="sem1" form="myform" aria-label="Default select example">
                             {% for i in semesters %}
                                 {% if forloop.counter0 ==  selected1 %}
-                                    <option value="{{forloop.counter0}}" selected="selected">{{i.0}} {{i.1}}</option>
+                                    <option value={{forloop.counter0}} selected="selected">{{i}}</option>
                                 {% else %}
-                                     <option value="{{forloop.counter0}}">{{i.0}} {{i.1}}</option>
+                                     <option value={{forloop.counter0}}>{{i}}</option>
                                 {% endif %}
                             {% endfor %}
-
-
                         </select>
                  </td>
                 <td class="form-field" style="padding-right:30px;">
                     <label style="padding-right:5px" for="sem2">To</label>
                     <select  style = "width:120px;height:30px;" class ="form-select selectpicker" id="sem2" name="sem2" form="myform" aria-label="Default select example">
-                        {% for i in semesters %}
-                            {% if forloop.counter0 == selected2 %}
-                                <option value="{{forloop.counter0}}" selected="selected">{{i.0}} {{i.1}}</option>
-                            {% else %}
-                                 <option value="{{forloop.counter0}}">{{i.0}} {{i.1}}</option>
-                            {% endif %}
-                        {% endfor %}
+                         {% for i in semesters %}
+                                {% if forloop.counter0 ==  selected2 %}
+                                    <option value={{forloop.counter0}} selected="selected">{{i}}</option>
+                                {% else %}
+                                     <option value={{forloop.counter0}}>{{i}}</option>
+                                {% endif %}
+                            {% endfor %}
                     </select>
                 </td>
                 <td style="text-align: center;" class="last-row mt-4" colspan="3">
@@ -113,7 +111,7 @@
     colors = ['Teal','Maroon','Gray','Olive','Lime','GoldenRod','Red','Orange','Green','Blue','Cyan', 'Purple','Pink']
 
     labels = {{labels|safe}}
-    ins = [{% for i in ins %} '{{ i }}', {% endfor %}];
+    ins = [{% for i in insnames %} '{{ i }}', {% endfor %}];
     gpatable = {{ gpatable }};
 
     var datasetlist = []

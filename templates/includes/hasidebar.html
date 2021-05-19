@@ -35,6 +35,12 @@
             </a>
           </li>
           <li class="{% if 'icons' in segment %} active {% endif %}">
+            <a href="{% url 'lgpa' %}">
+              <i class="tim-icons icon-single-copy-04"></i>
+              <p>Head/Dean/VC Wise GPA Analysis</p>
+            </a>
+          </li>
+          <li class="{% if 'icons' in segment %} active {% endif %}">
             <a href="{% url 'cigpa' %}">
               <i class="tim-icons icon-badge"></i>
               <p>Instructor Wise GPA Analysis For a Chosen Course</p>
@@ -65,15 +71,6 @@
               <p>Course Report</p>
             </a>
           </li>
-
-          <li>
-            <a href="{% url 'logoutpage' %}" >
-              <i class="tim-icons icon-user-run"></i>
-              <p>Logout</p>
-            </a>
-          </li>
-
-
                     
         </ul>
       </div>
