@@ -17,7 +17,7 @@
         <table class="form-table">
             <tr>
                 <td class="form-field" style="text-align: center; padding-right: 20px">
-                    <label for="course" style="padding-right: 10px">Course</label>
+                    <label for="course" style="padding-right: 10px">CourseID</label>
                     <select style="width: 120px; height: 30px" class="form-select" id="course" name="course" form="courseform" aria-label="Default select example">
             {% for i in courses %} {% if i == selectedCourse %}
             <option value="{{i}}" selected="selected">{{i}}</option>
@@ -28,7 +28,7 @@
                 </td>
 
                 <td class="form-field" style="text-align: center; padding-right: 20px">
-                    <label for="section" style="padding-right: 10px">Section</label>
+                    <label for="section" style="padding-right: 10px">SectionNum</label>
                     <select style="width: 120px; height: 30px" class="form-select" id="section" name="section" form="courseform" aria-label="Default select example">
             {% for i in sections %} {% if i == selectedSection %}
             <option value="{{i}}" selected="selected">{{i}}</option>
@@ -38,7 +38,7 @@
           </select>
                 </td>
                 <td class="form-field" style="text-align: center; padding-right: 20px">
-                    <label for="year" style="padding-right: 10px">Year</label>
+                    <label for="year" style="padding-right: 10px">Semester Year</label>
 
                     <select style="width: 120px; height: 30px" class="form-select" id="year" name="year" form="courseform" aria-label="Default select example">
             {% for i in year %} {% if i == selectedYear %}
