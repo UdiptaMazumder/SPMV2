@@ -1,0 +1,180 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} SPMS{% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block sidebar %} {% include 'includes/hasidebar.html' %} {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header ">
+                <h2 class="card-title">Head/Dean/VC Wise Student Performance Analysis</h2>
+            </div>
+        </div>
+    </div>git
+</div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card card-chart">
+          <div class="card-header ">
+            <div class="row">
+              <div class="col-sm-6 text-left">
+                <h2 class="card-title">Student Performance Trends</h2>
+              </div>
+              <div class="col-sm-6">
+                <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+                  <label class="btn btn-sm btn-primary btn-simple active" id="0">
+                    <input type="radio" name="options" checked>
+                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Head</span>
+                    <span class="d-block d-sm-none">
+                      <i class="tim-icons icon-single-02"></i>
+                    </span>
+                  </label>
+                  <label class="btn btn-sm btn-primary btn-simple" id="1">
+                    <input type="radio" class="d-none d-sm-none" name="options">
+                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Dean</span>
+                    <span class="d-block d-sm-none">
+                      <i class="tim-icons icon-gift-2"></i>
+                    </span>
+                  </label>
+                  <label class="btn btn-sm btn-primary btn-simple" id="2">
+                    <input type="radio" class="d-none" name="options">
+                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">VC</span>
+                    <span class="d-block d-sm-none">
+                      <i class="tim-icons icon-tap-02"></i>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body" style="height:450px;" >
+            <div class="chart-area">
+                <canvas id="gpatrend" height="100%"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script>
+        var ctx = document.getElementById("gpatrend").getContext("2d");
+
+        colors = ['Cyan', 'Purple','Pink','Maroon','Gray','Olive','Lime','GoldenRod','Red','Orange','Green','Blue','Teal']
+
+        headlabel = {{headlabel|safe}}
+        headgpa = {{headgpa}}
+
+        deanlabel = {{deanlabel|safe}}
+        deangpa = {{deangpa}}
+
+        vclabel = {{vclabel|safe}}
+        vcgpa = {{vcgpa}}
+
+        var bcolors =[]
+
+        for(let i=0;i<headgpa.length;i++){
+            bcolors.push(colors[i])
+        }
+
+         var dataset1= [{
+            label: 'Student GPA',
+            data: headgpa,
+            backgroundColor:bcolors
+         }]
+
+
+        var config = {
+              type: 'bar',
+              data: {
+                  labels: headlabel ,
+                  datasets: dataset1,
+              },
+              options: {
+                  scales: {
+                      xAxes: [{
+                          stacked: true,
+                          gridLines: {
+                              display: false,
+                          }
+                      }],
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero: true,
+                              max:4,
+                          },
+                          type: 'linear',
+                      }]
+                  },
+
+                  responsive: true,
+                  maintainAspectRatio: true
+              }
+        }
+
+   var myChartData = new Chart(ctx, config);
+    $("#0").click(function() {
+        var bcolors =[]
+
+        for(let i=0;i<headgpa.length;i++){
+            bcolors.push(colors[i])
+        }
+         var dataset1= [{
+            label: 'Student GPA',
+            data: headgpa,
+            backgroundColor:bcolors,
+         }]
+      var data = myChartData.config.data;
+      data.datasets = dataset1;
+      data.labels = headlabel;
+      myChartData.update();
+    });
+    $("#1").click(function() {
+        var bcolors =[]
+
+        for(let i=0;i<deangpa.length;i++){
+            bcolors.push(colors[i])
+        }
+
+        var dataset2= [{
+            label: 'Student GPA',
+            data: deangpa,
+            backgroundColor:bcolors,
+         }]
+      var data = myChartData.config.data;
+      data.datasets = dataset2;
+      data.labels = deanlabel;
+      myChartData.update();
+    });
+
+    $("#2").click(function() {
+        var bcolors =[]
+
+        for(let i=0;i<headgpa.length;i++){
+            bcolors.push(colors[i])
+        }
+        var dataset3= [{
+            label: 'Student GPA',
+            data: vcgpa,
+            backgroundColor: bcolors,
+         }]
+      var data = myChartData.config.data;
+      data.datasets = dataset3;
+      data.labels = vclabel;
+      myChartData.update();
+    });
+
+  </script>
+
+{% endblock javascripts %}

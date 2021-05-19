@@ -1,0 +1,56 @@
+
+   <div class="sidebar">
+      <div class="sidebar-wrapper">
+
+        <ul class="nav">
+
+          <li class="{% if 'index' in segment %} active {% endif %} ">
+            <a href="/">
+              <i class="tim-icons icon-chart-pie-36"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="{% if 'icons' in segment %} active {% endif %}">
+            <a href="{% url 'ploresult' %}">
+              <i class="tim-icons icon-atom"></i>
+              <p>Student Wise PLO Analysis</p>
+            </a>
+          </li>
+          <li class="{% if 'notifications' in segment %} active {% endif %}">
+            <a href="{% url 'studentplotable' %}">
+              <i class="tim-icons icon-bell-55"></i>
+              <p><strong>Student Wise PLO Table</strong></p>
+            </a>
+          </li>
+          <li class="{% if 'page-user' in segment %} active {% endif %}">
+            <a href="{% url 'plostats' %}">
+              <i class="tim-icons icon-single-02"></i>
+              <p>PLO Achievement Statistics</p>
+            </a>
+          </li>
+          <li class="{% if 'tables' in segment %} active {% endif %}">
+            <a href="{% url 'courseverdict' %}">
+              <i class="tim-icons icon-puzzle-10"></i>
+              <p>Course Report</p>
+            </a>
+          </li>
+          <li class="{% if 'tables' in segment %} active {% endif %}">
+            <a href="{% url 'dataentry' %}">
+              <i class="tim-icons icon-puzzle-10"></i>
+              <p>Data Entry</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="{% url 'logoutpage' %}" >
+              <i class="tim-icons icon-user-run"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+
+
+                    
+        </ul>
+      </div>
+    </div>
+

@@ -1,0 +1,99 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} SPMS{% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block sidebar %} {% include 'includes/studentsidebar.html' %} {% endblock %}
+
+{% block content %}
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card card-chart">
+          <div class="card-header ">
+                <h2 class="card-title">CO wise PLO Analysis</h2>
+          </div>
+        </div>
+          <div class="card-body" style="height:450px;" >
+            <div class="chart-area">
+                <canvas id="cowiseplo" height="100%"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<!--  <script>-->
+<!--    chartLabel = {{chartLabel|safe}}-->
+<!--     chartDataSet = {{chartDataSet}}-->
+<!--    $(document).ready(function(chartLabel,chartDataSet) {-->
+<!--      // Javascript method's body can be found in assets/js/demos.js-->
+<!--      demo.initDashboardPageCharts(chartLabel,chartDataSet);-->
+
+<!--    });-->
+<!--  </script>-->
+
+
+  <script>
+      var ctx = document.getElementById("cowiseplo").getContext('2d');
+
+      plo = [{% for i in plo %} '{{ i }}', {% endfor %}];
+      co = [{% for i in co %} '{{ i }}', {% endfor %}];
+      table = {{ table }};
+
+      colors = ['Red','Orange','Green','Blue']
+
+      var datasetlist = []
+
+      for (let i = 0; i < co.length; i++) {
+        datasetlist.push({
+           label: co[i],
+           data: table[i],
+           backgroundColor:colors[i]
+        });
+      }
+
+     var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: plo,
+            datasets: datasetlist
+        },
+        options: {
+            scales: {
+        xAxes: [{
+          stacked: true,
+          gridLines: {
+            display: false,
+          }
+        }],
+        yAxes: [{
+          stacked: true,
+          ticks: {
+            beginAtZero: true,
+            max:100,
+          },
+          type: 'linear',
+        }]
+      },
+
+            responsive: true,
+            maintainAspectRatio: true
+        }
+    });
+
+
+  </script>
+
+
+{% endblock javascripts %}
