@@ -29,9 +29,6 @@
   </div>
 
 
-
-
-
 {% endblock content %}
 
 
@@ -39,90 +36,71 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+<script>
+    var ctx = document.getElementById("coursewiseplo").getContext('2d');
 
-<!--  <script>-->
-<!--    chartLabel = {{chartLabel|safe}}-->
-<!--     chartDataSet = {{chartDataSet}}-->
-<!--    $(document).ready(function(chartLabel,chartDataSet) {-->
-<!--      // Javascript method's body can be found in assets/js/demos.js-->
-<!--      demo.initDashboardPageCharts(chartLabel,chartDataSet);-->
+    plo = [{% for i in plo %} '{{ i }}', {% endfor %}];
+    courses = [{% for i in courses %} '{{ i }}', {% endfor %}];
+    table = {{ table }};
 
-<!--    });-->
-<!--  </script>-->
+    colors = ['Red','Orange','Green','Blue','Cyan', 'Purple','Pink','Teal','Maroon','Gray','Olive','Lime','GoldenRod']
 
+    var datasetlist = []
 
-   <script>
-      var ctx = document.getElementById("coursewiseplo").getContext('2d');
-
-      plo = [{% for i in plo %} '{{ i }}', {% endfor %}];
-      courses = [{% for i in courses %} '{{ i }}', {% endfor %}];
-      table = {{ table }};
-
-      colors = ['Red','Orange','Green','Blue','Cyan', 'Purple','Pink','Teal','Maroon','Gray','Olive','Lime','GoldenRod']
-
-      var datasetlist = []
-
-      for (let i = 0; i < courses.length; i++) {
+    for (let i = 0; i < courses.length; i++) {
         datasetlist.push({
-           label: courses[i],
-           data: table[i],
-           backgroundColor:colors[i]
+            label: courses[i],
+            data: table[i],
+            backgroundColor:colors[i]
         });
-      }
+    }
+
+    console.log(datasetlist)
 
      var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: plo,
-            datasets: datasetlist
-        },
-        options: {
+         type: 'bar',
+         data: {
+             labels: plo,
+             datasets: datasetlist
+         },
+
+         options: {
+            onClick: onClickBar,
             scales: {
-        xAxes: [{
-          stacked: true,
-          gridLines: {
-            display: false,
-          }
-        }],
-        yAxes: [{
-          stacked: true,
-          ticks: {
-            beginAtZero: true,
-            max:100,
-          },
-          type: 'linear',
-        }]
-      },
+                xAxes: [{
+                  stacked: true,
+
+                }],
+                yAxes: [{
+                  stacked: true,
+                  ticks: {
+                    beginAtZero: true,
+                    max:100,
+                  },
+                  type: 'linear',
+                }]
+            },
 
             responsive: true,
             maintainAspectRatio: true
         }
-    });
+     });
 
-
-  </script>
-  <script>
-    block = document.getElementByID('pie');
-
+    function onClickBar(events){
+        const datasetIndex = myChart.getElementAtEvent(event)[0]._datasetIndex;
+        const model = myChart.getElementsAtEvent(event)[datasetIndex]._model;
+        console.log(model.datasetLabel, model.label)
+    }
+</script>
+<script>
+    block = document.getElementById('pie');
     var pielist = []
     for (let i = 0; i < courses.length; i++) {
         pielist.push({
-           label: courses[i],
-           data: table[i],
-           backgroundColor:colors[i]
+            label: courses[i],
+            data: table[i],
+            backgroundColor:colors[i]
         });
-     }
-
-
-
-
-
-
-
-
-
-  </script>
-
-
-
+    }
+</script>
 {% endblock javascripts %}

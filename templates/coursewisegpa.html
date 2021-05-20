@@ -18,7 +18,7 @@
     <div class="col-12">
         <div class="card card-chart">
             <div class="card-header ">
-                <h2 class="card-title">Course Wise GPA Analysis</h2>
+                <h2 class="card-title">Course Wise Student Performance</h2>
             </div>
         </div>
     </div>
@@ -29,7 +29,7 @@
         <table class="form-table">
             <tr>
                 <td class="form-field" style="padding-right:30px;">
-                     <label style="padding-right:5px;" for="sem1">Course</label>
+                     <label style="padding-right:5px;" for="courses">Course</label>
                         <select style = "width:120px;height:30px;" class ="form-select selectpicker"  data-live-search='true' id="courses" name="courses" form="myform"  multiple>
                             {% for i in courses %}
                                 {% if i in selectedCourses %}

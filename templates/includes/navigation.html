@@ -24,8 +24,7 @@
 
 
             <ul class="navbar-nav ml-auto">
-              <p class="navbar-text">{{name}}</br><small>{{usertype}}</small></p>
-              <p class ="navbar-text"></p>
+              <p class="navbar-text">{{request.user.get_full_name}}</br><small>{{usertype}}</small></p>
               <li class="dropdown nav-item">
                 <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                   <div class="photo">
