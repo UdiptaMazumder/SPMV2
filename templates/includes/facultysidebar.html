@@ -31,11 +31,37 @@
                     <p>Course Report</p>
                 </a>
             </li>
-            <li class="{% if 'tables' in segment %} active {% endif %}">
-                <a href="{% url 'dataentry2' %}">
-                    <i class="tim-icons icon-puzzle-10"></i>
-                    <p>Data Entry</p>
+
+            <li class="{% if 'Data Entry' == segment %} active {% endif %}">
+                <a data-toggle="collapse" href="#plo">
+                    <i class="tim-icons icon-chart-bar-32"></i>
+                    <p>
+                        Data Entry
+                        <b class="caret"></b>
+                    </p>
                 </a>
+                <div class="collapse" id="plo">
+                    <ul class="nav">
+                        <li>
+                            <a href="{% url 'stplo' %}">
+                                <span class="sidebar-mini-icon">S</span>
+                                <span class="sidebar-normal">Course Information</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'pplo' %}">
+                                <span class="sidebar-mini-icon">C</span>
+                                <span class="sidebar-normal">Assesment Data Entry</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dplo' %}">
+                                <span class="sidebar-mini-icon">I</span>
+                                <span class="sidebar-normal">Evaluation Data Entry</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
 
             <li>
