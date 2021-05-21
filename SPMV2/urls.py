@@ -39,9 +39,9 @@ urlpatterns = [
     path('courseverdict',views.courseverdict, name='courseverdict'),
     #path('dataentry',views.dataentry,name='dataentry'),
     path('dataentry2',views.dataentry2,name='dataentry2'),
-    path('dataentry2',views.plotoCoMapping,name='dataentry2'),
-    path('dataentry2',views.AssessmentDataEntry,name='dataentry2'),
-    path('dataentry2',views.EvaluationDataEntry,name='dataentry2'),
+    path('CourseInformationDataEntry',views.plotoCoMapping,name='CourseInformationDataEntry'),
+    path('AssesmentDataEntry',views.AssessmentDataEntry,name='AssesmentDataEntry'),
+    path('EvaluationDataEntry',views.EvaluationDataEntry,name='EvaluationDataEntry'),
 
     path('userprofile',views.userprofile, name='profile'),
 
