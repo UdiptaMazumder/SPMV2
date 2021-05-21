@@ -31,18 +31,18 @@ urlpatterns = [
 
     path('studentplotable',views.studentplotable,name='studentplotable'),
     path('plostats',views.plostats,name='plostats'),
-<<<<<<< HEAD
+
 
     path('dataentry',views.dataentry,name='dataentry'),
 
-=======
+
     path('courseverdict',views.courseverdict, name='courseverdict'),
     #path('dataentry',views.dataentry,name='dataentry'),
     path('dataentry2',views.dataentry2,name='dataentry2'),
     path('dataentry2',views.plotoCoMapping,name='dataentry2'),
     path('dataentry2',views.AssessmentDataEntry,name='dataentry2'),
     path('dataentry2',views.EvaluationDataEntry,name='dataentry2'),
->>>>>>> 47af7540e8cccd79984230deba0cec9317665cdc
+
     path('userprofile',views.userprofile, name='profile'),
 
     path('enrollment', views.enrollment, name='enrollment'),

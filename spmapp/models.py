@@ -123,7 +123,6 @@ class Section_T(models.Model):
     course = models.ForeignKey(Course_T, on_delete=models.CASCADE)
     faculty = models.ForeignKey(Faculty_T, on_delete=models.CASCADE)
     semester = models.CharField(max_length=15)
-    year = models.IntegerField()
 
     def __str__(self):
         return str(self.sectionNum)
@@ -134,7 +133,6 @@ class Registration_T(models.Model):
     student = models.ForeignKey(Student_T, on_delete=models.CASCADE)
     section = models.ForeignKey(Section_T, on_delete=models.CASCADE)
     semester = models.CharField(max_length=15)
-    year = models.IntegerField()
 
     def __str__(self):
         return str(self.registrationID)

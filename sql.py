@@ -1541,4 +1541,4 @@ def getStudentWisePLOComp(student, semester):
     return expected[0][0], actual[0][0]
 
 
-print(getCourseWisePLOComp('CSE101', 'Spring 2020'))
+print(getProgramWisePLOComp(1, 'Spring 2020'))
