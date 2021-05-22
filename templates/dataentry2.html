@@ -1,7 +1,8 @@
 {% extends "layouts/base.html" %} {% block title %} SPMS{% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %} {% block sidebar %} {% include 'includes/facultysidebar.html' %} {% endblock %} {% block content %}
+{% block stylesheets %}{% endblock stylesheets %} {% block sidebar %} {% include 'includes/facultysidebar.html' %} {% endblock %}
+
 <div class="row">
     <div class="col-12">
         <div class="card card-chart">
@@ -130,8 +131,6 @@
 
 <!---PLO CO mapping html code starting-->
 
-
-
 <!---PLO CO mapping html code end-->
 
 <!---Evaluation Data ENtry html Code start-->
@@ -163,7 +162,7 @@
 
                 <td class="form-field" style="text-align: center; padding-right: 20px">
                     <label for="section" style="padding-right: 10px">Section</label>
-                    <select style="width: 120px; height: 30px" class="form-select " id="section" name="section" form="courseform" aria-label="Default select example">
+                    <select style="width: 120px; height: 30px" class="form-select" id="section" name="section" form="courseform" aria-label="Default select example">
             {% for i in sections %} {% if i == selectedSection %}
             <option value="{{i}}" selected="selected">{{i}}</option>
             {% else %}
@@ -174,7 +173,7 @@
                 <td class="form-field" style="text-align: center; padding-right: 20px">
                     <label for="year" style="padding-right: 10px">Year</label>
 
-                    <select style="width: 120px; height: 30px" class="form-select " id="year" name="year" form="courseform" aria-label="Default select example">
+                    <select style="width: 120px; height: 30px" class="form-select" id="year" name="year" form="courseform" aria-label="Default select example">
             {% for i in year %} {% if i == selectedYear %}
             <option value="{{i}}" selected="selected">{{i}}</option>
             {% else %}
@@ -193,11 +192,12 @@
             {% endif %} {% endfor %}
           </select>
                 </td>
-                <td  class ="form-field last-row" style="text-align: center; padding-right: 20px">
-                    <label for="semester" style="padding-right: 10px">No of Students </label>
-                    <input  style="text-align:center;" type="text" id="snum" name="snum" class="form-control" />
+                <td class="form-field last-row" style="text-align: center; padding-right: 20px">
+                    <label for="semester" style="padding-right: 10px">No of Students
+          </label>
+                    <input style="text-align: center" type="text" id="snum" name="snum" class="form-control" />
                 </td>
-                <td class ="form-field last-row" style="text-align:center;" colspan="2">
+                <td class="form-field last-row" style="text-align: center" colspan="2">
                     <button class="btn btn-primary" onclick="showNOofStudents()">
             Enter
           </button>

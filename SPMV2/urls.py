@@ -32,11 +32,22 @@ urlpatterns = [
 
     path('dataentry',views.dataentry,name='dataentry'),
 
+<<<<<<< HEAD
     #path('dataentry',views.dataentry,name='dataentry'),
     path('dataentry2',views.dataentry2,name='dataentry2'),
     path('dataentry2',views.plotoCoMapping,name='dataentry2'),
     path('dataentry2',views.AssessmentDataEntry,name='dataentry2'),
     path('dataentry2',views.EvaluationDataEntry,name='dataentry2'),
+=======
+
+    path('courseverdict',views.courseverdict, name='courseverdict'),
+    
+    
+    path('CourseInfoEntry',views.StudCourseInfoDataEntry,name='CourseInfoEntry'),
+    path('PLOtoCOMapp',views.StudplotoCoMapping,name='PLOtoCOMapp'),
+    path('AssessmentDataEntry',views.StudAssessmentDataEntry,name='AssessmentDataEntry'),
+    path('EvaluationDataEntry',views.StudentEvaluationDataEntry,name='EvaluationDataEntry'),
+>>>>>>> cc17c04b7114e981dea3d7d611c2f84665c233eb
 
     path('userprofile',views.userprofile, name='profile'),
 

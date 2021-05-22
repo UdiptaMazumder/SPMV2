@@ -418,8 +418,109 @@ def enrollment(request):
             'segment': 'enrollment',
         })
 
+<<<<<<< HEAD
 # @allowedUsers(allowedRoles=['Faculty'])
 def dataentry2(request):
+=======
+
+
+def studentplotable(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    if request.method == 'POST':
+        studentid = request.POST.get('student-id')
+        (plo, courses, table) = getCourseWiseStudentPLO(studentid, 'report')
+        range = len(courses)
+        return render(request, 'studentplotable.html', {
+            'name': name,
+            'usertype': type,
+            'plo': plo,
+            'courses': courses,
+            'table': table,
+            'range': range,
+            'sid': studentid,
+            'search': 0,
+
+        })
+    else:
+        return render(request, 'studentplotable.html', {
+            'name': name,
+            'usertype': type,
+            'sid': None,
+            'search': 1,
+        })
+
+
+def plostats(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    if request.method == 'POST':
+        prog = int(request.POST['program'])
+
+        (plo, achieved, attempted) = getProgramWisePLO(prog)
+
+        return render(request, 'plostats.html', {
+            'name': name,
+            'usertype': type,
+            'programs': programlist,
+            'plo': plo,
+            'achieved': achieved,
+            'attempted': attempted,
+            'selectedItem': prog,
+            'search': 0,
+
+        })
+    else:
+        return render(request, 'plostats.html', {
+            'name': name,
+            'usertype': type,
+            'programs': programlist,
+            'selectedItem': None,
+            'search': 1,
+        })
+
+
+def courseverdict(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    courses = []
+    for c in courselist:
+        courses.append(c.courseID)
+
+    if request.method == 'POST':
+
+        course = request.POST['course']
+
+        (table, total) = getCourseReport(course)
+
+        return render(request, 'courseverdict.html', {
+            'name': name,
+            'usertype': type,
+            'table': table,
+            'courses': courses,
+            'total': total,
+            'search': 0,
+            'selectedCourse': course,
+
+        })
+
+    else:
+        return render(request, 'courseverdict.html', {
+            'name': name,
+            'usertype': type,
+            'courses': courses,
+            'search': 1,
+            'selectedCourse': None,
+
+        })
+
+
+
+def StudCourseInfoDataEntry(request):
+>>>>>>> cc17c04b7114e981dea3d7d611c2f84665c233eb
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
 
@@ -432,15 +533,16 @@ def dataentry2(request):
     sections = [1, 2, 3]
     year = [2019, 2020]
 
-    return render(request, 'dataentry2.html', {
+    return render(request, 'CourseInfoEntry.html', {
         'name': name,
         'usertype': type,
         'courses': courses,
         'semesters': semesters,
         'sections': sections,
         'year': year,
-    })
+ })
 
+<<<<<<< HEAD
 
 def plotoCoMapping(request):
     if request.method == 'POST':
@@ -559,6 +661,50 @@ def EvaluationDataEntry(request):
                 evaluation = Evaluation_T(enrollment_id=enrollment_id, assessment_id=assessment_list[j],
                                           obtainedMarks=coMarks[i][j])
                 evaluation.save()
+=======
+def StudplotoCoMapping(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    courses = []
+    for c in courselist:
+        courses.append(c.courseID)
+
+
+
+    return render(request, 'PLOtoCOMapp.html',{
+        'name': name,
+        'usertype': type,
+        'courses': courses,
+ })
+
+def StudAssessmentDataEntry(request):
+
+    return render(request, 'AssessmentDataEntry.html')
+
+def StudentEvaluationDataEntry(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    courses = []
+    for c in courselist:
+        courses.append(c.courseID)
+
+    semesters = ["Spring", "Summer", "Autumn"]
+
+    sections = [1, 2, 3]
+    year = [2019, 2020]
+
+    return render(request, 'EvaluationDataEntry.html', {
+        'name': name,
+        'usertype': type,
+        'courses': courses,
+        'semesters': semesters,
+        'sections': sections,
+        'year': year,
+    })
+
+>>>>>>> cc17c04b7114e981dea3d7d611c2f84665c233eb
 
         return redirect('dataentry2')
 

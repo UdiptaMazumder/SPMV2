@@ -31,13 +31,44 @@
                     <p>Course Report</p>
                 </a>
             </li>
-            <li class="{% if 'tables' in segment %} active {% endif %}">
-                <a href="{% url 'dataentry2' %}">
-                    <i class="tim-icons icon-puzzle-10"></i>
-                    <p>Data Entry</p>
-                </a>
-            </li>
 
+            <li class="{% if 'dataEntry' == segment %} active {% endif %}">
+                <a data-toggle="collapse" href="#dataentry">
+                    <i class="tim-icons icon-chart-bar-32"></i>
+                    <p>
+                        Data Entry
+                        <b class="caret"></b>
+                    </p>
+                </a>
+                <div class="collapse" id="dataentry">
+                    <ul class="nav">
+                        <li>
+                            <a href="{% url 'CourseInfoEntry' %}">
+                                <!---- <span class="sidebar-mini-icon">S</span>----->
+                                <span class="sidebar-normal">Course Info Entry</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'PLOtoCOMapp' %}">
+                                <!----<span class="sidebar-mini-icon">C</span>----->
+                                <span class="sidebar-normal">PLO to CO Mapp</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'AssessmentDataEntry' %}">
+                                <!---- <span class="sidebar-mini-icon">P</span>----->
+                                <span class="sidebar-normal">Assessment Data Entry</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'EvaluationDataEntry'%}">
+                                <!---- <span class="sidebar-mini-icon">P</span>----->
+                                <span class="sidebar-normal">Evaluation Data Entry</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
             <li>
                 <a href="{% url 'logoutpage' %}">
                     <i class="tim-icons icon-user-run"></i>
