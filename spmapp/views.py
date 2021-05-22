@@ -17,10 +17,9 @@ programlist = Program_T.objects.all()
 courselist = Course_T.objects.all()
 sectionlist = Section_T.objects.all()
 faculties = Faculty_T.objects.all()
+
 semlist = getAllSemesters()
-
 semesters = []
-
 for s in semlist:
     semesters.append(s[0])
 
@@ -50,6 +49,9 @@ def loginview(request):
 def logoutview(request):
     logout(request)
     return redirect('loginpage')
+
+def userprofile(request):
+    return render(request, 'page-user.html', {})
 
 
 @login_required(login_url="/login/")
@@ -97,6 +99,11 @@ def shome(request):
     chart3 = "Student Wise Gpa"
     gpalabel1 = []
     gpadata1 = []
+
+    semlist = getAllSemesters()
+    semesters = []
+    for s in semlist:
+        semesters.append(s[0])
 
     for s in semesters:
         print(s)
@@ -206,8 +213,6 @@ def fhome(request):
 
     dept = deptT.department_id
 
-    print(dept)
-
     row = getDeptWisePLO(dept)
     chart2 = 'PLO Achievement with Department Average'
     plolabel = []
@@ -240,6 +245,8 @@ def dataentry(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
 
+    courselist = Course_T.objects.all()
+
     courses = []
     for c in courselist:
         courses.append(c.courseID)
@@ -259,8 +266,160 @@ def dataentry(request):
     })
 
 
-def userprofile(request):
-    return render(request, 'page-user.html', {})
+def courseinfoentry(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    courselist = Course_T.objects.all()
+    courses = []
+    for c in courselist:
+        courses.append(c.courseID)
+
+    semesters = ["Spring", "Summer", "Autumn"]
+
+    sections = [1, 2, 3]
+    year = [2019, 2020]
+
+    return render(request, 'courseinfoentry.html', {
+        'name': name,
+        'usertype': type,
+        'courses': courses,
+        'semesters': semesters,
+        'sections': sections,
+        'year': year,
+    })
+
+
+def plocomapping(request):
+    usertype = request.user.groups.all()[0].name
+    if request.method == 'POST':
+        course_id = request.POST.get('course-id')
+        coMaps = request.POST.getlist('coMaps')
+
+        course = Course_T(course_id, program_id='BSc', noOfCredits=3)
+        course.save()
+
+        for i in range(len(coMaps)):
+            co = CO_T(coNo=i + 1, course_id=course_id, plo_id=coMaps[i])
+            co.save()
+
+        return redirect('plocomapping')
+    else:
+        return render(request,'plocomapping.html',{
+            'usertype': usertype,
+            'clist':courselist,
+
+        })
+
+
+def assessmentdataentry(request):
+    if request.method == 'POST':
+        faculty_id = request.user.username
+        course_id = request.POST.get('course-id')
+        sectionNo = request.POST.get('section')
+        coMarks = request.POST.getlist('coMarks')
+
+        section_id = None
+        try:
+            section_id = Section_T.objects.raw('''
+                SELECT *
+                FROM mainapp_section_t
+                WHERE course_id = '{}' AND sectionNo = {};
+            '''.format(course_id, sectionNo))
+            section_id = section_id[0].id
+        except:
+            section_id = None
+
+        if section_id is None:
+            section = Section_T(sectionNo=sectionNo, course_id=course_id, faculty_id=faculty_id)
+            section.save()
+            section_id = section.id
+
+        for j in range(1, len(coMarks) + 1):
+            co_id = CO_T.objects.raw('''
+                SELECT *
+                FROM mainapp_co_t
+                WHERE course_id = '{}' AND coNo = {}
+            '''.format(course_id, j))
+            assessment = Assessment_T(section_id=section_id, co_id=co_id[0].id, marks=coMarks[j - 1])
+            assessment.save()
+
+        return redirect('assessmentdataentry')
+
+    else:
+        return render(request,'assessmentdataentry.html',{})
+
+
+def evaluationdataentry(request):
+    if request.method == 'POST':
+        course_id = request.POST.get('course-id')
+        section = request.POST.get('section')
+        semester = request.POST.get('semester')
+        year = request.POST.get('year')
+
+        student_id = request.POST.getlist('student_id')
+        coMarks = []
+        for i in range(len(student_id)):
+            coMarks.append(request.POST.getlist(f'coMarks{i}'))
+
+        section_id = None
+        try:
+            section_id = Section_T.objects.raw('''
+                SELECT *
+                FROM mainapp_section_t
+                WHERE course_id = '{}' AND sectionNo = {};
+            '''.format(course_id, section))
+            section_id = section_id[0].id
+        except:
+            section_id = None
+        assessment_list = []
+        coLength = 0
+        try:
+            coLength = len(coMarks[0]) + 1
+        except:
+            coLength = 0
+        for j in range(1, coLength):
+            assessment_id = None
+            try:
+                assessment_id = Assessment_T.objects.raw('''
+                    SELECT *
+                    FROM mainapp_assessment_t
+                    WHERE section_id = {} AND co_id IN (
+                        SELECT id
+                        FROM mainapp_co_t
+                        WHERE course_id = '{}' AND coNo = {}
+                    )
+                '''.format(section_id, course_id, j))
+                assessment_list.append(assessment_id[0].assessmentNo)
+            except:
+                assessment_id = None
+                assessment_list.append(assessment_id)
+
+        for i in range(len(student_id)):
+            enrollment_id = None
+            try:
+                enrollment_id = Registration_T.objects.raw('''
+                    SELECT *
+                    FROM mainapp_enrollment_t
+                    WHERE student_id = '{}' AND section_id = {}
+                '''.format(student_id[i], section_id))
+                enrollment_id = enrollment_id[0].enrollmentID
+            except:
+                enrollment_id = None
+
+            if enrollment_id is None:
+                enrollment = Registration_T(student_id=student_id[i], section_id=section_id, semester=semester,
+                                            year=year)
+                enrollment.save()
+                enrollment_id = enrollment.enrollmentID
+
+            for j in range(len(assessment_list)):
+                evaluation = Evaluation_T(enrollment_id=enrollment_id, assessment_id=assessment_list[j],
+                                          obtainedMarks=coMarks[i][j])
+                evaluation.save()
+        return redirect('evaluationdataentry')
+    else:
+        return render(request,'evaluationdataentry.html',{})
 
 
 # higher authority
@@ -279,6 +438,10 @@ def hahome(request):
     depts = []
     programs = []
     programnames = []
+
+    schoollist = School_T.objects.all()
+    deptlist = Department_T.objects.all()
+    programlist = Program_T.objects.all()
 
     for s in schoollist:
         schools.append(s.schoolID)
@@ -346,7 +509,8 @@ def hahome(request):
 
     })
 
-#Enrollment
+
+# Enrollment
 def enrollment(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
@@ -354,6 +518,7 @@ def enrollment(request):
     if request.method == 'POST':
         b = int(request.POST['sem1'])
         e = int(request.POST['sem2'])
+
 
         sems = []
         for i in range(b, e + 1):
@@ -417,11 +582,6 @@ def enrollment(request):
             'search': 1,
             'segment': 'enrollment',
         })
-
-<<<<<<< HEAD
-# @allowedUsers(allowedRoles=['Faculty'])
-def dataentry2(request):
-=======
 
 
 def studentplotable(request):
@@ -514,202 +674,7 @@ def courseverdict(request):
             'courses': courses,
             'search': 1,
             'selectedCourse': None,
-
         })
-
-
-
-def StudCourseInfoDataEntry(request):
->>>>>>> cc17c04b7114e981dea3d7d611c2f84665c233eb
-    name = request.user.get_full_name()
-    type = request.user.groups.all()[0].name
-
-    courses = []
-    for c in courselist:
-        courses.append(c.courseID)
-
-    semesters = ["Spring", "Summer", "Autumn"]
-
-    sections = [1, 2, 3]
-    year = [2019, 2020]
-
-    return render(request, 'CourseInfoEntry.html', {
-        'name': name,
-        'usertype': type,
-        'courses': courses,
-        'semesters': semesters,
-        'sections': sections,
-        'year': year,
- })
-
-<<<<<<< HEAD
-
-def plotoCoMapping(request):
-    if request.method == 'POST':
-        course_id = request.POST.get('course-id')
-        coMaps = request.POST.getlist('coMaps')
-
-        course = Course_T(course_id, program_id='BSc', noOfCredits=3)
-        course.save()
-
-        for i in range(len(coMaps)):
-            co = CO_T(coNo=i + 1, course_id=course_id, plo_id=coMaps[i])
-            co.save()
-
-    return redirect('dataentry2')
-
-
-def AssessmentDataEntry(request):
-    if request.method == 'POST':
-        faculty_id = request.user.username
-        course_id = request.POST.get('course-id')
-        sectionNo = request.POST.get('section')
-        coMarks = request.POST.getlist('coMarks')
-
-        section_id = None
-        try:
-            section_id = Section_T.objects.raw('''
-                SELECT *
-                FROM mainapp_section_t
-                WHERE course_id = '{}' AND sectionNo = {};
-            '''.format(course_id, sectionNo))
-            section_id = section_id[0].id
-        except:
-            section_id = None
-
-        if section_id is None:
-            section = Section_T(sectionNo=sectionNo, course_id=course_id, faculty_id=faculty_id)
-            section.save()
-            section_id = section.id
-
-        for j in range(1, len(coMarks) + 1):
-            co_id = CO_T.objects.raw('''
-                SELECT *
-                FROM mainapp_co_t
-                WHERE course_id = '{}' AND coNo = {}
-            '''.format(course_id, j))
-            assessment = Assessment_T(section_id=section_id, co_id=co_id[0].id, marks=coMarks[j - 1])
-            assessment.save()
-
-        return redirect('dataentry2')
-
-
-def EvaluationDataEntry(request):
-    if request.method == 'POST':
-        course_id = request.POST.get('course-id')
-        section = request.POST.get('section')
-        semester = request.POST.get('semester')
-        year = request.POST.get('year')
-
-        student_id = request.POST.getlist('student_id')
-        coMarks = []
-        for i in range(len(student_id)):
-            coMarks.append(request.POST.getlist(f'coMarks{i}'))
-
-        section_id = None
-        try:
-            section_id = Section_T.objects.raw('''
-                SELECT *
-                FROM mainapp_section_t
-                WHERE course_id = '{}' AND sectionNo = {};
-            '''.format(course_id, section))
-            section_id = section_id[0].id
-        except:
-            section_id = None
-        assessment_list = []
-        coLength = 0
-        try:
-            coLength = len(coMarks[0]) + 1
-        except:
-            coLength = 0
-        for j in range(1, coLength):
-            assessment_id = None
-            try:
-                assessment_id = Assessment_T.objects.raw('''
-                    SELECT *
-                    FROM mainapp_assessment_t
-                    WHERE section_id = {} AND co_id IN (
-                        SELECT id
-                        FROM mainapp_co_t
-                        WHERE course_id = '{}' AND coNo = {}
-                    )
-                '''.format(section_id, course_id, j))
-                assessment_list.append(assessment_id[0].assessmentNo)
-            except:
-                assessment_id = None
-                assessment_list.append(assessment_id)
-
-        for i in range(len(student_id)):
-            enrollment_id = None
-            try:
-                enrollment_id = Registration_T.objects.raw('''
-                    SELECT *
-                    FROM mainapp_enrollment_t
-                    WHERE student_id = '{}' AND section_id = {}
-                '''.format(student_id[i], section_id))
-                enrollment_id = enrollment_id[0].enrollmentID
-            except:
-                enrollment_id = None
-
-            if enrollment_id is None:
-                enrollment = Registration_T(student_id=student_id[i], section_id=section_id, semester=semester,
-                                            year=year)
-                enrollment.save()
-                enrollment_id = enrollment.enrollmentID
-
-            for j in range(len(assessment_list)):
-                evaluation = Evaluation_T(enrollment_id=enrollment_id, assessment_id=assessment_list[j],
-                                          obtainedMarks=coMarks[i][j])
-                evaluation.save()
-=======
-def StudplotoCoMapping(request):
-    name = request.user.get_full_name()
-    type = request.user.groups.all()[0].name
-
-    courses = []
-    for c in courselist:
-        courses.append(c.courseID)
-
-
-
-    return render(request, 'PLOtoCOMapp.html',{
-        'name': name,
-        'usertype': type,
-        'courses': courses,
- })
-
-def StudAssessmentDataEntry(request):
-
-    return render(request, 'AssessmentDataEntry.html')
-
-def StudentEvaluationDataEntry(request):
-    name = request.user.get_full_name()
-    type = request.user.groups.all()[0].name
-
-    courses = []
-    for c in courselist:
-        courses.append(c.courseID)
-
-    semesters = ["Spring", "Summer", "Autumn"]
-
-    sections = [1, 2, 3]
-    year = [2019, 2020]
-
-    return render(request, 'EvaluationDataEntry.html', {
-        'name': name,
-        'usertype': type,
-        'courses': courses,
-        'semesters': semesters,
-        'sections': sections,
-        'year': year,
-    })
-
->>>>>>> cc17c04b7114e981dea3d7d611c2f84665c233eb
-
-        return redirect('dataentry2')
-
-
-#####################################################################################
 
 ####def dataentry(request):
 ####   name = request.user.get_full_name()
@@ -733,7 +698,7 @@ def StudentEvaluationDataEntry(request):
 ####      'year': year,
 ####   })
 
-#GPA Analysis
+# GPA Analysis
 def semesterwisegpa(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
@@ -1081,7 +1046,8 @@ def instructorwisegpaforcourse(request):
             'segment': 'GPA Analysis'
         })
 
-#PLO Analysis
+
+# PLO Analysis
 def studentplo(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
@@ -1093,7 +1059,6 @@ def studentplo(request):
         dept = st.department
         prog = st.program
         school = dept.school
-
 
         row = getStudentWisePLO(student)
         plo1 = []
@@ -1118,7 +1083,6 @@ def studentplo(request):
         row = getProgramWisePLO(prog.programID)
         for r in row:
             pplo.append(r[1])
-
 
         splo = []
 
@@ -1145,8 +1109,8 @@ def studentplo(request):
             'table4': table4,
             'stid': student,
 
-            'pplo':pplo,
-            'splo':splo,
+            'pplo': pplo,
+            'splo': splo,
 
             'search': 0,
             'segment': 'PLO Analysis'
@@ -1161,6 +1125,7 @@ def studentplo(request):
             'search': 1,
             'segment': 'PLO Analysis'
         })
+
 
 def programplo(request):
     name = request.user.get_full_name()
@@ -1416,7 +1381,6 @@ def deptwiseplostats(request):
         })
 
 
-
 def schoolwiseplostats(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
@@ -1447,7 +1411,6 @@ def schoolwiseplostats(request):
             'search': 1,
             'segment': 'plostats'
         })
-
 
 
 # PLO Comparison
@@ -1563,6 +1526,7 @@ def courseplocomp(request):
 
         })
 
+
 def programplocomp(request):
     usertype = request.user.groups.all()[0].name
 
@@ -1619,6 +1583,7 @@ def programplocomp(request):
             'segment': 'PLO Comp'
 
         })
+
 
 def deptplocomp(request):
     usertype = request.user.groups.all()[0].name
@@ -1677,6 +1642,7 @@ def deptplocomp(request):
 
         })
 
+
 def schoolplocomp(request):
     usertype = request.user.groups.all()[0].name
 
@@ -1733,6 +1699,7 @@ def schoolplocomp(request):
             'segment': 'PLO Comp'
 
         })
+
 
 # REPORT
 def coursereport(request):

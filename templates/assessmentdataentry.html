@@ -1,0 +1,76 @@
+{% extends "layouts/base.html" %} {% block title %} SPMS{% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %} {% block sidebar %} {% include 'includes/facultysidebar.html' %} {% endblock %} {% block content %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header">
+                <h2 class="card-title">Assessment Data</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    {% csrf_token %}
+    <table id="atable">
+        <tr>
+            <td style="text-align: center; padding-right: 20px">
+                <input type="text" id="anum" name="anum" class="form-control" placeholder="Number of Assessment" />
+            </td>
+            <td style="text-align: center" class="last-row" colspan="2">
+                <button class="btn btn-primary" onclick="showAssessment()">Enter</button>
+            </td>
+        </tr>
+    </table>
+
+    <table id="assess" class="mt-4"></table>
+</div>
+
+{% endblock %}
+
+<!-- Specific Page JS goes HERE  -->
+
+{% block javascripts %}
+
+<script>
+    function showAssessment() {
+        var placeholders = [
+            "Assessment Name",
+            "Question Number",
+            "TotalMarks",
+            "Weightage",
+        ];
+
+        var num = document.getElementById("anum").value;
+        console.log(num);
+
+        for (let j = 0; j < num; j++) {
+            var tr = document.createElement("tr");
+            var td = document.createElement("td");
+
+            for (let i = 0; i < 4; i++) {
+                var td1 = document.createElement("td");
+                var input = document.createElement("INPUT");
+                input.setAttribute("type", "text");
+                input.setAttribute("placeholder", placeholders[i]);
+
+                console.log(input);
+
+                td1.appendChild(input);
+                td1.style.padding = "0px 20px 0px 0px";
+
+                td.appendChild(td1);
+            }
+
+            tr.appendChild(td);
+            document.getElementById("assess").appendChild(tr);
+        }
+
+        tr.appendChild(td);
+        document.getElementById("atable").appendChild(tr);
+    }
+</script>
+
+{% endblock javascripts %}
