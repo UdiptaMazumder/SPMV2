@@ -7,6 +7,7 @@ studentlist = Student_T.objects.all()
 programlist = Program_T.objects.all()
 
 
+# GPA Analysis
 def getStudentWiseGPA(studentID, semester):
     with connection.cursor() as cursor:
         cursor.execute(''' 
@@ -37,7 +38,7 @@ def getStudentWiseGPA(studentID, semester):
                         and sc.course_id = c.courseID 
                         and r.registrationID = e.registration_id 
                         and e.assessment_id = a.assessmentID
-                        and r.student_id = '{}' 
+                        and r.student_id = '{}'
                         and r.semester='{}' 
                     GROUP BY  c.courseID,a.assessmentName) Derived 
                 GROUP BY CourseID) Derived
@@ -646,6 +647,7 @@ def getVCWiseGPA(vc):
     return row
 
 
+# PLO Analysis
 def getStudentWisePLO(studentID):
     with connection.cursor() as cursor:
         cursor.execute(''' 
@@ -884,6 +886,7 @@ def getProgramWisePLO(program):
     return row
 
 
+# Enrollment
 def getSchoolWiseEnrolledStudents(school, semesters):
     cursor = connection.cursor()
 
@@ -979,6 +982,7 @@ def getProgramWiseEnrolledStudents(program, semesters):
     return row[0][0]
 
 
+# Semesters Information
 def getAllSemesters():
     with connection.cursor() as cursor:
         cursor.execute('''
@@ -990,6 +994,7 @@ def getAllSemesters():
     return row
 
 
+# PLO Statistics
 def getProgramWisePLOStats(program):
     plo = ['PLO1', 'PLO2', 'PLO3', 'PLO4', 'PLO5', 'PLO6', 'PLO7', 'PLO8', 'PLO9', 'PLO10', 'PLO11', 'PLO12']
     achieved = []
@@ -999,7 +1004,7 @@ def getProgramWisePLOStats(program):
         with connection.cursor() as cursor:
             cursor.execute('''SELECT COUNT(*)
                 FROM(SELECT AVG(percourse) as actual
-                    FROM (SELECT r.student_id as StudentID, sum(e.obtainedMarks)/sum(a.totalMarks) as percourse
+                    FROM (SELECT r.student_id as StudentID, 100*sum(e.obtainedMarks)/sum(a.totalMarks) as percourse
                         FROM spmapp_registration_t r,
                             spmapp_evaluation_t e,
                             spmapp_assessment_t a,
@@ -1012,9 +1017,10 @@ def getProgramWisePLOStats(program):
                             and c.plo_id = p.ploID
                             and p.program_id = pr.programID
                             and pr.programID='{}'
+                            and p.ploNum = '{}'
                         GROUP BY r.student_id,c.coID) per
                     GROUP BY per.StudentID) avgTable
-          '''.format(program))
+          '''.format(program, p))
             row = cursor.fetchall()
 
             if row is not None:
@@ -1056,6 +1062,168 @@ def getProgramWisePLOStats(program):
     return plo, achieved, attempted
 
 
+def getDeptWisePLOStats(dept):
+    cursor = connection.cursor()
+
+    cursor.execute('''
+              SELECT ploNum,COUNT(Marks)
+              FROM(
+                    SELECT ploNum, StudentID, avg(coursemarks) as Marks
+                    FROM(
+                          SELECT p.ploNum as ploNum, r.student_id as StudentID,c.course_id, 
+                                100*(sum(e.obtainedMarks)/sum(a.totalMarks)) as coursemarks
+                          FROM spmapp_student_t st,
+                              spmapp_registration_t r,
+                              spmapp_department_t d,
+                              spmapp_evaluation_t e,
+                              spmapp_assessment_t a,
+                              spmapp_co_t c,
+                              spmapp_plo_t p
+                          WHERE st.studentID = r.student_id
+                              and e.registration_id = r.registrationID
+                              and a.assessmentID = e.assessment_id
+                              and a.co_id = c.coID
+                              and c.plo_id = p.ploID
+                              and st.department_id = d.departmentID
+                              and d.departmentID = '{}'
+                          GROUP BY p.ploNum, r.student_id,c.course_id) derived1
+                      GROUP BY  ploNum,StudentID) derived2
+                    GROUP BY ploNum
+
+          '''.format(dept))
+
+    row1 = cursor.fetchall()
+
+    row1.sort(key=lambda t: len(t[0]))
+
+    cursor.execute('''
+                  SELECT ploNum,COUNT(Marks)
+                  FROM(
+                        SELECT ploNum, StudentID, avg(coursemarks) as Marks
+                        FROM(
+                              SELECT p.ploNum as ploNum, r.student_id as StudentID,c.course_id, 
+                                    100*(sum(e.obtainedMarks)/sum(a.totalMarks)) as coursemarks
+                              FROM spmapp_student_t st,
+                                  spmapp_registration_t r,
+                                  spmapp_department_t d,
+                                  spmapp_evaluation_t e,
+                                  spmapp_assessment_t a,
+                                  spmapp_co_t c,
+                                  spmapp_plo_t p
+                              WHERE st.studentID = r.student_id
+                                  and e.registration_id = r.registrationID
+                                  and a.assessmentID = e.assessment_id
+                                  and a.co_id = c.coID
+                                  and c.plo_id = p.ploID
+                                  and st.department_id = d.departmentID
+                                  and d.departmentID = '{}'
+                              GROUP BY p.ploNum, r.student_id,c.course_id) derived1
+                          GROUP BY  ploNum,StudentID
+                          HAVING avg(coursemarks)>=40) derived2
+                        GROUP BY ploNum
+
+              '''.format(dept))
+
+    row2 = cursor.fetchall()
+    row2.sort(key=lambda t: len(t[0]))
+
+    plo = []
+    attempted = []
+    achieved = []
+
+    for i in row1:
+        plo.append(i[0])
+        attempted.append(i[1])
+
+    for i in row2:
+        achieved.append(i[1])
+
+    return plo, achieved, attempted
+
+
+def getSchoolWisePLOStats(school):
+    cursor = connection.cursor()
+
+    cursor.execute('''
+              SELECT ploNum,COUNT(Marks)
+              FROM(
+                    SELECT ploNum, StudentID, avg(coursemarks) as Marks
+                    FROM(
+                          SELECT p.ploNum as ploNum, r.student_id as StudentID,c.course_id, 
+                                100*(sum(e.obtainedMarks)/sum(a.totalMarks)) as coursemarks
+                          FROM spmapp_student_t st,
+                              spmapp_registration_t r,
+                              spmapp_department_t d,
+                              spmapp_school_t s,
+                              spmapp_evaluation_t e,
+                              spmapp_assessment_t a,
+                              spmapp_co_t c,
+                              spmapp_plo_t p
+                          WHERE st.studentID = r.student_id
+                              and e.registration_id = r.registrationID
+                              and a.assessmentID = e.assessment_id
+                              and a.co_id = c.coID
+                              and c.plo_id = p.ploID
+                              and st.department_id = d.departmentID
+                              and d.school_id = s.schoolID
+                              and s.schoolID = '{}'
+                          GROUP BY p.ploNum, r.student_id,c.course_id) derived1
+                      GROUP BY  ploNum,StudentID) derived2
+                    GROUP BY ploNum
+
+          '''.format(school))
+
+    row1 = cursor.fetchall()
+    row1.sort(key=lambda t: len(t[0]))
+
+    cursor.execute('''
+                  SELECT ploNum,COUNT(Marks)
+                  FROM(
+                        SELECT ploNum, StudentID, avg(coursemarks) as Marks
+                        FROM(
+                              SELECT p.ploNum as ploNum, r.student_id as StudentID,c.course_id, 
+                                    100*(sum(e.obtainedMarks)/sum(a.totalMarks)) as coursemarks
+                              FROM spmapp_student_t st,
+                                  spmapp_registration_t r,
+                                  spmapp_department_t d,
+                                  spmapp_school_t s,
+                                  spmapp_evaluation_t e,
+                                  spmapp_assessment_t a,
+                                  spmapp_co_t c,
+                                  spmapp_plo_t p
+                              WHERE st.studentID = r.student_id
+                                  and e.registration_id = r.registrationID
+                                  and a.assessmentID = e.assessment_id
+                                  and a.co_id = c.coID
+                                  and c.plo_id = p.ploID
+                                  and st.department_id = d.departmentID
+                                  and d.school_id = s.schoolID
+                                  and s.schoolID = '{}'
+                              GROUP BY p.ploNum, r.student_id,c.course_id) derived1
+                          GROUP BY  ploNum,StudentID
+                          HAVING avg(coursemarks)>=40) derived2
+                        GROUP BY ploNum
+
+              '''.format(school))
+
+    row2 = cursor.fetchall()
+    row2.sort(key=lambda t: len(t[0]))
+
+    plo = []
+    attempted = []
+    achieved = []
+
+    for i in row1:
+        plo.append(i[0])
+        attempted.append(i[1])
+
+    for i in row2:
+        achieved.append(i[1])
+
+    return plo, achieved, attempted
+
+
+# PLO Comparison
 def getSchoolWisePLOComp(school, semester):
     cursor = connection.cursor()
     cursor.execute('''
@@ -1084,8 +1252,8 @@ def getSchoolWisePLOComp(school, semester):
 
     '''.format(school, semester))
 
-    expected = cursor.fetchall()
-    expected.sort(key=lambda t: len(t[0]))
+    row1 = cursor.fetchall()
+    row1.sort(key=lambda t: len(t[0]))
 
     cursor.execute('''
             SELECT ploNum,COUNT(*)
@@ -1113,10 +1281,21 @@ def getSchoolWisePLOComp(school, semester):
             GROUP BY  derived.ploNum
         '''.format(school, semester))
 
-    actual = cursor.fetchall()
-    actual.sort(key=lambda t: len(t[0]))
+    row2 = cursor.fetchall()
+    row2.sort(key=lambda t: len(t[0]))
 
-    return expected, actual
+    plo = []
+    expected = []
+    actual = []
+
+    for r in row1:
+        plo.append(r[0])
+        expected.append(r[1])
+
+    for r in row2:
+        actual.append(r[1])
+
+    return plo, expected, actual
 
 
 def getDeptWisePLOComp(dept, semester):
@@ -1145,8 +1324,8 @@ def getDeptWisePLOComp(dept, semester):
 
     '''.format(dept, semester))
 
-    expected = cursor.fetchall()
-    expected.sort(key=lambda t: len(t[0]))
+    row1 = cursor.fetchall()
+    row1.sort(key=lambda t: len(t[0]))
 
     cursor.execute('''
             SELECT ploNum,COUNT(*)
@@ -1173,10 +1352,21 @@ def getDeptWisePLOComp(dept, semester):
 
         '''.format(dept, semester))
 
-    actual = cursor.fetchall()
-    actual.sort(key=lambda t: len(t[0]))
+    row2 = cursor.fetchall()
+    row2.sort(key=lambda t: len(t[0]))
 
-    return expected, actual
+    plo = []
+    expected = []
+    actual = []
+
+    for r in row1:
+        plo.append(r[0])
+        expected.append(r[1])
+
+    for r in row2:
+        actual.append(r[1])
+
+    return plo, expected,actual
 
 
 def getProgramWisePLOComp(program, semester):
@@ -1205,8 +1395,8 @@ def getProgramWisePLOComp(program, semester):
 
     '''.format(program, semester))
 
-    expected = cursor.fetchall()
-    expected.sort(key=lambda t: len(t[0]))
+    row1 = cursor.fetchall()
+    row1.sort(key=lambda t: len(t[0]))
 
     cursor.execute('''
             SELECT ploNum,COUNT(*)
@@ -1233,10 +1423,21 @@ def getProgramWisePLOComp(program, semester):
 
         '''.format(program, semester))
 
-    actual = cursor.fetchall()
-    actual.sort(key=lambda t: len(t[0]))
+    row2 = cursor.fetchall()
+    row2.sort(key=lambda t: len(t[0]))
 
-    return expected, actual
+    plo = []
+    expected = []
+    actual = []
+
+    for r in row1:
+        plo.append(r[0])
+        expected.append(r[1])
+
+    for r in row2:
+        actual.append(r[1])
+
+    return plo, expected, actual
 
 
 def getCourseWisePLOComp(course, semester):
@@ -1350,6 +1551,7 @@ def getStudentWisePLOComp(student, semester):
     return expected[0][0], actual[0][0]
 
 
+# Report
 def getCourseReport(course):
     row = []
     total = 0

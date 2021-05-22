@@ -24,19 +24,14 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.loginview, name='loginpage'),
     path('logout', views.logoutview, name='logoutpage'),
+
+
     path('cowise',views.cowiseplo,name='cowiseplo'),
     path('coursewise',views.coursewiseplo,name='coursewiseplo'),
     path('plotable',views.plotable,name='plotable'),
 
-
-    path('studentplotable',views.studentplotable,name='studentplotable'),
-    path('plostats',views.plostats,name='plostats'),
-
-
     path('dataentry',views.dataentry,name='dataentry'),
 
-
-    path('courseverdict',views.courseverdict, name='courseverdict'),
     #path('dataentry',views.dataentry,name='dataentry'),
     path('dataentry2',views.dataentry2,name='dataentry2'),
     path('dataentry2',views.plotoCoMapping,name='dataentry2'),
@@ -59,9 +54,9 @@ urlpatterns = [
 
     path('stcomp',views.studentplocomp,name='stcomp'),
     path('ccomp', views.courseplocomp, name='ccomp'),
-    #path('pcomp', views.programplocomp, name='pcomp'),
-    # path('dcomp', views.deptplocomp, name='dcomp'),
-    #path('scomp',views.schoolplocomp, name='scomp'),
+    path('pcomp', views.programplocomp, name='pcomp'),
+    path('dcomp', views.deptplocomp, name='dcomp'),
+    path('scomp',views.schoolplocomp, name='scomp'),
 
 
 
@@ -69,6 +64,12 @@ urlpatterns = [
     path('preport', views.programreport, name='preport'),
     path('dreport', views.deptreport, name='dreport'),
     path('sreport', views.schoolreport, name='sreport'),
+
+    path('pplostats',views.programwiseplostats,name='pplostats'),
+    path('dplostats',views.deptwiseplostats,name='dplostats'),
+    path('splostats',views.schoolwiseplostats,name='splostats'),
+
+    path('studentplotable',views.studentplotable,name='studentplotable'),
 
 
 

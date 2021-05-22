@@ -1,0 +1,221 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} SPMS{% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block sidebar %}
+    {% if usertype == 'Higher Authority' %}
+        {% include 'includes/hasidebar.html' %}
+    {% else %}
+        {% include 'includes/facultysidebar.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header ">
+                <h2 class="card-title">School/Department/Program Wise Student Performance</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class ="row justify-content-center">
+    <form  id = "myform" action="sgpa" method="post">
+        {% csrf_token %}
+        <table class="form-table">
+            <tr>
+                 <td class="form-field" style="padding-right:30px;">
+                     <label style="padding-right:5px;" for="sem1">From</label>
+                        <select  style = "width:120px;height:30px;" class ="form-select selectpicker" id="sem1" name="sem1" form="myform" aria-label="Default select example">
+                            {% for i in semesters %}
+                                {% if forloop.counter0 ==  selected1 %}
+                                    <option value="{{forloop.counter0}}" selected="selected">{{i}}</option>
+                                {% else %}
+                                     <option value="{{forloop.counter0}}">{{i}}</option>
+                                {% endif %}
+                            {% endfor %}
+
+
+                        </select>
+                 </td>
+                <td class="form-field" style="padding-right:30px;">
+                    <label style="padding-right:5px" for="sem2">To</label>
+                    <select  style = "width:120px;height:30px;" class ="form-select selectpicker" id="sem2" name="sem2" form="myform" aria-label="Default select example">
+                        {% for i in semesters %}
+                            {% if forloop.counter0 == selected2 %}
+                                <option value="{{forloop.counter0}}" selected="selected">{{i}}</option>
+                            {% else %}
+                                 <option value="{{forloop.counter0}}">{{i}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </td>
+                <td style="text-align: center;" class="last-row mt-4" colspan="3">
+                    <button class="btn btn-primary">Enter</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div class="row mt-4" id ="chart" >
+    <div class="col-12" >
+        <div class="card card-chart">
+            <div class="card-header ">
+                <div class="row justify-content-end">
+                    <div class="col-sm-6 text-left">
+                        <h2 class="card-title">GPA Performance</h2>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+                            <label class="btn btn-sm btn-primary btn-simple active" id="0">
+                                <input type="radio" name="options" checked>
+                                <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">School Wise</span>
+                                <span class="d-block d-sm-none"><i class="tim-icons icon-single-02"></i></span>
+                            </label>
+                            <label class="btn btn-sm btn-primary btn-simple" id="1">
+                                <input type="radio" class="d-none d-sm-none" name="options">
+                                <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Department Wise</span>
+                                <span class="d-block d-sm-none"><i class="tim-icons icon-gift-2"></i></span>
+                            </label>
+                            <label class="btn btn-sm btn-primary btn-simple" id="2">
+                                <input type="radio" class="d-none" name="options">
+                                <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Program Wise</span>
+                                <span class="d-block d-sm-none"><i class="tim-icons icon-tap-02"></i></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body" style="height:450px;" >
+                <div class="chart-area">
+                    <canvas id="gpatrend" height="100%"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>
+    var search = {{search}}
+
+        if(search==1){
+            document.getElementById('chart').style.display = 'none';
+        }
+
+</script>
+<script>
+        var ctx = document.getElementById("gpatrend").getContext("2d");
+
+        colors = ['#5CC8D7FF','#00539CFF','#EEA47FFF','#2C5F2D','#97BC62FF','#CE4A7EFF','#FC766AFF','#603F83FF','#006D77',
+         '#E29578','#264653','#81b29a','#8d99ae']
+
+
+
+
+
+        label = [{% for i in labels %} '{{ i }}', {% endfor %}];
+        schools = [{% for i in schools %} '{{ i }}', {% endfor %}];
+        stable = {{ sgpatable }};
+
+        depts = [{% for i in depts %} '{{ i }}', {% endfor %}];
+        dtable = {{ dgpatable }};
+
+        programs = [{% for i in programs %} '{{ i }}', {% endfor %}];
+        ptable = {{ pgpatable }};
+
+        let datasetlist1 = [];
+
+        for (let i = 0; i < schools.length; i++) {
+            datasetlist1.push({
+               label: schools[i],
+               data: stable[i],
+               backgroundColor:colors[i],
+               fill:false,
+               borderColor: colors[i],
+
+            });
+        }
+
+        var config = {
+              type: 'bar',
+              data: {
+                  labels: label,
+                  datasets: datasetlist1,
+              },
+              options: {
+                  scales: {
+                      xAxes: [{
+                          gridLines: {
+                              display: false,
+                          }
+                      }],
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero: true,
+                              max:4,
+                          },
+                          type: 'linear',
+                      }]
+                  },
+
+                  responsive: true,
+                  maintainAspectRatio: true
+              }
+        }
+
+   var myChartData = new Chart(ctx, config);
+    $("#0").click(function() {
+      var data = myChartData.config.data;
+      data.datasets = datasetlist1;
+      data.labels = label;
+      myChartData.update();
+    });
+    $("#1").click(function() {
+      var datasetlist2 = []
+      for (let i = 0; i < depts.length; i++) {
+            datasetlist2.push({
+               label: depts[i],
+               data: dtable[i],
+               backgroundColor:colors[i],
+               fill:false,
+               borderColor: colors[i],
+
+            });
+        }
+      var data = myChartData.config.data;
+      data.datasets = datasetlist2;
+      data.labels = label;
+      myChartData.update();
+    });
+
+    $("#2").click(function() {
+       var datasetlist3 = []
+       for (let i = 0; i < programs.length; i++) {
+            datasetlist3.push({
+               label: programs[i],
+               data: ptable[i],
+               backgroundColor:colors[i],
+               fill:false,
+               borderColor: colors[i],
+
+            });
+        }
+      var data = myChartData.config.data;
+      data.datasets = datasetlist3;
+      data.labels = label;
+      myChartData.update();
+    });
+
+  </script>
+
+{% endblock javascripts %}

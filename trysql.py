@@ -257,7 +257,6 @@ def getSchoolWiseEnrolledStudents(semester, year):
     return row
 
 
-
 def getProgramWiseEnrolledStudents(semester, year):
     with connection.cursor() as cursor:
         cursor.execute('''
@@ -288,9 +287,7 @@ def getAllSemesters():
     return row
 
 
-
-def getSchoolWiseGPA(school,semester,year):
-
+def getSchoolWiseGPA(school, semester, year):
     with connection.cursor() as cursor:
         cursor.execute('''
             SELECT st.studentID
@@ -307,7 +304,7 @@ def getSchoolWiseGPA(school,semester,year):
     print(studentlist)
 
 
-def getProgramWiseEnrolledStudents(program,semester, year):
+def getProgramWiseEnrolledStudents(program, semester, year):
     with connection.cursor() as cursor:
         cursor.execute('''
             SELECT count( distinct st.studentID)
@@ -319,7 +316,7 @@ def getProgramWiseEnrolledStudents(program,semester, year):
                 and r.semester = '{}'
                 and r.year = '{}'
                 and st.program_id = '{}'
-            '''.format(semester, year,program))
+            '''.format(semester, year, program))
         row = cursor.fetchall()
     return row[0][0]
 
@@ -391,38 +388,6 @@ def getProgramWisePLO(program):
                 achieved.append(0)
 
     return plo, achieved, attempted
-
-
-
-
-def fuchka(program):
-    with connection.cursor() as cursor:
-        cursor.execute('''SELECT COUNT(*)
-        FROM(
-         SELECT StudentID, AVG(percourse) as actual
-         FROM(
-                    SELECT r.student_id as StudentID, 100*sum(e.obtainedMarks)/sum(a.totalMarks) as percourse
-                        FROM spmapp_registration_t r,
-                            spmapp_evaluation_t e,
-                            spmapp_assessment_t a,
-                            spmapp_co_t c,
-                            spmapp_plo_t p,
-                            spmapp_program_t pr
-                        WHERE r.registrationID = e.registration_id
-                            and e.assessment_id = a.assessmentID
-                            and a.co_id = c.coID
-                            and c.plo_id = p.ploID
-                            and p.program_id = pr.programID
-                            and pr.programID='{}'
-                            and p.ploNum ='{}'
-                        GROUP BY r.student_id,r.registrationID) d1
-                    GROUP BY StudentID)d2
-                    WHERE actual>=40
-        '''.format(program,'PLO1'))
-
-        row = cursor.fetchall()
-
-        print(row)
 
 
 def getVerdictTable(course):
@@ -501,4 +466,25 @@ def getVerdictTable(course):
 
     return (finalRow, total)
 
-print(getVerdictTable(('CSE101')))
+
+def getStudentWisePLO2(studentID):
+    with connection.cursor() as cursor:
+        cursor.execute(''' 
+                SELECT p.ploNum as plonum,100*(sum( e.obtainedMarks)/sum( a.totalMarks)) as plopercent
+                FROM spmapp_registration_t r,
+                    spmapp_assessment_t a, 
+                    spmapp_evaluation_t e,
+                    spmapp_co_t co, 
+                    spmapp_plo_t p
+                WHERE  r.registrationID = e.registration_id 
+                    and e.assessment_id = a.assessmentID
+                    and a.co_id=co.coID 
+                    and co.plo_id = p.ploID
+                    and  r.student_id = '{}'
+                GROUP BY  p.ploID
+
+                '''.format(studentID))
+        row = cursor.fetchall()
+    return row
+
+print(getStudentWisePLO2(1416455))

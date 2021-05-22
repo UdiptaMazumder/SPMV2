@@ -1541,4 +1541,167 @@ def getStudentWisePLOComp(student, semester):
     return expected[0][0], actual[0][0]
 
 
-print(getProgramWisePLOComp(1, 'Spring 2020'))
+def getDeptWisePLOStats(dept):
+    cursor = connection.cursor()
+
+    cursor.execute('''
+              SELECT ploNum,COUNT(Marks)
+              FROM(
+                    SELECT ploNum, StudentID, avg(coursemarks) as Marks
+                    FROM(
+                          SELECT p.ploNum as ploNum, r.student_id as StudentID,c.course_id, 
+                                100*(sum(e.obtainedMarks)/sum(a.totalMarks)) as coursemarks
+                          FROM spmapp_student_t st,
+                              spmapp_registration_t r,
+                              spmapp_department_t d,
+                              spmapp_evaluation_t e,
+                              spmapp_assessment_t a,
+                              spmapp_co_t c,
+                              spmapp_plo_t p
+                          WHERE st.studentID = r.student_id
+                              and e.registration_id = r.registrationID
+                              and a.assessmentID = e.assessment_id
+                              and a.co_id = c.coID
+                              and c.plo_id = p.ploID
+                              and st.department_id = d.departmentID
+                              and d.departmentID = '{}'
+                          GROUP BY p.ploNum, r.student_id,c.course_id) derived1
+                      GROUP BY  ploNum,StudentID) derived2
+                    GROUP BY ploNum
+
+          '''.format(dept))
+
+    row1 = cursor.fetchall()
+
+    row1.sort(key=lambda t:len(t[0]))
+
+    cursor.execute('''
+                  SELECT ploNum,COUNT(Marks)
+                  FROM(
+                        SELECT ploNum, StudentID, avg(coursemarks) as Marks
+                        FROM(
+                              SELECT p.ploNum as ploNum, r.student_id as StudentID,c.course_id, 
+                                    100*(sum(e.obtainedMarks)/sum(a.totalMarks)) as coursemarks
+                              FROM spmapp_student_t st,
+                                  spmapp_registration_t r,
+                                  spmapp_department_t d,
+                                  spmapp_evaluation_t e,
+                                  spmapp_assessment_t a,
+                                  spmapp_co_t c,
+                                  spmapp_plo_t p
+                              WHERE st.studentID = r.student_id
+                                  and e.registration_id = r.registrationID
+                                  and a.assessmentID = e.assessment_id
+                                  and a.co_id = c.coID
+                                  and c.plo_id = p.ploID
+                                  and st.department_id = d.departmentID
+                                  and d.departmentID = '{}'
+                              GROUP BY p.ploNum, r.student_id,c.course_id) derived1
+                          GROUP BY  ploNum,StudentID
+                          HAVING avg(coursemarks)>=40) derived2
+                        GROUP BY ploNum
+
+              '''.format(dept))
+
+    row2 = cursor.fetchall()
+    row2.sort(key=lambda t: len(t[0]))
+
+    plo = []
+    attempted = []
+    achieved = []
+
+    for i in row1:
+        plo.append(i[0])
+        attempted.append(i[1])
+
+    for i in row2:
+        achieved.append(i[1])
+
+    return plo, attempted, achieved
+
+
+def getSchoolWisePLOStats(school):
+    cursor = connection.cursor()
+
+    cursor.execute('''
+              SELECT ploNum,COUNT(Marks)
+              FROM(
+                    SELECT ploNum, StudentID, avg(coursemarks) as Marks
+                    FROM(
+                          SELECT p.ploNum as ploNum, r.student_id as StudentID,c.course_id, 
+                                100*(sum(e.obtainedMarks)/sum(a.totalMarks)) as coursemarks
+                          FROM spmapp_student_t st,
+                              spmapp_registration_t r,
+                              spmapp_department_t d,
+                              spmapp_school_t s,
+                              spmapp_evaluation_t e,
+                              spmapp_assessment_t a,
+                              spmapp_co_t c,
+                              spmapp_plo_t p
+                          WHERE st.studentID = r.student_id
+                              and e.registration_id = r.registrationID
+                              and a.assessmentID = e.assessment_id
+                              and a.co_id = c.coID
+                              and c.plo_id = p.ploID
+                              and st.department_id = d.departmentID
+                              and d.school_id = s.schoolID
+                              and s.schoolID = '{}'
+                          GROUP BY p.ploNum, r.student_id,c.course_id) derived1
+                      GROUP BY  ploNum,StudentID) derived2
+                    GROUP BY ploNum
+
+          '''.format(school))
+
+    row1 = cursor.fetchall()
+    row1.sort(key=lambda t: len(t[0]))
+
+    cursor.execute('''
+                  SELECT ploNum,COUNT(Marks)
+                  FROM(
+                        SELECT ploNum, StudentID, avg(coursemarks) as Marks
+                        FROM(
+                              SELECT p.ploNum as ploNum, r.student_id as StudentID,c.course_id, 
+                                    100*(sum(e.obtainedMarks)/sum(a.totalMarks)) as coursemarks
+                              FROM spmapp_student_t st,
+                                  spmapp_registration_t r,
+                                  spmapp_department_t d,
+                                  spmapp_school_t s,
+                                  spmapp_evaluation_t e,
+                                  spmapp_assessment_t a,
+                                  spmapp_co_t c,
+                                  spmapp_plo_t p
+                              WHERE st.studentID = r.student_id
+                                  and e.registration_id = r.registrationID
+                                  and a.assessmentID = e.assessment_id
+                                  and a.co_id = c.coID
+                                  and c.plo_id = p.ploID
+                                  and st.department_id = d.departmentID
+                                  and d.school_id = s.schoolID
+                                  and s.schoolID = '{}'
+                              GROUP BY p.ploNum, r.student_id,c.course_id) derived1
+                          GROUP BY  ploNum,StudentID
+                          HAVING avg(coursemarks)>=40) derived2
+                        GROUP BY ploNum
+
+              '''.format(school))
+
+    row2 = cursor.fetchall()
+    row2.sort(key=lambda t: len(t[0]))
+
+    plo = []
+    attempted = []
+    achieved = []
+
+    for i in row1:
+        plo.append(i[0])
+        attempted.append(i[1])
+
+    for i in row2:
+        achieved.append(i[1])
+
+    return plo, attempted, achieved
+
+
+print(getDeptWisePLOStats('CSE'))
+print(getDeptWisePLOStats('EEE'))
+print(getSchoolWisePLOStats('SETS'))

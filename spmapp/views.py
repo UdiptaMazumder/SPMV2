@@ -1,3 +1,4 @@
+import numpy as np
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
@@ -345,7 +346,7 @@ def hahome(request):
 
     })
 
-
+#Enrollment
 def enrollment(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
@@ -417,101 +418,6 @@ def enrollment(request):
             'segment': 'enrollment',
         })
 
-
-
-def studentplotable(request):
-    name = request.user.get_full_name()
-    type = request.user.groups.all()[0].name
-
-    if request.method == 'POST':
-        studentid = request.POST.get('student-id')
-        (plo, courses, table) = getCourseWiseStudentPLO(studentid, 'report')
-        range = len(courses)
-        return render(request, 'studentplotable.html', {
-            'name': name,
-            'usertype': type,
-            'plo': plo,
-            'courses': courses,
-            'table': table,
-            'range': range,
-            'sid': studentid,
-            'search': 0,
-
-        })
-    else:
-        return render(request, 'studentplotable.html', {
-            'name': name,
-            'usertype': type,
-            'sid': None,
-            'search': 1,
-        })
-
-
-def plostats(request):
-    name = request.user.get_full_name()
-    type = request.user.groups.all()[0].name
-
-    if request.method == 'POST':
-        prog = int(request.POST['program'])
-
-        (plo, achieved, attempted) = getProgramWisePLO(prog)
-
-        return render(request, 'plostats.html', {
-            'name': name,
-            'usertype': type,
-            'programs': programlist,
-            'plo': plo,
-            'achieved': achieved,
-            'attempted': attempted,
-            'selectedItem': prog,
-            'search': 0,
-
-        })
-    else:
-        return render(request, 'plostats.html', {
-            'name': name,
-            'usertype': type,
-            'programs': programlist,
-            'selectedItem': None,
-            'search': 1,
-        })
-
-
-def courseverdict(request):
-    name = request.user.get_full_name()
-    type = request.user.groups.all()[0].name
-
-    courses = []
-    for c in courselist:
-        courses.append(c.courseID)
-
-    if request.method == 'POST':
-
-        course = request.POST['course']
-
-        (table, total) = getCourseReport(course)
-
-        return render(request, 'courseverdict.html', {
-            'name': name,
-            'usertype': type,
-            'table': table,
-            'courses': courses,
-            'total': total,
-            'search': 0,
-            'selectedCourse': course,
-
-        })
-
-    else:
-        return render(request, 'courseverdict.html', {
-            'name': name,
-            'usertype': type,
-            'courses': courses,
-            'search': 1,
-            'selectedCourse': None,
-
-        })
-
 # @allowedUsers(allowedRoles=['Faculty'])
 def dataentry2(request):
     name = request.user.get_full_name()
@@ -535,20 +441,21 @@ def dataentry2(request):
         'year': year,
     })
 
+
 def plotoCoMapping(request):
     if request.method == 'POST':
         course_id = request.POST.get('course-id')
         coMaps = request.POST.getlist('coMaps')
-        
+
         course = Course_T(course_id, program_id='BSc', noOfCredits=3)
         course.save()
-        
+
         for i in range(len(coMaps)):
             co = CO_T(coNo=i + 1, course_id=course_id, plo_id=coMaps[i])
             co.save()
-    
-        
+
     return redirect('dataentry2')
+
 
 def AssessmentDataEntry(request):
     if request.method == 'POST':
@@ -556,7 +463,7 @@ def AssessmentDataEntry(request):
         course_id = request.POST.get('course-id')
         sectionNo = request.POST.get('section')
         coMarks = request.POST.getlist('coMarks')
-        
+
         section_id = None
         try:
             section_id = Section_T.objects.raw('''
@@ -567,12 +474,12 @@ def AssessmentDataEntry(request):
             section_id = section_id[0].id
         except:
             section_id = None
-        
+
         if section_id is None:
             section = Section_T(sectionNo=sectionNo, course_id=course_id, faculty_id=faculty_id)
             section.save()
             section_id = section.id
-            
+
         for j in range(1, len(coMarks) + 1):
             co_id = CO_T.objects.raw('''
                 SELECT *
@@ -581,8 +488,9 @@ def AssessmentDataEntry(request):
             '''.format(course_id, j))
             assessment = Assessment_T(section_id=section_id, co_id=co_id[0].id, marks=coMarks[j - 1])
             assessment.save()
-            
+
         return redirect('dataentry2')
+
 
 def EvaluationDataEntry(request):
     if request.method == 'POST':
@@ -590,12 +498,12 @@ def EvaluationDataEntry(request):
         section = request.POST.get('section')
         semester = request.POST.get('semester')
         year = request.POST.get('year')
-        
+
         student_id = request.POST.getlist('student_id')
         coMarks = []
         for i in range(len(student_id)):
             coMarks.append(request.POST.getlist(f'coMarks{i}'))
-        
+
         section_id = None
         try:
             section_id = Section_T.objects.raw('''
@@ -628,7 +536,7 @@ def EvaluationDataEntry(request):
             except:
                 assessment_id = None
                 assessment_list.append(assessment_id)
-        
+
         for i in range(len(student_id)):
             enrollment_id = None
             try:
@@ -640,48 +548,46 @@ def EvaluationDataEntry(request):
                 enrollment_id = enrollment_id[0].enrollmentID
             except:
                 enrollment_id = None
-                
+
             if enrollment_id is None:
-                enrollment = Registration_T(student_id=student_id[i], section_id=section_id, semester=semester, year=year)
+                enrollment = Registration_T(student_id=student_id[i], section_id=section_id, semester=semester,
+                                            year=year)
                 enrollment.save()
                 enrollment_id = enrollment.enrollmentID
-            
+
             for j in range(len(assessment_list)):
-                evaluation = Evaluation_T(enrollment_id=enrollment_id, assessment_id=assessment_list[j], obtainedMarks=coMarks[i][j])
+                evaluation = Evaluation_T(enrollment_id=enrollment_id, assessment_id=assessment_list[j],
+                                          obtainedMarks=coMarks[i][j])
                 evaluation.save()
-                
+
         return redirect('dataentry2')
-
-
-
-
 
 
 #####################################################################################
 
 ####def dataentry(request):
- ####   name = request.user.get_full_name()
+####   name = request.user.get_full_name()
 ####    type = request.user.groups.all()[0].name
 
 ####    courses = []
 ####    for c in courselist:
- ####       courses.append(c.courseID)
+####       courses.append(c.courseID)
 
- ####   semesters = ["Spring", "Summer", "Autumn"]
+####   semesters = ["Spring", "Summer", "Autumn"]
 
- ####   sections = [1, 2, 3]
+####   sections = [1, 2, 3]
 ####    year = [2019, 2020]
 
- ####   return render(request, 'dataentry2.html', {
- ####       'name': name,
- ####       'usertype': type,
- ####       'courses': courses,
- ####       'semesters': semesters,
- ####       'sections': sections,
-  ####      'year': year,
- ####   })
+####   return render(request, 'dataentry2.html', {
+####       'name': name,
+####       'usertype': type,
+####       'courses': courses,
+####       'semesters': semesters,
+####       'sections': sections,
+####      'year': year,
+####   })
 
-
+#GPA Analysis
 def semesterwisegpa(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
@@ -743,7 +649,7 @@ def semesterwisegpa(request):
 
             pgpatable.append(gpa)
 
-        return render(request, 'semesterwisegpa.html', {
+        return render(request, 'gpa/semesterwisegpa.html', {
             'name': name,
             'usertype': type,
 
@@ -766,7 +672,7 @@ def semesterwisegpa(request):
 
         })
     else:
-        return render(request, 'semesterwisegpa.html', {
+        return render(request, 'gpa/semesterwisegpa.html', {
             'name': name,
             'usertype': type,
 
@@ -807,7 +713,7 @@ def coursewisegpa(request):
                 gpa.append(getCourseWiseGPA(c, semesters[i]))
             gpatable.append(gpa)
 
-        return render(request, 'coursewisegpa.html', {
+        return render(request, 'gpa/coursewisegpa.html', {
             'name': name,
             'usertype': type,
 
@@ -827,7 +733,7 @@ def coursewisegpa(request):
         })
 
     else:
-        return render(request, 'coursewisegpa.html', {
+        return render(request, 'gpa/coursewisegpa.html', {
             'name': name,
             'usertype': type,
 
@@ -871,7 +777,7 @@ def instructorwisegpa(request):
                 gpa.append(getInstructorWiseGPA(s, semesters[i]))
             gpatable.append(gpa)
 
-        return render(request, 'inswisegpa.html', {
+        return render(request, 'gpa/inswisegpa.html', {
             'name': name,
             'usertype': type,
 
@@ -891,7 +797,7 @@ def instructorwisegpa(request):
         })
 
     else:
-        return render(request, 'inswisegpa.html', {
+        return render(request, 'gpa/inswisegpa.html', {
             'name': name,
             'usertype': type,
 
@@ -935,7 +841,7 @@ def leaderwisegpa(request):
         vclabel.append(v.firstName + " " + v.lastName)
         vcgpa.append(getVCWiseGPA(v))
 
-    return render(request, 'leaderwisegpa.html', {
+    return render(request, 'gpa/leaderwisegpa.html', {
         'name': name,
         'usertype': type,
 
@@ -995,7 +901,7 @@ def instructorwisegpaforcourse(request):
                         gpa.append(e[1])
             gpatable.append(gpa)
 
-        return render(request, 'instructorwisegpaforcourse.html', {
+        return render(request, 'gpa/instructorwisegpaforcourse.html', {
             'name': name,
             'usertype': type,
 
@@ -1017,7 +923,7 @@ def instructorwisegpaforcourse(request):
         })
 
     else:
-        return render(request, 'instructorwisegpaforcourse.html', {
+        return render(request, 'gpa/instructorwisegpaforcourse.html', {
             'name': name,
             'usertype': type,
 
@@ -1029,7 +935,7 @@ def instructorwisegpaforcourse(request):
             'segment': 'GPA Analysis'
         })
 
-
+#PLO Analysis
 def studentplo(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
@@ -1038,7 +944,10 @@ def studentplo(request):
         student = int(request.POST['student'])
 
         st = Student_T.objects.get(pk=student)
-        dept = st.department_id
+        dept = st.department
+        prog = st.program
+        school = dept.school
+
 
         row = getStudentWisePLO(student)
         plo1 = []
@@ -1048,7 +957,7 @@ def studentplo(request):
             plo1.append(i[0])
             table1.append(i[1])
 
-        row = getDeptWisePLO(dept)
+        row = getDeptWisePLO(dept.departmentID)
 
         table2 = []
         plo2 = []
@@ -1058,6 +967,18 @@ def studentplo(request):
 
         (plo3, co, table3) = getCOWiseStudentPLO(student, 'chart')
         (plo4, courses, table4) = getCourseWiseStudentPLO(student, 'chart')
+
+        pplo = []
+        row = getProgramWisePLO(prog.programID)
+        for r in row:
+            pplo.append(r[1])
+
+
+        splo = []
+
+        row = getSchoolWisePLO(school.schoolID)
+        for r in row:
+            splo.append(r[1])
 
         response = {
             'name': name,
@@ -1078,20 +999,22 @@ def studentplo(request):
             'table4': table4,
             'stid': student,
 
+            'pplo':pplo,
+            'splo':splo,
+
             'search': 0,
             'segment': 'PLO Analysis'
         }
 
-        return render(request, 'studentplo.html', response)
+        return render(request, 'ploanalysis/studentplo.html', response)
     else:
-        return render(request, 'studentplo.html', {
+        return render(request, 'ploanalysis/studentplo.html', {
             'name': name,
             'usertype': type,
             'stid': None,
             'search': 1,
             'segment': 'PLO Analysis'
         })
-
 
 def programplo(request):
     name = request.user.get_full_name()
@@ -1136,9 +1059,9 @@ def programplo(request):
             'segment': 'PLO Analysis'
         }
 
-        return render(request, 'programplo.html', response)
+        return render(request, 'ploanalysis/programplo.html', response)
     else:
-        return render(request, 'programplo.html', {
+        return render(request, 'ploanalysis/programplo.html', {
             'name': name,
             'usertype': type,
             'pid': None,
@@ -1189,9 +1112,9 @@ def deptplo(request):
             'segment': 'PLO Analysis'
         }
 
-        return render(request, 'deptplo.html', response)
+        return render(request, 'ploanalysis/deptplo.html', response)
     else:
-        return render(request, 'deptplo.html', {
+        return render(request, 'ploanalysis/deptplo.html', {
             'name': name,
             'usertype': type,
             'did': None,
@@ -1243,9 +1166,9 @@ def schoolplo(request):
             'segment': 'PLO Analysis'
         }
 
-        return render(request, 'schoolplo.html', response)
+        return render(request, 'ploanalysis/schoolplo.html', response)
     else:
-        return render(request, 'schoolplo.html', {
+        return render(request, 'ploanalysis/schoolplo.html', {
             'name': name,
             'usertype': type,
             'sid': None,
@@ -1260,16 +1183,13 @@ def studentplotable(request):
     type = request.user.groups.all()[0].name
 
     if request.method == 'POST':
-        studentid = request.POST.get('student-id')
+        studentid = request.POST.get('student')
         (plo, courses, table) = getCourseWiseStudentPLO(studentid, 'report')
-        range = len(courses)
         return render(request, 'studentplotable.html', {
             'name': name,
             'usertype': type,
             'plo': plo,
-            'courses': courses,
             'table': table,
-            'range': range,
             'sid': studentid,
             'search': 0,
             'segment': 'plotable'
@@ -1285,7 +1205,8 @@ def studentplotable(request):
         })
 
 
-def plostats(request):
+# PLO Statistics
+def programwiseplostats(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
 
@@ -1294,7 +1215,7 @@ def plostats(request):
 
         (plo, achieved, attempted) = getProgramWisePLOStats(prog)
 
-        return render(request, 'plostats.html', {
+        return render(request, 'plostats/programwiseplostats.html', {
             'name': name,
             'usertype': type,
             'programs': programlist,
@@ -1307,7 +1228,7 @@ def plostats(request):
 
         })
     else:
-        return render(request, 'plostats.html', {
+        return render(request, 'plostats/programwiseplostats.html', {
             'name': name,
             'usertype': type,
             'programs': programlist,
@@ -1317,28 +1238,73 @@ def plostats(request):
         })
 
 
-def schoolplocomp(request):
-    usertype = request.user.groups.all()[0].name
+def deptwiseplostats(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
+
+    if request.method == 'POST':
+        dept = request.POST['dept']
+
+        (plo, achieved, attempted) = getDeptWisePLOStats(dept)
+
+        return render(request, 'plostats/deptwiseplostats.html', {
+            'name': name,
+            'usertype': type,
+            'dlist': deptlist,
+            'plo': plo,
+            'achieved': achieved,
+            'attempted': attempted,
+            'selectedItem': dept,
+            'search': 0,
+            'segment': 'plostats'
+
+        })
+    else:
+        return render(request, 'plostats/deptwiseplostats.html', {
+            'name': name,
+            'usertype': type,
+            'dlist': deptlist,
+            'selectedItem': None,
+            'search': 1,
+            'segment': 'plostats'
+        })
+
+
+
+def schoolwiseplostats(request):
+    name = request.user.get_full_name()
+    type = request.user.groups.all()[0].name
 
     if request.method == 'POST':
         school = request.POST['school']
-        b = int(request.POST['sem1'])
-        e = int(request.POST['sem2'])
 
-        labels = []
-        for i in range(b, e + 1):
-            labels.append(semesters[i])
+        (plo, achieved, attempted) = getSchoolWisePLOStats(school)
 
-        expectedtable = []
-        actualtable = []
+        return render(request, 'plostats/schoolwiseplostats.html', {
+            'name': name,
+            'usertype': type,
+            'slist': schoollist,
+            'plo': plo,
+            'achieved': achieved,
+            'attempted': attempted,
+            'selectedItem': school,
+            'search': 0,
+            'segment': 'plostats'
 
-        expectedplo = []
-        actualplo = []
+        })
+    else:
+        return render(request, 'plostats/schoolwiseplostats.html', {
+            'name': name,
+            'usertype': type,
+            'slist': schoollist,
+            'selectedItem': None,
+            'search': 1,
+            'segment': 'plostats'
+        })
 
-        for l in labels:
-            (expected, actual) = getSchoolWisePLOComp(school, l)
 
 
+# PLO Comparison
 def studentplocomp(request):
     usertype = request.user.groups.all()[0].name
 
@@ -1360,7 +1326,7 @@ def studentplocomp(request):
             expected.append(temp[0])
             actual.append(temp[1])
 
-        return render(request, 'studentplocomp.html', {
+        return render(request, 'plocomp/studentplocomp.html', {
             'usertype': usertype,
 
             'labels': labels,
@@ -1378,7 +1344,7 @@ def studentplocomp(request):
 
         })
     else:
-        return render(request, 'studentplocomp.html', {
+        return render(request, 'plocomp/studentplocomp.html', {
             'usertype': usertype,
 
             'semesters': semesters,
@@ -1421,13 +1387,13 @@ def courseplocomp(request):
         actual = np.transpose(actual)
         actual = actual.tolist()
 
-        return render(request, 'courseplocomp.html', {
+        return render(request, 'plocomp/courseplocomp.html', {
             'usertype': usertype,
 
             'labels': labels,
             'expected': expected,
             'actual': actual,
-            'plo':plo,
+            'plo': plo,
 
             'sem1': b,
             'sem2': e,
@@ -1441,7 +1407,7 @@ def courseplocomp(request):
 
         })
     else:
-        return render(request, 'courseplocomp.html', {
+        return render(request, 'plocomp/courseplocomp.html', {
             'usertype': usertype,
 
             'semesters': semesters,
@@ -1451,7 +1417,178 @@ def courseplocomp(request):
 
         })
 
+def programplocomp(request):
+    usertype = request.user.groups.all()[0].name
 
+    if request.method == 'POST':
+        program = request.POST.get('program')
+        b = int(request.POST['sem1'])
+        e = int(request.POST['sem2'])
+
+        labels = []
+        for i in range(b, e + 1):
+            labels.append(semesters[i])
+
+        expected = []
+        actual = []
+        plo = []
+
+        for l in labels:
+            plo, etemp, atemp = getProgramWisePLOComp(program, l)
+            expected.append(etemp)
+            actual.append(atemp)
+
+        actual = np.transpose(actual)
+        actual = actual.tolist()
+
+        expected = np.transpose(expected)
+        expected = expected.tolist()
+
+        return render(request, 'plocomp/programplocomp.html', {
+            'usertype': usertype,
+
+            'labels': labels,
+            'expected': expected,
+            'actual': actual,
+            'plo': plo,
+
+            'sem1': b,
+            'sem2': e,
+            'semesters': semesters,
+
+            'selectedProgram': program,
+            'plist': programlist,
+            'search': 0,
+
+            'segment': 'PLO Comp'
+
+        })
+    else:
+        return render(request, 'plocomp/programplocomp.html', {
+            'usertype': usertype,
+
+            'semesters': semesters,
+            'search': 1,
+            'plist': programlist,
+            'segment': 'PLO Comp'
+
+        })
+
+def deptplocomp(request):
+    usertype = request.user.groups.all()[0].name
+
+    if request.method == 'POST':
+        dept = request.POST.get('dept')
+        b = int(request.POST['sem1'])
+        e = int(request.POST['sem2'])
+
+        labels = []
+        for i in range(b, e + 1):
+            labels.append(semesters[i])
+
+        expected = []
+        actual = []
+        plo = []
+
+        for l in labels:
+            plo, etemp, atemp = getDeptWisePLOComp(dept, l)
+            expected.append(etemp)
+            actual.append(atemp)
+
+        actual = np.transpose(actual)
+        actual = actual.tolist()
+
+        expected = np.transpose(expected)
+        expected = expected.tolist()
+
+        return render(request, 'plocomp/deptplocomp.html', {
+            'usertype': usertype,
+
+            'labels': labels,
+            'expected': expected,
+            'actual': actual,
+            'plo': plo,
+
+            'sem1': b,
+            'sem2': e,
+            'semesters': semesters,
+
+            'selectedDept': dept,
+            'dlist': deptlist,
+            'search': 0,
+
+            'segment': 'PLO Comp'
+
+        })
+    else:
+        return render(request, 'plocomp/deptplocomp.html', {
+            'usertype': usertype,
+
+            'semesters': semesters,
+            'search': 1,
+            'dlist': deptlist,
+            'segment': 'PLO Comp'
+
+        })
+
+def schoolplocomp(request):
+    usertype = request.user.groups.all()[0].name
+
+    if request.method == 'POST':
+        school = request.POST.get('school')
+        b = int(request.POST['sem1'])
+        e = int(request.POST['sem2'])
+
+        labels = []
+        for i in range(b, e + 1):
+            labels.append(semesters[i])
+
+        expected = []
+        actual = []
+        plo = []
+
+        for l in labels:
+            plo, etemp, atemp = getSchoolWisePLOComp(school, l)
+            expected.append(etemp)
+            actual.append(atemp)
+
+        actual = np.transpose(actual)
+        actual = actual.tolist()
+
+        expected = np.transpose(expected)
+        expected = expected.tolist()
+
+        return render(request, 'plocomp/schoolplocomp.html', {
+            'usertype': usertype,
+
+            'labels': labels,
+            'expected': expected,
+            'actual': actual,
+            'plo': plo,
+
+            'sem1': b,
+            'sem2': e,
+            'semesters': semesters,
+
+            'selectedSchool': school,
+            'slist': schoollist,
+            'search': 0,
+
+            'segment': 'PLO Comp'
+
+        })
+    else:
+        return render(request, 'plocomp/schoolplocomp.html', {
+            'usertype': usertype,
+
+            'semesters': semesters,
+            'search': 1,
+            'slist': schoollist,
+            'segment': 'PLO Comp'
+
+        })
+
+# REPORT
 def coursereport(request):
     name = request.user.get_full_name()
     type = request.user.groups.all()[0].name
@@ -1466,7 +1603,7 @@ def coursereport(request):
 
         (table, total) = getCourseReport(course)
 
-        return render(request, 'coursereport.html', {
+        return render(request, 'report/coursereport.html', {
             'name': name,
             'usertype': type,
             'table': table,
@@ -1479,7 +1616,7 @@ def coursereport(request):
         })
 
     else:
-        return render(request, 'coursereport.html', {
+        return render(request, 'report/coursereport.html', {
             'name': name,
             'usertype': type,
             'courses': courses,
@@ -1500,7 +1637,7 @@ def programreport(request):
 
         table = getProgramReport(program)
 
-        return render(request, 'programreport.html', {
+        return render(request, 'report/programreport.html', {
             'name': name,
             'usertype': type,
             'table': table,
@@ -1512,7 +1649,7 @@ def programreport(request):
         })
 
     else:
-        return render(request, 'programreport.html', {
+        return render(request, 'report/programreport.html', {
             'name': name,
             'usertype': type,
             'plist': programlist,
@@ -1533,7 +1670,7 @@ def deptreport(request):
 
         table = getDeptReport(dept)
 
-        return render(request, 'deptreport.html', {
+        return render(request, 'report/deptreport.html', {
             'name': name,
             'usertype': type,
             'table': table,
@@ -1545,7 +1682,7 @@ def deptreport(request):
         })
 
     else:
-        return render(request, 'deptreport.html', {
+        return render(request, 'report/deptreport.html', {
             'name': name,
             'usertype': type,
             'dlist': deptlist,
@@ -1566,7 +1703,7 @@ def schoolreport(request):
 
         table = getSchoolReport(school)
 
-        return render(request, 'schoolreport.html', {
+        return render(request, 'report/schoolreport.html', {
             'name': name,
             'usertype': type,
             'table': table,
@@ -1578,7 +1715,7 @@ def schoolreport(request):
         })
 
     else:
-        return render(request, 'schoolreport.html', {
+        return render(request, 'report/schoolreport.html', {
             'name': name,
             'usertype': type,
             'slist': schoollist,

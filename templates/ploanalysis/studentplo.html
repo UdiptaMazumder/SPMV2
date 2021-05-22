@@ -1,0 +1,373 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} SPMS{% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block sidebar %}
+    {% if usertype == 'Higher Authority' %}
+        {% include 'includes/hasidebar.html' %}
+    {% else %}
+        {% include 'includes/facultysidebar.html' %}
+    {% endif %}
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header ">
+                <h2 class="card-title">Student wise PLO Analysis</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class ="row justify-content-center">
+    <form  id = "myform" action="stplo" method="post">
+        {% csrf_token %}
+        <table class="form-table">
+            <tr>
+                <td class="form-field" style="padding-right:30px;">
+                    {% if stid is not None %}
+                        <input type="text" id="student1" name="student" class="form-control" value={{stid}} />
+                    {% else %}
+                         <input type="text" id="student2" name="student" class="form-control"  placeholder="Student ID" />
+                    {% endif %}
+                </td>
+                <td style="text-align: center;" class="last-row" colspan="2">
+                    <button class="btn btn-primary">Search</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+
+
+    <div class="row mt-4" id ="chart">
+      <div class="col-12">
+        <div class="card card-chart">
+          <div class="card-header ">
+            <div class="row">
+              <div class="col-sm-6 text-left">
+                <h2 class="card-title"><i class="tim-icons icon-chart-bar-32 text-primary"></i>PLO Analysis of Student</h2>
+              </div>
+              <div class="col-sm-6">
+                <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
+                  <label class="btn btn-sm btn-primary btn-simple active" id="0">
+                    <input type="radio" name="options" checked>
+                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Overall PLO</span>
+                    <span class="d-block d-sm-none">
+                      <i class="tim-icons icon-single-02"></i>
+                    </span>
+                  </label>
+                  <label class="btn btn-sm btn-primary btn-simple" id="1">
+                    <input type="radio" class="d-none d-sm-none" name="options">
+                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">CO wise</span>
+                    <span class="d-block d-sm-none">
+                      <i class="tim-icons icon-gift-2"></i>
+                    </span>
+                  </label>
+                  <label class="btn btn-sm btn-primary btn-simple" id="2">
+                    <input type="radio" class="d-none" name="options">
+                    <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Course Wise</span>
+                    <span class="d-block d-sm-none">
+                      <i class="tim-icons icon-tap-02"></i>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body" style="height:500px;" >
+            <div class="chart-area">
+                <canvas id="ploanalysis" height="100%"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" id="chart2">
+      <div class="col-lg-12">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h3 class="card-title"><i class="tim-icons icon-chart-bar-32 text-warning"></i>PLO Analysis of Student With Department Average</h3>
+          </div>
+          <div class="card-body" style="height:450px;">
+            <div class="chart-area">
+              <canvas id="plowithavg" height="100%"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+     <div class="row" id ="chart3">
+      <div class="col-lg-6">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h3 class="card-title"><i class="tim-icons icon-chart-bar-32 text-primary"></i> PLO Analysis of Student With Program Average</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+              <canvas id="left" height="100%"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h3 class="card-title"><i class="tim-icons icon-chart-bar-32 text-warning"></i>PLO Analysis of Student With School Average</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+              <canvas id="right" height="100%"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+
+<script>
+    var search ={{search}}
+
+    if(search==1){
+        document.getElementById("chart").style.display = "none";
+        }
+    var ctx = document.getElementById("ploanalysis").getContext("2d");
+    colors = ['#5CC8D7FF','#00539CFF','#EEA47FFF','#2C5F2D','#97BC62FF','#CE4A7EFF','#FC766AFF','#603F83FF','#006D77',
+        '#E29578','#264653','#81b29a','#8d99ae']
+    plo1 = {{plo1|safe}}
+    plo2 = {{plo2|safe}}
+    plo3 = {{plo3|safe}}
+    plo4 = {{plo4|safe}}
+
+    table1 = {{table1}}
+    table2 = {{table2}}
+    table3 = {{table3}}
+    table4 = {{table4}}
+
+    co = [{% for i in co %} '{{ i }}', {% endfor %}]
+    courses = [{% for i in courses %} '{{ i }}', {% endfor %}]
+
+    var originaldata = {
+        labels:  plo1,
+                  datasets: [{
+                        label:"PLO Percentage",
+                        data:table1,
+                        backgroundColor:colors,
+                    },
+                  ]
+      }
+
+     var config = {
+              type: 'bar',
+              data: originaldata,
+              options: {
+                    scales: {
+                        xAxes: [{
+                          stacked: true,
+                          gridLines: {
+                            display: false,
+                          }
+                        }],
+                        yAxes: [{
+                          stacked: true,
+                          ticks: {
+                            beginAtZero: true,
+                            max:100,
+                          },
+                          type: 'linear',
+                        }]
+                     },
+
+                    responsive: true,
+                    maintainAspectRatio: true
+        }
+        }
+     var myChart = new Chart(ctx, config);
+
+    $("#0").click(function() {
+        var datasetlist1 = []
+        datasetlist1.push({
+            label:'PLO Percentage',
+            data: table1,
+            backgroundColor: colors
+            });
+
+        var data = myChart.config.data;
+      data.datasets = datasetlist1;
+      data.labels = plo1;
+
+      myChart.update();
+
+    });
+    $("#1").click(function() {
+      var datasetlist2 = []
+      for (let i = 0; i < co.length; i++) {
+            datasetlist2.push({
+               label: co[i],
+               data: table3[i],
+               backgroundColor:colors[i],
+               fill:false,
+               borderColor: colors[i],
+
+            });
+        }
+      var data = myChart.config.data;
+      data.datasets = datasetlist2;
+      data.labels = plo3;
+
+      myChart.update();
+    });
+
+    $("#2").click(function() {
+       var datasetlist3 = []
+       for (let i = 0; i < courses.length; i++) {
+            datasetlist3.push({
+               label: courses[i],
+               data: table4[i],
+               backgroundColor:colors[i],
+               fill:false,
+               borderColor: colors[i],
+
+            });
+        }
+      var data = myChart.config.data;
+      data.datasets = datasetlist3;
+      data.labels = plo4;
+      myChart.update();
+    });
+</script>
+<script>
+    var search ={{search}}
+
+    if(search==1){
+        document.getElementById("chart2").style.display = "none";
+        }
+</script>
+<script>
+
+
+    var ctx = document.getElementById('plowithavg').getContext('2d');
+      var data = {
+              labels: {{plo1|safe}},
+              datasets: [{
+                  label: 'Individual',
+                  data: {{table1}},
+                  backgroundColor: '#00539CFF'
+              },
+              {
+                  label: 'Dept Average',
+                  data: {{table2}},
+                  backgroundColor: '#EEA47FFF'
+              },
+              ]
+          };
+
+        var myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            barValueSpacing: 30,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0,
+                        max:100,
+                    }
+                }]
+            }
+        }
+    });
+</script>
+<script>
+    var search ={{search}}
+
+    if(search==1){
+        document.getElementById("chart3").style.display = "none";
+        }
+</script>
+<script>
+
+
+    var ctx = document.getElementById('left').getContext('2d');
+      var data = {
+              labels: {{plo1|safe}},
+              datasets: [{
+                  label: 'Individual',
+                  data: {{table1}},
+                  backgroundColor: '#2C5F2D'
+              },
+              {
+                  label: 'Program Average',
+                  data: {{table2}},
+                  backgroundColor: '#97BC62FF'
+              },
+              ]
+          };
+
+        var myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            barValueSpacing: 30,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0,
+                        max:100,
+                    }
+                }]
+            }
+        }
+    });
+
+    var ctx = document.getElementById('right').getContext('2d');
+      var data = {
+              labels: {{plo1|safe}},
+              datasets: [{
+                  label: 'Individual',
+                  data: {{table1}},
+                  backgroundColor: '#FC766AFF'
+              },
+              {
+                  label: 'School Average',
+                  data: {{splo}},
+                  backgroundColor: '#5B84B1FF'
+              },
+              ]
+          };
+
+        var myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            barValueSpacing: 30,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0,
+                        max:100,
+                    }
+                }]
+            }
+        }
+    });
+</script>
+
+
+{% endblock javascripts %}

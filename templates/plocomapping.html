@@ -1,0 +1,153 @@
+{% extends "layouts/base.html" %} {% block title %} SPMS{% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %} {% block sidebar %} {% include 'includes/facultysidebar.html' %} {% endblock %} {% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header">
+                <h2 class="card-title">Course Information</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center text-center mt-auto">
+    <form id="courseform">
+        {% csrf_token %}
+        <table class="form-table">
+            <tr>
+                <td class="form-field" style="text-align: center; padding-right: 20px">
+                    <label for="course" style="padding-right: 10px">Course</label>
+                    <select style="width: 120px; height: 30px" class="form-select" id="course" name="course" form="courseform" aria-label="Default select example">
+            {% for i in courses %} {% if i == selectedCourse %}
+            <option value="{{i}}" selected="selected">{{i}}</option>
+            {% else %}
+            <option value="{{i}}">{{i}}</option>
+            {% endif %} {% endfor %}
+          </select>
+                </td>
+
+                <td class="form-field" style="text-align: center; padding-right: 20px">
+                    <label for="section" style="padding-right: 10px">Section</label>
+                    <select style="width: 120px; height: 30px" class="form-select" id="section" name="section" form="courseform" aria-label="Default select example">
+            {% for i in sections %} {% if i == selectedSection %}
+            <option value="{{i}}" selected="selected">{{i}}</option>
+            {% else %}
+            <option value="{{i}}">{{i}}</option>
+            {% endif %} {% endfor %}
+          </select>
+                </td>
+                <td class="form-field" style="text-align: center; padding-right: 20px">
+                    <label for="year" style="padding-right: 10px">Year</label>
+
+                    <select style="width: 120px; height: 30px" class="form-select" id="year" name="year" form="courseform" aria-label="Default select example">
+            {% for i in year %} {% if i == selectedYear %}
+            <option value="{{i}}" selected="selected">{{i}}</option>
+            {% else %}
+            <option value="{{i}}">{{i}}</option>
+            {% endif %} {% endfor %}
+          </select>
+                </td>
+                <td class="form-field" style="text-align: center; padding-right: 20px">
+                    <label for="semester" style="padding-right: 10px">Semester </label>
+
+                    <select style="width: 120px; height: 30px" class="form-select" id="semester" name="semester" form="courseform" aria-label="Default select example">
+            {% for i in semesters %} {% if i == selectedSemester %}
+            <option value="{{i}}" selected="selected">{{i}}</option>
+            {% else %}
+            <option value="{{i}}">{{i}}</option>
+            {% endif %} {% endfor %}
+          </select>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header">
+                <h2 class="card-title">Assessment Data</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class ="row justify-content-center">
+        {% csrf_token %}
+        <table id ="atable">
+            <tr>
+                <td  style="text-align:center; padding-right:20px;">
+                    <input type="text" id="anum" name="anum" class="form-control"  placeholder="Number of Assessments"/>
+                </td>
+                <td style="text-align: center;" class="last-row" colspan="2">
+                    <button class="btn btn-primary" onclick="showAssessment()">Enter</button>
+                </td>
+            </tr>
+
+        </table>
+
+
+</div>
+<div class="row justify-content-center">
+    {% csrf_token %}
+    <table id="atable">
+        <tr>
+            <td style="text-align: center; padding-right: 20px">
+                <input type="text" id="anum" name="anum" class="form-control" placeholder="Number of Assessments" />
+            </td>
+            <td style="text-align: center" class="last-row" colspan="2">
+                <button class="btn btn-primary" onclick="showAssessment()">
+          Enter
+        </button>
+            </td>
+        </tr>
+    </table>
+
+    <table id="assess" class="mt-4"></table>
+</div>
+{% endblock %} {% block javascripts %}
+
+<script>
+    function showAssessment() {
+        var placeholders = [
+            "Assessment Name",
+            "Question Number",
+            "TotalMarks",
+            "Weightage",
+        ];
+
+        var num = document.getElementById("anum").value;
+        console.log(num);
+
+        for (let j = 0; j < num; j++) {
+            var tr = document.createElement("tr");
+            var td = document.createElement("td");
+
+            for (let i = 0; i < 4; i++) {
+                var td1 = document.createElement("td");
+                var input = document.createElement("INPUT");
+                input.setAttribute("type", "text");
+                input.setAttribute("placeholder", placeholders[i]);
+
+                console.log(input);
+
+                td1.appendChild(input);
+                td1.style.padding = "0px 20px 0px 0px";
+
+                td.appendChild(td1);
+            }
+
+            tr.appendChild(td);
+            document.getElementById("assess").appendChild(tr);
+        }
+
+        tr.appendChild(td);
+    document.getElementById("atable").appendChild(tr);
+    }
+}
+
+</script>
+
+{% endblock javascripts %}

@@ -99,7 +99,7 @@
 
            <li class="{% if 'PLO Comp' == segment %} active {% endif %}">
             <a  data-toggle="collapse" href="#plocomp">
-              <i class="tim-icons icon-chart-bar-32"></i>
+              <i class="tim-icons icon-molecule-40"></i>
               <p>PLO Comparison
                 <b class="caret"></b>
               </p>
@@ -120,21 +120,21 @@
                   </a>
                 </li>
                 <li>
-                  <a href="">
+                  <a href="{% url 'pcomp' %}">
                      <span class="sidebar-mini-icon">P</span>
                     <span class="sidebar-normal">Program</span>
                   </a>
                 </li>
                 <li>
                 <li>
-                  <a href="">
-                     <span class="sidebar-mini-icon">I</span>
+                  <a href="{% url 'dcomp' %}">
+                     <span class="sidebar-mini-icon">D</span>
                     <span class="sidebar-normal">Department</span>
                   </a>
                 </li>
                 <li>
-                  <a href="">
-                     <span class="sidebar-mini-icon">H</span>
+                  <a href="{% url 'scomp' %}">
+                     <span class="sidebar-mini-icon">S</span>
                     <span class="sidebar-normal">School</span>
                   </a>
                 </li>
@@ -147,7 +147,7 @@
            <li class="{% if 'PLO-CO' == segment %} active {% endif %}">
             <a  data-toggle="collapse" href="#ploco">
               <i class="tim-icons icon-notes"></i>
-              <p>PLO-CO Report
+              <p>PLO & CO Report
                 <b class="caret"></b>
               </p>
 
@@ -185,6 +185,40 @@
               </ul>
             </div>
           </li>
+          <li class="{% if 'plostats' == segment %} active {% endif %}">
+            <a  data-toggle="collapse" href="#plostats">
+              <i class="tim-icons icon-puzzle-10"></i>
+              <p>PLO Stats
+                <b class="caret"></b>
+              </p>
+
+            </a>
+            <div class="collapse" id="plostats">
+              <ul class="nav">
+                <li>
+                  <a href="{% url 'pplostats' %}">
+                     <span class="sidebar-mini-icon">P</span>
+                    <span class="sidebar-normal">Program</span>
+                  </a>
+                </li>
+                </li>
+                <li>
+                  <a href="{% url 'dplostats' %}">
+                     <span class="sidebar-mini-icon">D</span>
+                    <span class="sidebar-normal">Department</span>
+                  </a>
+                </li>
+                </li>
+                <li>
+                  <a href="{% url 'splostats' %}">
+                     <span class="sidebar-mini-icon">S</span>
+                    <span class="sidebar-normal">School</span>
+                  </a>
+                </li>
+                </li>
+              </ul>
+            </div>
+          </li>
 
           <li class="{% if 'plotable' == segment %} active {% endif %}">
             <a href="{% url 'studentplotable' %}">
@@ -192,12 +226,14 @@
               <p><strong>Student Wise PLO Table</strong></p>
             </a>
           </li>
-          <li class="{% if 'plostats' == segment %} active {% endif %}">
-            <a href="{% url 'plostats' %}">
-              <i class="tim-icons icon-align-center"></i>
-              <p>PLO Achievement Statistics</p>
+
+           <li>
+            <a href="{% url 'logoutpage' %}" >
+              <i class="tim-icons icon-user-run"></i>
+              <p>Logout</p>
             </a>
           </li>
+
                     
         </ul>
       </div>

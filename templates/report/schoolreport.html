@@ -1,0 +1,97 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} SPMS{% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block sidebar %}
+    {% if usertype == 'Higher Authority' %}
+        {% include 'includes/hasidebar.html' %}
+    {% else %}
+        {% include 'includes/facultysidebar.html' %}
+    {% endif %}
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header ">
+                <h2 class="card-title">PLO & CO Achievement Report For School</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class ="row justify-content-center">
+    <form  id = "myform" action="sreport" method="post">
+        {% csrf_token %}
+        <table class="form-table">
+            <tr>
+                <td class="form-field" style="padding-right:30px;">
+                     <select  style = "width:120px;height:30px;" class ="form-select selectpicker" id="school" name="school" form="myform" aria-label="Default select example">
+                         {% for i in slist %}
+                            {% if i.schoolID == selectedSchool %}
+                                <option value="{{i.schoolID}}" selected="selected">{{i.schoolID}}</option>
+                            {% else %}
+                                 <option value="{{i.schoolID}}">{{i.schoolID}}</option>
+                            {% endif %}
+                         {% endfor %}
+                    </select>
+                </td>
+                <td style="text-align: center;" class="last-row" colspan="2">
+                    <button class="btn btn-primary">Search</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+
+
+<div class="row mt-4" id="chart">
+      <div class="col-12">
+          <div class="card card-chart">
+              <div class="card-body">
+                    <table class="table table-bordered table-striped table-sm" style="text-align: center;">
+                        <thead style="background-color:#007FFF">
+                            <tr>
+                                <th>CO/PLO</th>
+                                <th>Attempted</th>
+                                <th>Successfully Achieved</th>
+                                <th>Successful Percentage (%)</th>
+                                <th>Failed to Achieve</th>
+                                <th>Failed Percentage (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in table %}
+                                <tr>
+                                    {% for i in entry %}
+                                        <td>{{ i }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+              </div>
+          </div>
+      </div>
+</div>
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>
+    var search ={{search}}
+
+    if(search==1){
+        document.getElementById("chart").style.display = "none";
+        }
+</script>
+
+{% endblock javascripts %}
