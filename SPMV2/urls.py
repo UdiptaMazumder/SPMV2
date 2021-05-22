@@ -37,11 +37,12 @@ urlpatterns = [
 
 
     path('courseverdict',views.courseverdict, name='courseverdict'),
-    #path('dataentry',views.dataentry,name='dataentry'),
-    path('dataentry2',views.dataentry2,name='dataentry2'),
-    path('CourseInformationDataEntry',views.plotoCoMapping,name='CourseInformationDataEntry'),
-    path('AssesmentDataEntry',views.AssessmentDataEntry,name='AssesmentDataEntry'),
-    path('EvaluationDataEntry',views.EvaluationDataEntry,name='EvaluationDataEntry'),
+    
+    
+    path('CourseInfoEntry',views.StudCourseInfoDataEntry,name='CourseInfoEntry'),
+    path('PLOtoCOMapp',views.StudplotoCoMapping,name='PLOtoCOMapp'),
+    path('AssessmentDataEntry',views.StudAssessmentDataEntry,name='AssessmentDataEntry'),
+    path('EvaluationDataEntry',views.StudentEvaluationDataEntry,name='EvaluationDataEntry'),
 
     path('userprofile',views.userprofile, name='profile'),
 
