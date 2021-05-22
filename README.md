@@ -13,8 +13,8 @@ This is a kind web-based application using in Python (Django), Javascript, CSS a
 
 | Faculty       | Student          | Higher Authorities  |
 | ------------- |:-------------:| -----|
-| Username: 4201 | Username: | Username: 4001 |
-| Password: Group1    | Password:      | Password: Group1 |
+| Username: 4201 | Username: 1921834 | Username: 4001 |
+| Password: Group1    | Password: Group1      | Password: Group1 |
 
 
 ## Top Contributors
