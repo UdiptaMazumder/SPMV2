@@ -40,7 +40,7 @@ urlpatterns = [
     #path('dataentry2',views.EvaluationDataEntry,name='dataentry2'),
 
 
-    #path('courseverdict',views.courseverdict, name='courseverdict'),
+    ##path('courseverdict',views.courseverdict, name='courseverdict'),
     
     
     path('courseinfoentry',views.courseinfoentry,name='courseinfoentry'),
@@ -59,6 +59,7 @@ urlpatterns = [
 
     path('stplo', views.studentplo, name='stplo'),
     path('pplo', views.programplo, name='pplo'),
+
     path('dplo', views.deptplo, name='dplo'),
     path('splo', views.schoolplo, name='splo'),
 
@@ -80,6 +81,7 @@ urlpatterns = [
     path('splostats',views.schoolwiseplostats,name='splostats'),
 
     path('studentplotable',views.studentplotable,name='studentplotable'),
+
 
 
 

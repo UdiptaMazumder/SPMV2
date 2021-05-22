@@ -17,6 +17,9 @@ school1.save()
 school2 = School_T(schoolID='SBE', schoolName='School of Business and Entrepreneurship')
 school2.save()
 
+school3 = School_T(schoolID='SLASS', schoolName='School of Liberal Arts & Social Sciences')
+school3.save()
+
 #Add Department
 
 d1 = Department_T(departmentID='CSE',departmentName='Computer Science & Engineering',school_id='SETS')
@@ -28,6 +31,15 @@ d2.save()
 d3 = Department_T(departmentID='ACN',departmentName='Accounting',school_id='SBE')
 d3.save()
 
+d4 = Department_T(departmentID='MIS',departmentName='Management Information Systems',school_id='SBE')
+d4.save()
+
+d5 = Department_T(departmentID='ENG',departmentName='English',school_id='SLASS')
+d5.save()
+
+d6 = Department_T(departmentID='GSG',departmentName='Global Studies & Governance',school_id='SLASS')
+d6.save()
+
 #Add programs
 
 p1 = Program_T(programName='B.Sc. in CSE', department_id='CSE')
@@ -38,6 +50,15 @@ p2.save()
 
 p3 = Program_T(programName='B.Sc. in EEE', department_id='EEE')
 p3.save()
+
+p4 = Program_T(programName='BBA in MIS', department_id='MIS')
+p4.save()
+
+p5 = Program_T(programName='BA in ENG', department_id='ENG')
+p5.save()
+
+p6 = Program_T(programName='BSS in GSG', department_id='GSG')
+p6.save()
 
 
 
@@ -95,6 +116,47 @@ i = 0
 
 for name in fnames:
     f = Faculty_T(facultyID=id, firstName=name, lastName=lnames[i], employeeType="F", department_id="EEE")
+    f.save()
+    id = id + 1
+    i = i + 1
+
+fnames = ["Rezwanul", "Arifur Rahman", "Aminul", "Ikramul", "Bushra", "Zakia Binte"]
+
+lnames = ["Alam", "Khan", "Islam", "Hasan", "Sanjana", "Jamal",]
+
+id = 4401
+
+i = 0
+for name in fnames:
+    f = Faculty_T(facultyID=id, firstName=name, lastName=lnames[i], employeeType="F", department_id="MIS")
+    f.save()
+    id = id + 1
+    i = i + 1
+
+fnames = ["Shafiul", "Sara", "Vikarun", "Adilur", "Mazaharul","Mithila"]
+lnames = ["Islam", "Zabeen", "Nesa", "Rahman", "Islam","Mahfuz"]
+
+id = 4501
+
+i = 0
+
+for name in fnames:
+    f = Faculty_T(facultyID=id, firstName=name, lastName=lnames[i], employeeType="F", department_id="ENG")
+    f.save()
+    id = id + 1
+    i = i + 1
+
+
+
+fnames = ["Marufa", "Imtiaz", "Ahmed", "Amjad", "Mohammad", "Shahidul"]
+lnames = ["Akter", "Hossain", "Taufique", "Hossain", "Hasan","Alam"]
+
+id = 4601
+
+i = 0
+
+for name in fnames:
+    f = Faculty_T(facultyID=id, firstName=name, lastName=lnames[i], employeeType="F", department_id="GSG")
     f.save()
     id = id + 1
     i = i + 1

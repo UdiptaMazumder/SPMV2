@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import random
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "SPMV2.settings")
 
@@ -149,7 +150,9 @@ def updatedatabase(d, sem):
         num = 11 * (data[i][3] - 1)
 
         for j in range(0, len(marks)):
-            ev = Evaluation_T(obtainedMarks=marks[j], assessment=assessmentlist[num+j], registration=reglist[i])
+            tmark = assessmentlist[num + j].totalMarks
+            omark = random.randint(0, int(tmark))
+            ev = Evaluation_T(obtainedMarks=omark, assessment=assessmentlist[num + j], registration=reglist[i])
             ev.save()
             evlist.append(ev)
 
