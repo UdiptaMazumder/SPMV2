@@ -50,6 +50,7 @@ def logoutview(request):
     logout(request)
     return redirect('loginpage')
 
+
 def userprofile(request):
     return render(request, 'page-user.html', {})
 
@@ -74,7 +75,7 @@ def shome(request):
     name = request.user.get_full_name()
     usertype = request.user.groups.all()[0].name
 
-    studentid = 1416455
+    studentid = 1823001
     st = Student_T.objects.get(pk=1416455)
     dept = st.department_id
 
@@ -293,133 +294,195 @@ def courseinfoentry(request):
 def plocomapping(request):
     usertype = request.user.groups.all()[0].name
     if request.method == 'POST':
-        course_id = request.POST.get('course-id')
+        courseID = request.POST.get('course')
         coMaps = request.POST.getlist('coMaps')
 
-        course = Course_T(course_id, program_id='BSc', noOfCredits=3)
-        course.save()
+        course = Course_T.objects.get(pk=courseID)
+
+        plist = PLO_T.objects.all()
+
+        plolist = []
+
+        for p in plist:
+            if p.program_id == course.program_id:
+                plolist.append(p)
 
         for i in range(len(coMaps)):
-            co = CO_T(coNo=i + 1, course_id=course_id, plo_id=coMaps[i])
+            k = -1
+
+            for p in range(len(plolist)):
+                if plolist[p].ploNum == coMaps[i]:
+                    k = p
+            co = CO_T(coNum="CO" + str(i + 1), course=course, plo=plolist[k])
             co.save()
 
         return redirect('plocomapping')
     else:
-        return render(request,'plocomapping.html',{
+        return render(request, 'plocomapping.html', {
             'usertype': usertype,
-            'clist':courselist,
+            'clist': courselist,
 
         })
 
 
 def assessmentdataentry(request):
+    usertype = request.user.groups.all()[0].name
+
+    sections = [1, 2, 3]
+
     if request.method == 'POST':
         faculty_id = request.user.username
-        course_id = request.POST.get('course-id')
+        course_id = request.POST.get('course')
         sectionNo = request.POST.get('section')
-        coMarks = request.POST.getlist('coMarks')
+        semester = request.POST.get('semester')
+        totalMarks = request.POST.getlist('totalMarks')
+        weightage = request.POST.getlist('weightAge')
+        assessmentName = request.POST.getlist('assessmentName')
+        questions = request.POST.getlist('questions')
+        cos = request.POST.getlist('co')
 
         section_id = None
         try:
-            section_id = Section_T.objects.raw('''
+            sections = Section_T.objects.raw('''
                 SELECT *
-                FROM mainapp_section_t
-                WHERE course_id = '{}' AND sectionNo = {};
-            '''.format(course_id, sectionNo))
-            section_id = section_id[0].id
+                FROM spmapp_section_t
+                WHERE course_id = '{}' 
+                    AND sectionNum = {};
+                    AND semester = '{}'
+                
+            '''.format(course_id, sectionNo,semester))
+            section_id = sections[0].sectionID
         except:
             section_id = None
 
         if section_id is None:
-            section = Section_T(sectionNo=sectionNo, course_id=course_id, faculty_id=faculty_id)
+            section = Section_T(sectionNum=sectionNo, course_id=course_id, faculty_id=faculty_id,semester=semester)
             section.save()
-            section_id = section.id
+            section_id = section.sectionID
 
-        for j in range(1, len(coMarks) + 1):
+        for j in range(1, len(totalMarks) + 1):
+            conum = cos[j-1]
             co_id = CO_T.objects.raw('''
                 SELECT *
-                FROM mainapp_co_t
-                WHERE course_id = '{}' AND coNo = {}
-            '''.format(course_id, j))
-            assessment = Assessment_T(section_id=section_id, co_id=co_id[0].id, marks=coMarks[j - 1])
+                FROM spmapp_co_t
+                WHERE course_id = '{}' 
+                    AND coNum = '{}'
+            '''.format(course_id, conum))
+
+            assessment = Assessment_T(section_id=section_id, co_id=co_id[0].coID, totalMarks=totalMarks[j - 1],
+                                      assessmentName=assessmentName[j-1],questionNum=questions[j-1],weight=weightage[j-1])
             assessment.save()
 
         return redirect('assessmentdataentry')
 
     else:
-        return render(request,'assessmentdataentry.html',{})
+        return render(request, 'assessmentdataentry.html', {
+            'usertype': usertype,
+            'clist': courselist,
+            'semesters': semesters,
+            'sections': sections,
+
+        })
 
 
 def evaluationdataentry(request):
+    usertype = request.user.groups.all()[0].name
+    section = [1, 2, 3]
+
     if request.method == 'POST':
-        course_id = request.POST.get('course-id')
+        course_id = request.POST.get('course')
         section = request.POST.get('section')
         semester = request.POST.get('semester')
-        year = request.POST.get('year')
 
-        student_id = request.POST.getlist('student_id')
-        coMarks = []
+        print(course_id)
+        print(section)
+        print(semester)
+
+        student_id = request.POST.getlist('student')
+        obtainedMarks = []
+        questions = []
         for i in range(len(student_id)):
-            coMarks.append(request.POST.getlist(f'coMarks{i}'))
+            obtainedMarks.append(request.POST.getlist(f'obtainedMarks{i}'))
+            questions.append(request.POST.getlist(f'questions'))
 
         section_id = None
         try:
             section_id = Section_T.objects.raw('''
                 SELECT *
-                FROM mainapp_section_t
-                WHERE course_id = '{}' AND sectionNo = {};
-            '''.format(course_id, section))
-            section_id = section_id[0].id
+                FROM spmapp_section_t
+                WHERE course_id = '{}' 
+                    AND sectionNum = '{}'
+                    AND semester ='{}';
+            '''.format(course_id, section,semester))
+            section_id = section_id[0].sectionID
+            print(section_id)
         except:
             section_id = None
         assessment_list = []
         coLength = 0
         try:
-            coLength = len(coMarks[0]) + 1
+            col = CO_T.objects.raw('''
+                SELECT count(*)
+                FROM spmapp_co_t
+                WHERE course_id ='{}'
+                '''.format(course_id))
+            coLength = col[0][0]+1
         except:
             coLength = 0
-        for j in range(1, coLength):
+        for j in range(1, len(questions[0])+1):
             assessment_id = None
             try:
                 assessment_id = Assessment_T.objects.raw('''
                     SELECT *
-                    FROM mainapp_assessment_t
-                    WHERE section_id = {} AND co_id IN (
-                        SELECT id
-                        FROM mainapp_co_t
-                        WHERE course_id = '{}' AND coNo = {}
+                    FROM spmapp_assessment_t
+                    WHERE section_id = '{}'
+                        AND co_id IN (
+                        SELECT coID
+                        FROM spmapp_co_t
+                        WHERE course_id = '{}' 
+                            AND questionNum = '{}'
                     )
                 '''.format(section_id, course_id, j))
-                assessment_list.append(assessment_id[0].assessmentNo)
+                assessment_list.append(assessment_id[0].assessmentID)
             except:
                 assessment_id = None
                 assessment_list.append(assessment_id)
 
         for i in range(len(student_id)):
-            enrollment_id = None
-            try:
-                enrollment_id = Registration_T.objects.raw('''
-                    SELECT *
-                    FROM mainapp_enrollment_t
-                    WHERE student_id = '{}' AND section_id = {}
-                '''.format(student_id[i], section_id))
-                enrollment_id = enrollment_id[0].enrollmentID
-            except:
-                enrollment_id = None
 
-            if enrollment_id is None:
-                enrollment = Registration_T(student_id=student_id[i], section_id=section_id, semester=semester,
-                                            year=year)
-                enrollment.save()
-                enrollment_id = enrollment.enrollmentID
+
+            registration_id = None
+            try:
+                registration_id = Registration_T.objects.raw('''
+                    SELECT *
+                    FROM spmapp_registration_t
+                    WHERE student_id = '{}'
+                        AND section_id = '{}'
+                '''.format(student_id[i], section_id))
+                registration_id = registration_id[0].registrationID
+            except:
+                registration_id = None
+
+            if registration_id is None:
+                print(section_id)
+                print(student_id[i])
+                registration = Registration_T(student_id=student_id[i], section_id=section_id, semester=semester)
+                registration.save()
+                registration_id = registration.registrationID
 
             for j in range(len(assessment_list)):
-                evaluation = Evaluation_T(enrollment_id=enrollment_id, assessment_id=assessment_list[j],
-                                          obtainedMarks=coMarks[i][j])
+                evaluation = Evaluation_T(registration_id=registration_id, assessment_id=assessment_list[j],
+                                          obtainedMarks=obtainedMarks[i][j])
                 evaluation.save()
         return redirect('evaluationdataentry')
     else:
-        return render(request,'evaluationdataentry.html',{})
+        return render(request, 'evaluationdataentry.html', {
+            'usertype': usertype,
+            'clist': courselist,
+            'semesters': semesters,
+            'sections': section,
+
+        })
 
 
 # higher authority
@@ -518,7 +581,6 @@ def enrollment(request):
     if request.method == 'POST':
         b = int(request.POST['sem1'])
         e = int(request.POST['sem2'])
-
 
         sems = []
         for i in range(b, e + 1):
@@ -675,6 +737,7 @@ def courseverdict(request):
             'search': 1,
             'selectedCourse': None,
         })
+
 
 ####def dataentry(request):
 ####   name = request.user.get_full_name()

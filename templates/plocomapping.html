@@ -16,7 +16,7 @@
     </div>
 </div>
 <div class="row justify-content-center text-center mt-auto">
-
+    <form>
         <table class="form-table">
             <tr>
                 <td class="form-field" style="text-align: center; padding-right: 20px">
@@ -36,22 +36,15 @@
                     <input type="text" id="conum" name="conum" class="form-control" placeholder="No. of COs to be Added" />
                 </td>
                 <td style="text-align: center" class="last-row" colspan="2">
-                    <button class="btn btn-primary" onclick="showCOs()">Enter</button>
+                    <button class="btn btn-primary" id ="submitButton">Enter</button>
                 </td>
             </tr>
         </table>
-
+    </form>
 </div>
-    <div class="row">
-        <div class="col-12">
-
-                <table class="form-table" id="mapping-table">
-
-                </table>
-
-
-        </div>
-    </div>
+<div class="row justify-content-center mt-4">
+    <form id="mappingSection" action="{% url 'plocomapping' %}" method="post"></form>
+</div>
 
 
 
@@ -59,39 +52,52 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 <script>
-    function showCOs() {
-        var num = document.getElementById('conum').value;
+   $("#submitButton").click(function() {
+        let courseID = document.getElementById('course').value;
+        let noOfCO = document.getElementById('conum').value;
 
-        for (let j = 0; j <parseInt(num); j++) {
-            var tr = document.createElement("tr");
+        let mappingSection = document.getElementById('mappingSection');
+        mappingSection.innerHTML = '';
 
-            var td1 = document.createElement("td");
-            td1.innerHTML = "CO"+(j+1);
-            td1.setAttribute("text-align", "center")
+        let formTable = document.createElement('table');
+        formTable.className = 'form-table';
+        formTable.innerHTML = `
+                            {% csrf_token %}
+                            <input type="hidden" name="course" value="${courseID}" />
+                        `;
+        for (let i = 0; i < parseInt(noOfCO); i++) {
+            let inputForm = document.createElement('tr')
+            inputForm.innerHTML = `
+                   <td class="form-field" style="width: 120px;">
+                         <label style="margin-right: 0px;" for="mapping${i + 1}" id="mappinglabel${i + 1}"><b>CO${i + 1}</b> maps to</label>
+                   </td>
+                    <td class="form-field" style="width: 110px;">
+                        <select class="form-control" id="coMaps" name="coMaps">
+                        <option value="PLO1">PLO01</option>
+                        <option value="PLO2">PLO02</option>
+                        <option value="PLO3">PLO03</option>
+                        <option value="PLO4">PLO04</option>
+                        <option value="PLO5">PLO05</option>
+                        <option value="PLO6">PLO06</option>
+                        <option value="PLO7">PLO07</option>
+                        <option value="PLO8">PLO08</option>
+                        <option value="PLO9">PLO09</option>
+                        <option value="PLO10">PLO10</option>
+                        <option value="PLO11">PLO11</option>
+                        <option value="PLO12">PLO12</option>
+                        </select>
+                    </td>
+                    `;
+                    formTable.appendChild(inputForm);
+                        }
+                        let inputButton = document.createElement('tr');
+                        inputButton.innerHTML = `<td style="text-align: center;" class="last-row" colspan="2"><button class="btn btn-primary">Submit Mapping</button></td>`;
 
-            tr.appendChild(td1)
-
-            var td2 = document.createElement("td");
-            var select = document.createElement("select")
-            select.setAttribute("id", "mySelect");
-            select.setAttribute("class", "form-select selectpicker");
-            td2.appendChild(select)
-            tr.appendChild(td2)
+                        formTable.appendChild(inputButton);
+                        mappingSection.appendChild(formTable);
+                        return false;
 
 
-            for(let k=1;k<=12;k++){
-                  var z = document.createElement("option");
-                  z.setAttribute("value", "PLO"+k);
-                  var t = document.createTextNode("PLO"+k);
-                  z.appendChild(t);
-                  document.getElementById("mySelect").appendChild(z);
-            }
-
-            tr.appendChild(td2)
-
-        }
-         document.getElementById("mapping-table").appendChild(tr);
-
-    }
+});
 </script>
 {% endblock javascripts %}

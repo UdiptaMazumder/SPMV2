@@ -81,7 +81,6 @@
         }
 
          var dataset1= [{
-            label: 'Student Average GPA',
             data: headgpa,
             backgroundColor:bcolors
          }]
@@ -94,7 +93,16 @@
                   datasets: dataset1,
               },
               options: {
+                 legend: {
+                    display: false
+                },
+                title: {
+                display: true,
+                text: 'Student Average GPA'
+              },
                   scales: {
+
+
                       xAxes: [{
                           stacked: true,
                           gridLines: {
@@ -123,7 +131,7 @@
             bcolors.push(colors[i])
         }
          var dataset1= [{
-            label: 'Student Average GPA',
+
             data: headgpa,
             backgroundColor:bcolors,
          }]
@@ -140,7 +148,7 @@
         }
 
         var dataset2= [{
-            label: 'Student Average GPA',
+
             data: deangpa,
             backgroundColor:bcolors,
          }]
@@ -157,7 +165,7 @@
             bcolors.push(colors[i])
         }
         var dataset3= [{
-            label: 'Student Average GPA',
+
             data: vcgpa,
             backgroundColor: bcolors,
          }]

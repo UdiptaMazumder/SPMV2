@@ -33,16 +33,6 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 
-<!--  <script>-->
-<!--    chartLabel = {{chartLabel|safe}}-->
-<!--     chartDataSet = {{chartDataSet}}-->
-<!--    $(document).ready(function(chartLabel,chartDataSet) {-->
-<!--      // Javascript method's body can be found in assets/js/demos.js-->
-<!--      demo.initDashboardPageCharts(chartLabel,chartDataSet);-->
-
-<!--    });-->
-<!--  </script>-->
-
 
   <script>
       var ctx = document.getElementById("cowiseplo").getContext('2d');
@@ -51,7 +41,8 @@
       co = [{% for i in co %} '{{ i }}', {% endfor %}];
       table = {{ table }};
 
-      colors = ['Red','Orange','Green','Blue']
+      colors =  ['#5CC8D7FF','#00539CFF','#EEA47FFF','#2C5F2D','#97BC62FF','#CE4A7EFF','#FC766AFF','#603F83FF','#006D77'
+        ,'#E29578','#264653','#81b29a','#8d99ae']
 
       var datasetlist = []
 

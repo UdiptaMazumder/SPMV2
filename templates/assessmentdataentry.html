@@ -1,7 +1,10 @@
 {% extends "layouts/base.html" %} {% block title %} SPMS{% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %} {% block sidebar %} {% include 'includes/facultysidebar.html' %} {% endblock %} {% block content %}
+{% block stylesheets %}{% endblock stylesheets %}
+{% block sidebar %}
+    {% include 'includes/facultysidebar.html' %}
+{% endblock %} {% block content %}
 
 <div class="row">
     <div class="col-12">
@@ -12,21 +15,70 @@
         </div>
     </div>
 </div>
-<div class="row justify-content-center">
-    {% csrf_token %}
-    <table id="atable">
-        <tr>
-            <td style="text-align: center; padding-right: 20px">
-                <input type="text" id="anum" name="anum" class="form-control" placeholder="Number of Assessment" />
-            </td>
-            <td style="text-align: center" class="last-row" colspan="2">
-                <button class="btn btn-primary" onclick="showAssessment()">Enter</button>
-            </td>
-        </tr>
-    </table>
 
-    <table id="assess" class="mt-4"></table>
+<div class="row justify-content-center">
+    <form>
+        {% csrf_token %}
+        <table class="form-table">
+            <tr>
+                <td class="form-field" style="text-align: center;">
+                    <label for="course" >CourseID</label>
+                    <select style="width: 120px; height: 30px" class="form-select selectpicker" id="course" name="course">
+                        {% for i in clist %}
+                            {% if i.courseID == selectedCourse %}
+                                <option value="{{i.courseID}}" selected="selected">{{i.courseID}}</option>
+                            {% else %}
+                                <option value="{{i.courseID}}">{{i.courseID}}</option>
+                            {% endif %}
+                        {% endfor %}
+                     </select>
+                </td>
+
+                <td class="form-field" style="text-align: center;padding-right:20px;">
+                    <label for="section" >SectionNum</label>
+                    <select  class="form-select selectpicker" id="section" name="section">
+                        {% for i in sections %}
+                            {% if i == selectedSection %}
+                                <option value="{{i}}" selected="selected">{{i}}</option>
+                            {% else %}
+                                <option value="{{i}}">{{i}}</option>
+                            {% endif %}
+                        {% endfor %}
+                  </select>
+                </td>
+
+                <td class="form-field" style="text-align: center;padding-right: 20px;width:210px;">
+
+                    <input type="text" class="form-control" id="semester" name="semester" placeholder="Semester(e.g. Spring 2020)">
+
+                    <!--<select  class="form-select selectpicker" id="semester" name="semester">
+                        {% for i in semesters %}
+                            {% if i == selectedSemester %}
+                                 <option value="{{i}}" selected="selected">{{i}}</option>
+                            {% else %}
+                                <option value="{{i}}">{{i}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>-->
+                </td>
+
+
+                <td class="form-field" style="text-align: center;padding-right: 20px;">
+                    <input type="text" id="anum" name="anum" class="form-control" placeholder="Number of Assessment" />
+                </td>
+                <td style="text-align: center" class="last-row" colspan="2">
+                    <button class="btn btn-primary" id ="enterButton">Enter</button>
+                </td>
+             </tr>
+        </table>
+    </form>
 </div>
+
+<div class="row justify-content-center mt-4">
+    <form id="assessmentSection"  action="{% url 'assessmentdataentry' %}" method="post"></form>
+</div>
+
+
 
 {% endblock %}
 
@@ -35,42 +87,67 @@
 {% block javascripts %}
 
 <script>
-    function showAssessment() {
-        var placeholders = [
+    $("#enterButton").click(function() {
+        let placeholders = [
             "Assessment Name",
             "Question Number",
             "TotalMarks",
             "Weightage",
         ];
+        let courseName = document.getElementById('course').value;
+        let noOfAssess= document.getElementById('anum').value;
+        let section = document.getElementById('section').value;
+        let semester = document.getElementById('semester').value;
 
-        var num = document.getElementById("anum").value;
-        console.log(num);
 
-        for (let j = 0; j < num; j++) {
-            var tr = document.createElement("tr");
-            var td = document.createElement("td");
 
-            for (let i = 0; i < 4; i++) {
-                var td1 = document.createElement("td");
-                var input = document.createElement("INPUT");
-                input.setAttribute("type", "text");
-                input.setAttribute("placeholder", placeholders[i]);
+        let assessmentSection = document.getElementById('assessmentSection');
 
-                console.log(input);
+        console.log(courseName)
 
-                td1.appendChild(input);
-                td1.style.padding = "0px 20px 0px 0px";
+        assessmentSection.innerHTML = '';
 
-                td.appendChild(td1);
-            }
-
-            tr.appendChild(td);
-            document.getElementById("assess").appendChild(tr);
+        let formTable = document.createElement('table');
+        formTable.className = 'form-table';
+        formTable.innerHTML = `
+                            {% csrf_token %}
+                            <input type="hidden" name="course" value="${courseName}" />
+                            <input type="hidden" name="section" value="${section}" />
+                             <input type="hidden" name="semester" value="${semester}" />
+                        `;
+        for (let i = 0; i < parseInt(noOfAssess); i++){
+            let inputForm = document.createElement('tr')
+            inputForm.innerHTML = `
+            <td class="form-field">
+               <input type="text" class ="form-control" id="questions${i + 1}" name="questions" class="form-control" placeholder="Question Number"/>
+            </td>
+            <td class="form-field" style="width: 180px;padding-right:20px;">
+                <input type="text" id="assessmentName${i + 1}" name="assessmentName" class="form-control" placeholder="AssessmentName"/>
+            </td>
+            <td class="form-field" style="padding-right:20px;">
+                <input type="text" id="totalMark${i + 1}" name="totalMarks" class="form-control" placeholder="Total Marks" />
+            </td>
+            <td class="form-field">
+                <input type="text" id="weightAge${i + 1}" name="weightAge" class="form-control" placeholder="Weightage" />
+            </td>
+             <td class="form-field" style="text-align: center;padding-right: 20px;">
+                    <select  class="form-select" id="co" name="co">
+                       <option value="CO1">CO1</option>
+                        <option value="CO2">CO2</option>
+                         <option value="CO3">CO3</option>
+                        <option value="CO4">CO4</option>
+                    </select>
+              </td>
+            `;
+            formTable.appendChild(inputForm);
         }
-
-        tr.appendChild(td);
-        document.getElementById("atable").appendChild(tr);
-    }
+        let inputButton = document.createElement('tr');
+        inputButton.innerHTML = `<td style="text-align: center;" class="last-row mt-2" colspan="4"><button class="btn btn-primary">Submit Assessment</button></td>`;
+        formTable.appendChild(inputButton);
+        assessmentSection.appendChild(formTable);
+        return false;
+});
 </script>
+
 
 {% endblock javascripts %}

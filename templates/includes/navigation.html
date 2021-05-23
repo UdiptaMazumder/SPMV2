@@ -28,7 +28,12 @@
               <li class="dropdown nav-item">
                 <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                   <div class="photo">
-                    <img src="{% static 'assets/img/anime3.png' %}" alt="Profile Photo">
+                    <img src="{% if request.user.get_full_name == 'Sadita Ahmed' %}
+                                  {% static 'assets/img/saditaahmed.jpg' %}
+                                {% else %}
+                                  {% static 'assets/img/anime3.png' %}
+                                {% endif %}"
+                    alt="Profile Photo">
                   </div>
                   <b class="caret d-none d-lg-block d-xl-block"></b>
                   <p class="d-lg-none">

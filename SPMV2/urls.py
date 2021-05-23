@@ -30,20 +30,7 @@ urlpatterns = [
     path('coursewise',views.coursewiseplo,name='coursewiseplo'),
     path('plotable',views.plotable,name='plotable'),
 
-    path('dataentry',views.dataentry,name='dataentry'),
 
-
-    #path('dataentry',views.dataentry,name='dataentry'),
-    #path('dataentry2',views.dataentry2,name='dataentry2'),
-    #path('dataentry2',views.plotoCoMapping,name='dataentry2'),
-    #path('dataentry2',views.AssessmentDataEntry,name='dataentry2'),
-    #path('dataentry2',views.EvaluationDataEntry,name='dataentry2'),
-
-
-    ##path('courseverdict',views.courseverdict, name='courseverdict'),
-    
-    
-    path('courseinfoentry',views.courseinfoentry,name='courseinfoentry'),
     path('plocomapping',views.plocomapping,name='plocomapping'),
     path('assessmentdataentry',views.assessmentdataentry,name='assessmentdataentry'),
     path('evaluationdataentry',views.evaluationdataentry,name='evaluationdataentry'),
@@ -81,8 +68,5 @@ urlpatterns = [
     path('splostats',views.schoolwiseplostats,name='splostats'),
 
     path('studentplotable',views.studentplotable,name='studentplotable'),
-
-
-
 
 ]

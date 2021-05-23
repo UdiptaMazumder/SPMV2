@@ -122,7 +122,8 @@
 <script>
 
     var ctx = document.getElementById("pie").getContext("2d");
-    colors = ['Red','Orange','Green','Blue','Cyan', 'Purple','Pink','Teal','Maroon','Gray','Olive','Lime','GoldenRod']
+    colors =  ['#5CC8D7FF','#00539CFF','#EEA47FFF','#2C5F2D','#97BC62FF','#CE4A7EFF','#FC766AFF','#603F83FF','#006D77'
+        ,'#E29578','#264653','#81b29a','#8d99ae']
 
 
 
@@ -142,7 +143,7 @@
         datasets: [{
             label:"Students",
             data:snum,
-            backgroundColor: ['Olive','Purple','Cyan']
+            backgroundColor: colors,
         }]
     }
 
@@ -157,7 +158,7 @@
         datasetlist1.push({
             label:'Student',
             data: snum,
-            backgroundColor:['Olive','Blue','Cyan']
+            backgroundColor:colors,
         });
       var data = myChartData.config.data;
       data.datasets = datasetlist1;
@@ -169,7 +170,7 @@
       datasetlist2.push({
             label:'Student',
             data: dnum,
-            backgroundColor:['Olive','Cyan','Purple','Teal','Maroon','Gray']
+            backgroundColor:colors,
       });
 
       var data = myChartData.config.data;
@@ -183,18 +184,12 @@
       datasetlist3.push({
             label:'Student',
             data: pnum,
-            backgroundColor:['Lime','Olive','Purple','Maroon','Gray','Blue']
+            backgroundColor:colors,
       });
       var data = myChartData.config.data;
       data.datasets = datasetlist3;
       data.labels = program;
       myChartData.update();
     });
-
-
-
-
 </script>
-
-
 {% endblock javascripts %}

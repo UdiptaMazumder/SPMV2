@@ -11,18 +11,7 @@ django.setup()
 from spmapp.models import *
 
 
-reglist = Registration_T.objects.all()
+vfnames = ["M. Omar","Tanweer"]
 
-for r in reglist:
-    if(len(r.semester)==6):
-        st = r.semester+" "+str(r.year)
-        r.semester=st
-        r.save()
+vlnames = ["Rahman", "Hasan"]
 
-sectionlist = Section_T.objects.all()
-
-for s in sectionlist:
-    if(len(s.semester)==6):
-        st = s.semester+" "+str(s.year)
-        s.semester = st
-        s.save()

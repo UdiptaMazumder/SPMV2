@@ -8,6 +8,47 @@ programlist = Program_T.objects.all()
 
 
 # GPA Analysis
+
+def getStudentCGPA(studentID):
+    with connection.cursor() as cursor:
+        cursor.execute(''' 
+            SELECT sum(Credits*grade)/sum(Credits)
+            FROM(   
+                SELECT  Credits,
+                    CASE
+                        WHEN sum(Marks) >= 85 THEN 4.0
+                        WHEN sum(Marks) >= 80 AND sum(Marks)<85 THEN 3.7
+                        WHEN sum(Marks) >= 75 AND sum(Marks)<80 THEN 3.3
+                        WHEN sum(Marks) >= 70 AND sum(Marks)<75 THEN 3.0
+                        WHEN sum(Marks) >= 65 AND sum(Marks)<70 THEN 2.7
+                        WHEN sum(Marks) >= 60 AND sum(Marks)<65 THEN 2.3
+                        WHEN sum(Marks) >= 55 AND sum(Marks)<60 THEN 2.0
+                        WHEN sum(Marks) >= 50 AND sum(Marks)<55 THEN 1.7
+                        WHEN sum(Marks) >= 45 AND sum(Marks)<50 THEN 1.3
+                        WHEN sum(Marks) >= 40 AND sum(Marks)<45 THEN 1.0
+                        ELSE 0.0
+                    END as grade
+                FROM(
+                    SELECT c.courseID as CourseID,a.weight*(sum(e.obtainedMarks)/sum(a.totalMarks)) as Marks, c.numOfCredits as Credits
+                    FROM spmapp_registration_t r,
+                        spmapp_section_t sc, 
+                        spmapp_course_t c,
+                        spmapp_assessment_t a, 
+                        spmapp_evaluation_t e
+                    WHERE r.section_id = sc.sectionID
+                        and sc.course_id = c.courseID 
+                        and r.registrationID = e.registration_id 
+                        and e.assessment_id = a.assessmentID
+                        and r.student_id = '{}'
+                    GROUP BY  c.courseID,a.assessmentName) Derived 
+                GROUP BY CourseID) Derived
+                    '''.format(studentID))
+
+        row = cursor.fetchall()[0][0]
+    return np.round(row, 3)
+
+
+
 def getStudentWiseGPA(studentID, semester):
     with connection.cursor() as cursor:
         cursor.execute(''' 
@@ -45,6 +86,7 @@ def getStudentWiseGPA(studentID, semester):
                     '''.format(studentID, semester))
 
         row = cursor.fetchall()[0][0]
+
     return np.round(row, 3)
 
 

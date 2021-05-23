@@ -65,6 +65,8 @@
 
  <script>
    var ctx = document.getElementById("ploperformance").getContext("2d");
+    colors =  ['#5CC8D7FF','#00539CFF','#EEA47FFF','#2C5F2D','#97BC62FF','#CE4A7EFF','#FC766AFF','#603F83FF','#006D77'
+        ,'#E29578','#264653','#81b29a','#8d99ae']
 
     var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
@@ -86,7 +88,7 @@
           fill: true,
           backgroundColor: gradientStroke,
           hoverBackgroundColor: gradientStroke,
-          borderColor: '#1f8ef1',
+          borderColor: '#5CC8D7FF',
           borderWidth: 2,
           borderDash: [],
           borderDashOffset: 0.0,
@@ -133,16 +135,16 @@
       labels: {{gpalabel1|safe}},
       datasets: [{
         label: "Individual",
-        backgroundColor: '#d048b6',
+        backgroundColor: '#5CC8D7FF',
         fill: false,
-        borderColor: '#d048b6',
+        borderColor: '#5CC8D7FF',
         data: {{gpadata1}}
         },
         {
         label: "Department Average",
-        backgroundColor: '#006aff',
+        backgroundColor: '#00539CFF',
         fill: false,
-        borderColor: '#006aff',
+        borderColor: '#00539CFF',
         data: {{gpadata2}}
       }]
     };
@@ -178,12 +180,12 @@
           datasets: [{
               label: 'Individual',
               data: {{plodata1}},
-              backgroundColor: '#c603fc'
+              backgroundColor: '#EEA47FFF',
           },
           {
               label: 'Dept Average',
               data: {{plodata2}},
-              backgroundColor: '#ffa600'
+              backgroundColor: '#2C5F2D',
           }
           ]
       };

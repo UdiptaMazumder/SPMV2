@@ -14,7 +14,7 @@
     <div class ="col-4">
         <div class="card text-center">
             <div class="card-header">
-              Number of Courses: 31
+              Number of Courses: 49
             </div>
             <div class="card-body">
               <h5 class="card-title">Average PLO mapped: 4</h5>
@@ -34,7 +34,7 @@
      <div class ="col-4">
         <div class="card text-center">
             <div class="card-header">
-              Number of Faculties: 33
+              Number of Faculties: 51
             </div>
             <div class="card-body">
               <h5 class="card-title">Practising Semesters: 3</h5>
@@ -96,8 +96,8 @@
   <script>
         var ctx = document.getElementById("gpatrend").getContext("2d");
 
-        colors = ['Red','Orange','Green','Blue','Cyan', 'Purple','Pink','Teal','Maroon','Gray','Olive','Lime','GoldenRod']
-
+       colors =  ['#5CC8D7FF','#00539CFF','#EEA47FFF','#2C5F2D','#97BC62FF','#CE4A7EFF','#FC766AFF','#603F83FF','#006D77'
+        ,'#E29578','#264653','#81b29a','#8d99ae']
         label = {{gpalabel|safe}}
         schools = [{% for i in schools %} '{{ i }}', {% endfor %}];
         stable = {{ sgpatable }};
@@ -122,7 +122,7 @@
         }
 
         var config = {
-              type: 'line',
+              type: 'bar',
               data: {
                   labels: label,
                   datasets: datasetlist1,
@@ -130,7 +130,7 @@
               options: {
                   scales: {
                       xAxes: [{
-                          stacked: true,
+                          stacked: false,
                           gridLines: {
                               display: false,
                           }
