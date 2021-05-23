@@ -19,9 +19,10 @@ This is a kind web-based application using in Python (Django), Javascript, CSS a
 
 ## Top Contributors
 
-1. Rakib Hassan Rajib
-2. Mahmud Hassan Rabby
-3. Misbah Ahmed Shaikat
-4. Hasan Ahmed
-5. Udipta Mazumder 
+1. Udipta Mazumder 
+2. Rakib Hassan Rajib
+3. Mahmud Hassan Rabby
+4. Misbah Ahmed Shaikat
+5. Hasan Ahmed
 6. Md Rakib Hossain
+7. Tamima Sigma
