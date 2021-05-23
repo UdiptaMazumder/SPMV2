@@ -13,8 +13,8 @@ This is a advanced web-based application using in Python (Django), Javascript, C
 
 | Faculty       | Student          | Higher Authorities  |
 | ------------- |:-------------:| -----|
-| Username: 4201 | Username: 1921834 | Username: 4001 |
-| Password: Group1    | Password: Group1      | Password: Group1 |
+| Username: 4102 | Username: 1921834 | Username: 4001 |
+| Password: group1    | Password: group1      | Password: Group1 |
 
 
 ## Top Contributors
