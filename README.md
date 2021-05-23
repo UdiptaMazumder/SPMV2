@@ -6,6 +6,8 @@ This is a advanced web-based application using in Python (Django), Javascript, C
 * Python
 * Django
 * Chart.js
+* Numpy
+* Panda
 
 
 
