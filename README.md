@@ -10,6 +10,9 @@ This is a advanced web-based application using in Python (Django), Javascript, C
 * Numpy
 * Panda
 
+## How to Run
+You need to have python installed in your system. Then you can do "python manage.py runserver" to run the application.
+
 ## Login Credentials
 
 | Faculty       | Student          | Higher Authorities  |
